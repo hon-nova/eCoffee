@@ -10,10 +10,15 @@ from .models import User
 
 logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
-
+footer_data = [
+        ["Get to Know Us", "Careers", "Amazon and Our Planet", "Investor Relations", "Press Releases", "Amazon Science"],
+        ["Make Money with Us", "Sell on Amazon", "Supply to Amazon", "Become an Affiliate", "Protect & Build Your Brand", "Sell on Amazon Handmade", "Advertise Your Products", "Independently Publish with Us", "Host an Amazon Hub"],
+        ["Amazon Payment Products", "Amazon.ca Rewards Mastercard", "Shop with Points", "Reload Your Balance", "Amazon Currency Converter", "Gift Cards", "Amazon Cash"],
+        ["Let Us Help You", "Shipping Rates & Policies", "Amazon Prime", "Returns Are Easy", "Manage your Content and Devices", "Recalls and Product Safety Alerts", "Customer Service"]
+    ]
 def index(request):
     logging.debug('index got invoked::')
-    return render(request,'eCoffee/index.html')
+    return render(request,'eCoffee/index.html',{'footer_data':footer_data})
 
 def login_view(request):
     if request.method == "POST":
@@ -28,11 +33,11 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "eCoffee/login.html", {
+            return render(request, "eCoffee/login_view.html", {
                 "message": "Invalid username and/or password."
             })
     else:
-        return render(request, "eCoffee/login.html")
+        return render(request, "eCoffee/login_view.html")
 
 def logout_view(request):
     logout(request)

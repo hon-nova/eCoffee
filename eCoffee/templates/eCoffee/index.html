@@ -2,5 +2,33 @@
 <!-- {% load static %} -->
 {%block title%}Home Page{%endblock%} 
 {%block body %}
-<h1>Hello eCoffee!</h1>
+
+<div class="index-container">
+   <h1>Hello eCoffee!</h1>
+   <div class="row">
+      <div class="col-md-6" style="display:flex;margin:auto;justify-content:center;align-items:center;">
+         <button class="btn btn-sm btn-info">Let's go</button>
+      </div>
+      <div class="col-md-6">
+         <img src="{% static 'eCoffee/images/coffee-homepage.jpg' %}" alt="coffee" width="700" heigth="auto"/>
+      </div>
+   </div>
+   <div class="divider"></div>
+    <div class="footer-section">
+        {% if footer_data %}
+        <div class="row">
+            {% for column in footer_data %}
+            <div class="col-md-3 footer-column">
+                <ul>
+                    {% for item in column %}
+                    <li><a href="#">{{ item }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div> 
+   </div>
+</div>
 {% endblock %}
