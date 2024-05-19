@@ -12,6 +12,6 @@
 ul > li {
    list-style: none;
 }
-a {
+a.footer {
    color:white;
 }

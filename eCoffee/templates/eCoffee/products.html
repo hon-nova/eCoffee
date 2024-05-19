@@ -15,9 +15,19 @@
    
    <div class="divider"></div>
    <div class="footer-section">
-      <footer>
-
-      </footer>
+      {% if footer_data %}
+      <div class="row">
+          {% for column in footer_data %}
+          <div class="col-md-3 footer-column">
+              <ul>
+                  {% for item in column %}
+                  <li><a href="#" class="footer">{{ item }}</a></li>
+                  {% endfor %}
+              </ul>
+          </div>
+          {% endfor %}
+      </div>
+      {% endif %}
    </div>
 </div>
 {% endblock %}

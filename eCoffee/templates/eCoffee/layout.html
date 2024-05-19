@@ -9,6 +9,7 @@
         <link href="{% static 'eCoffee/style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/layout-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/index-style.css' %}" rel="stylesheet">
+        <link href="{% static 'eCoffee/admin-style.css' %}" rel="stylesheet">
         {%block script%}{%endblock%}
     </head>
     <body>
@@ -43,7 +44,7 @@
             </div>
             <div class="navbar-brand">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">Product</li>
+                    <li class="nav-item"><a href="{% url 'products' %}">Product</a></li>
                     <li class="nav-item"><i class="bi bi-cart3"></i></li>
                 </ul>
             </div>

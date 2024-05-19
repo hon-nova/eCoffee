@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
@@ -31,6 +31,8 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
+            if user.is_superuser and user.username=='hon-admin':
+                return redirect('admin_dashboard')
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "eCoffee/login_view.html", {
@@ -70,3 +72,15 @@ def register(request):
     else:
         return render(request, "eCoffee/register.html")
     
+    
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
+
+@user_passes_test(is_admin)
+def admin_dashboard(request):
+    
+    return render(request,'eCoffee/admin_dashboard.html')
+
+def products(request):
+    
+    return render(request,'eCoffee/products.html',{'footer_data':footer_data})
