@@ -15,10 +15,15 @@
 
 <div class="admin-container">
    {% if request.user.is_authenticated%}
-   <h1>Admin: {{user.username}}</h1>
+   <div class="d-flex justify-content-between"><h1>Admin: {{user.username}}</h1> 
+      <div class="d-flex justify-content-center align-items-center">
+         <i class="bi bi-file-lock2"></i>
+         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+      </div>
+     
+   </div>
    {%endif%}
-   <div class="row mx-1">  
-       
+   <div class="row mx-1">       
       <div class="sidebar col-md-2" style="background-color:#0077b3;">
          <ul>
             <li><i class="bi bi-person-fill-lock"></i><a href="{% url 'users' %}" class="admin">All Users</a></li>

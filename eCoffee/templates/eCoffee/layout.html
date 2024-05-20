@@ -3,6 +3,8 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}eCoffee Home{% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">   
@@ -13,25 +15,24 @@
         {%block script%}{%endblock%}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            
-            <a class="navbar-brand" href="/">eCoffee</a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">            
+            <div><a class="navbar-brand" href="/">eCoffee</a></div>
             <div>
-              <ul class="navbar-nav mr-auto">  
-               {% comment %} <li><img src="{% static 'network/images/network.png' %}" width="50" height="50" class="network-icon"/></li> {% endcomment %}
-                {% comment %} <li class="nav-item">
-                  <a class="nav-link {% if request.path == '' %}active{% endif %}" href="{% url 'index' %}">All Posts</a>
-                </li> {% endcomment %}
+              <ul class="navbar-nav mr-auto">               
                 {% if user.is_authenticated %}
-                    {% comment %} <li class="nav-item">
-                        <a class="nav-link {% if request.path == '/following' %}active{% endif %}" href="{% url 'following'%}">Following</a>
-                    </li> {% endcomment %}
                     <li class="nav-item">
-                        <a class="nav-link" style="color:blue;">{{user.username}}</a>
+                        <select id="profile">
+                            <option value=""> <a class="nav-link" style="color:blue;">{{user.username}}</a></option>
+                            <option value="settings">Settings</option>
+                            <option value="profile">Profile</option>
+                        </select>
+                       
                     </li>
+                    <li class="nav-item"><i class="bi bi-cart3"></i><sup>0</sup></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>
+                    
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Log In</a>
@@ -42,13 +43,7 @@
                 {% endif %}
               </ul>
             </div>
-            <div class="navbar-brand">
-                <ul class="navbar-nav mr-auto">
-                    <li class="nav-item"><a href="{% url 'products' %}">Product</a></li>
-                    <li class="nav-item"><i class="bi bi-cart3"></i></li>
-                </ul>
-            </div>
-          </nav>
+        </nav>
           {% block nav %}
           {% endblock %}
         <div class="body">

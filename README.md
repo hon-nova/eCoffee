@@ -7,7 +7,7 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
 # 2. What’s contained in each file you created.
 # 3. How to run your application.
 # 4. Any other additional information the staff should know about your project. 
-
+- The email address the user used to register for this website is considered the main vehicle used for communication with this user by the admin or a sales person
 # 5. Python Libraries used:
 
  ```python

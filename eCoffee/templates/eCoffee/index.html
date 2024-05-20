@@ -8,13 +8,14 @@
    <div class="row">
       <div class="col-md-6" style="display:flex;margin:auto;justify-content:center;align-items:center;">
         <img src="{% static 'eCoffee/images/gif.webp' %}" alt="gif"/>
-         <button class="btn btn-sm btn-info">Let's go</button>
+         <a href="{% url 'products' %}">View Products</a>
       </div>
       <div class="col-md-6">
          <img src="{% static 'eCoffee/images/coffee-homepage.jpg' %}" alt="coffee" width="700" heigth="auto"/>
       </div>
    </div>
    <div class="divider"></div>
+   
     <div class="footer-section">
         {% if footer_data %}
         <div class="row">
@@ -29,7 +30,7 @@
             {% endfor %}
         </div>
         {% endif %}
-    </div> 
+    </div>
    </div>
 </div>
 {% endblock %}
