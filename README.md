@@ -7,7 +7,15 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
 # 2. What’s contained in each file you created.
 # 3. How to run your application.
 # 4. Any other additional information the staff should know about your project. 
-- The email address the user used to register for this website is considered the main vehicle used for communication with this user by the admin or a sales person
+1.  The email address the user used to register for this website is considered the main vehicle used for communication with this user by the admin or a sales person
+2.  The app does use other Bootstrap libraries for collapsible task as shown
+  ```js
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+  
+  ```
+
+   
 # 5. Python Libraries used:
 
  ```python

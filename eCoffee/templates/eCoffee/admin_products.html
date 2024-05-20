@@ -6,70 +6,106 @@
 
 {% block body %}  
     <div class="admin-products-container">
-      <a class="btn btn-sm btn-primary" href="{% url 'create_product' %}" id="clickBtn" onclick="openForm"> + Add Product </a>
-      <div class="new-product" style="" id="editForm">
-        {{ form.non_field_errors }}
-        <form method="POST" enctype="multipart/form-data" class="my-4">
-          {% csrf_token %}         
-          <div class="form-group row">
-            {{ form.description.errors }}
-            <label
-              for="{{ form.description.id_for_label }}"
-              class="col-sm-2 col-form-label"
-              >Description:</label
-            >
-            <div class="col-sm-10 create-input">{{ form.description }}</div>
-          </div>
-          <div class="form-group row">
-            {{ form.category.errors }}
-            <label
-              for="{{ form.category.id_for_label }}"
-              class="col-sm-2 col-form-label"
-              >Category:</label
-            >
-            <div class="col-sm-10 create-input">{{ form.category }}</div>
-          </div>
-          <div class="form-group row">
-            {{ form.price.errors }}
-            <label
-              for="{{ form.price.id_for_label }}"
-              class="col-sm-2 col-form-label"
-              >Price:</label
-            >
-            <div class="col-sm-10 create-input">{{ form.price }}</div>
-          </div>
-          <div class="form-group row">
-            {{ form.photo_url.errors }}
-            <label
-              for="{{ form.photo_url.id_for_label }}"
-              class="col-sm-2 col-form-label"
-              >Photo URL:</label
-            >
-            <div class="col-sm-10 create-input">{{ form.photo_url }}</div>
-          </div>
-      
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
-      </div>		 
-		{%if products %}
+		<button class="btnAdd" data-toggle="collapse" data-target="#editForm" aria-expanded="false" aria-controls="editForm"> + Add Coffee </button>        
+		<div class="collapse" id="editForm">		
+			<div class="new-product">
+				{{ form.non_field_errors }}
+				<form method="POST" enctype="multipart/form-data" class="my-4" action="{% url 'admin_products' %}">
+				  {% csrf_token %}         
+				  <div class="form-group row">
+					 {{ form.description.errors }}
+					 <label
+						for="{{ form.description.id_for_label }}"
+						class="col-sm-2 col-form-label"
+						>Description:</label
+					 >
+					 <div class="col-sm-10 create-input">{{ form.description }}</div>
+				  </div>
+				  <div class="form-group row">
+					 {{ form.category.errors }}
+					 <label
+						for="{{ form.category.id_for_label }}"
+						class="col-sm-2 col-form-label"
+						>Category:</label
+					 >
+					 <div class="col-sm-10 create-input">{{ form.category }}</div>
+				  </div>
+				  <div class="form-group row">
+					 {{ form.price.errors }}
+					 <label
+						for="{{ form.price.id_for_label }}"
+						class="col-sm-2 col-form-label"
+						>Price:</label
+					 >
+					 <div class="col-sm-10 create-input">{{ form.price }}</div>
+				  </div>
+				  <div class="form-group row">
+					 {{ form.photo_url.errors }}
+					 <label
+						for="{{ form.photo_url.id_for_label }}"
+						class="col-sm-2 col-form-label"
+						>Photo URL:</label
+					 >
+					 <div class="col-sm-10 create-input">{{ form.photo_url }}</div>
+				  </div>			 
+				  <button type="submit" class="btn btn-outline-primary">Submit</button>
+				</form>
+			 </div>
+		</div>
+     		 
+		
       <div class="products">All Coffees Table
         <table class="table table-striped">
          <thead>
+				{%if categories %}
          <tr>
-            <td>id</td><td>photo</td><td>description</td><td>category</td><td>price</td><td>created at</td>
+            <td>id</td><td>photo</td><td>description</td>				
+				<td>
+					
+					<form method="GET" action="{% url 'admin_products' %}">
+					<select id="category" name="category" onchange="this.form.submit()">
+						<option value="">all categories</option>
+						{%for cat in categories%}
+						<option value={{ cat }} {%if selected_category == cat%}selected{%endif%}>{{cat}}</option>
+						{%endfor%}
+					</select>
+					</form>					
+				</td>				
+				<td>price</td><td>created at</td><td>Edit</td><td>Delete</td>
          </tr>
+			
        </thead>     
         <tbody>
-    			 {% for coffee in products %}
+			{%if products %}
+    			{% for coffee in products %}
          <tr>
 				<td>{{ coffee.id }}</td>
-				<td><img src="{{ coffee.photo_url }}" width="200" height="150" alt="coffee"/></td>
-				<td>{{ coffee.description }}</td>
+				<td><img src="{{ coffee.photo_url }}" width="100" height="70" alt="coffee"/></td>
+				<td><small>{{ coffee.description }}</small></td>
 				<td>{{coffee.category}}</td>
 				<td>{{coffee.price}}</td>
 				<td>{{coffee.created_at}}</td>
-      	</tr>
+				<td>
+					<div class="edit">
+						<button type="submit" class="pencil-circle" style="border:none;"><i class="bi bi-pencil-fill pencil" id="pen-icon"></i></button>
+					</div>
+				</td>
+				<td>
+					<div class="delete">
+						<form method="POST" action="{% url 'delete_product' %}" >
+							{%csrf_token%}
+							<input type="hidden" name="product_index" value="{{index}}"/>
+							<button type="submit" style="border:none;">
+								<i class="bi bi-trash3" id="trash_icon"></i>
+							</button>
+						</form>
+					</div>  
+				</td>
+      	</tr>			
       {%endfor%}
+		{%else%}
+				<tr><td>No items found</td></tr>
+			{%endif%}
       </tbody>
     </table>
       {% comment %} pagination here {% endcomment %}

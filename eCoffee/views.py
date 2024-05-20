@@ -83,35 +83,61 @@ def main_dashboard(request):
     
     return render(request,'eCoffee/main_dashboard.html',{'dashboard':'MY DASHBOARD CONTENT'})
 
-
 @user_passes_test(is_admin)
-def admin_products(request):
-    products =Product.objects.all()
-    products=products.order_by('-created_at')
-    return render(request,'eCoffee/admin_products.html',{'products':products})
-
-def home_products(request):
+def admin_products(request):    
     
-    return render(request,'eCoffee/home_products.html',{'footer_data':footer_data})
-
-
-def create_product(request):
+    categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
+    selected_category=request.GET.get('category','')
+    
+    if selected_category:
+        products=Product.objects.filter(category=selected_category)
+        products=products.order_by('-created_at')
+        logging.debug(f'products display based on selected category LIST::{products}')
+    # logging.debug(f'categories filtered from models::{categories_filtered}')
+    # form
+    else:
+        products =Product.objects.all()
+        products=products.order_by('-created_at')
+    
     if request.method == "POST":
         if request.user.is_authenticated:
-            form = ProductForm(request.POST)        
+            form = ProductForm(request.POST,request.FILES)        
             if form.is_valid():                
                 product = form.save(commit=False)  
                 product.save()    
                           
-                return HttpResponseRedirect(reverse("index"))
+                return HttpResponseRedirect(reverse("admin_products"))
         else:
             return redirect('login')
     
     else:
         form = ProductForm()
-    return render(request, "eCoffee/admin_products.html", {"form": form})
+    return render(request, "eCoffee/admin_products.html", {"form": form,'products':products,'categories':categories_filtered,'selected_category':selected_category})
+    
+
+def home_products(request):
+    
+    return render(request,'eCoffee/home_products.html',{'footer_data':footer_data})
 
 @user_passes_test(is_admin)
 def admin_users(request):
     users=User.objects.exclude(username='hon-admin')
     return render(request,'eCoffee/admin_users.html',{'users':users})
+
+@user_passes_test(is_admin)
+def delete_product(request):
+    if request.method=="POST":
+        form_product_index=request.POST.get('product_index')
+        try:
+            form_product_index=int(form_product_index)
+            # logging.debug(f'index from FORM 2:',form_product_index)
+        except(ValueError):
+            return redirect('admin_products')       
+
+        products= Product.objects.all()
+        
+        if form_product_index<len(products):
+            product_to_delete=products[form_product_index]
+            product_to_delete.delete()
+        return redirect('admin_products')    
+    return render(request,'eCoffee/admin_products.html',{"products":products})
