@@ -2,6 +2,31 @@
    border:5px solid green;
 }
 a.admin{
-   color:white;
-   font-size:30px;
+   color:black;
+   font-size:25px;
+}
+
+.create-input input[type="number"],
+.create-input input[type="url"],
+.create-input select{
+   width:500px;
+   height: 40px;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   box-sizing: border-box;
+}
+.create-input textarea{
+   width:500px;
+   height: 100px;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   box-sizing: border-box;
+}
+.new-product {
+   border: 5px solid red;
+   border-radius: 5px;
+   border: 1px solid #d0d0d5;
+   width: 800px;
+   margin: auto;
+   padding: 10px;
 }

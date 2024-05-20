@@ -6,7 +6,8 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
 import logging
-from .models import User
+from .models import User,Product
+from .forms import ProductForm
 
 logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
@@ -78,9 +79,37 @@ def is_admin(user):
 
 @user_passes_test(is_admin)
 def admin_dashboard(request):
-    
-    return render(request,'eCoffee/admin_dashboard.html')
+    products =Product.objects.all()
+    products=products.order_by('-created_at')
+    return render(request,'eCoffee/admin_dashboard.html',{'products':products})
 
 def products(request):
     
     return render(request,'eCoffee/products.html',{'footer_data':footer_data})
+
+def admin_products(request):
+    
+    
+    return render(request,'eCoffee/admin_products.html')
+
+def create_product(request):
+    if request.method == "POST":
+        if request.user.is_authenticated:
+            form = ProductForm(request.POST)        
+            if form.is_valid():                
+                listing = form.save(commit=False)                
+                listing.user = request.user               
+                listing.save()    
+                          
+                return HttpResponseRedirect(reverse("index"))
+        else:
+            return redirect('login')
+    
+    else:
+        form = ProductForm()
+
+    return render(request, "eCoffee/admin_dashboard.html", {"form": form})
+
+def users(request):
+    users=User.objects.exclude(username='hon-admin')
+    return render(request,'eCoffee/admin_dashboard.html',{'users':users})

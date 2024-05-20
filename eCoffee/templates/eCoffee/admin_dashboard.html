@@ -1,21 +1,112 @@
-{% extends "eCoffee/layout.html" %} 
-<!-- {% load static %} -->
-{%block title%}Admin Page{%endblock%} 
-{%block body %}
+{% extends "eCoffee/admin_products.html" %}
 
-<div class="admin-container">
-   <h1>Admin!</h1>
-   <div class="row mx-1">      
-      <div class="col-md-3" style="background-color:#0077b3;">
-         <ul>
-            <li><a href="#" class="admin">All Users</a></li>
-            <li><a href="#" class="admin">All Products</a></li>
-            <li><a href="#" class="admin">Audit</a></li>
-         </ul>
+{% block title %}
+    Admin Products
+{% endblock %}
+
+{% block body %}   
+
+    <div class="admin-products-container">
+      {%if products%}
+      <a class="btn btn-sm btn-primary" href="{% url 'create_product' %}"> + Add Product </a>
+      <div class="new-product">
+        {{ form.non_field_errors }}
+        <form method="POST" enctype="multipart/form-data" class="my-4">
+          {% csrf_token %}         
+          <div class="form-group row">
+            {{ form.description.errors }}
+            <label
+              for="{{ form.description.id_for_label }}"
+              class="col-sm-2 col-form-label"
+              >Description:</label
+            >
+            <div class="col-sm-10 create-input">{{ form.description }}</div>
+          </div>
+          <div class="form-group row">
+            {{ form.category.errors }}
+            <label
+              for="{{ form.category.id_for_label }}"
+              class="col-sm-2 col-form-label"
+              >Category:</label
+            >
+            <div class="col-sm-10 create-input">{{ form.category }}</div>
+          </div>
+          <div class="form-group row">
+            {{ form.price.errors }}
+            <label
+              for="{{ form.price.id_for_label }}"
+              class="col-sm-2 col-form-label"
+              >Price:</label
+            >
+            <div class="col-sm-10 create-input">{{ form.price }}</div>
+          </div>
+          <div class="form-group row">
+            {{ form.photo_url.errors }}
+            <label
+              for="{{ form.photo_url.id_for_label }}"
+              class="col-sm-2 col-form-label"
+              >Photo URL:</label
+            >
+            <div class="col-sm-10 create-input">{{ form.photo_url }}</div>
+          </div>
+      
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>     
+      <div class="products">All Coffees Table
+         <table class="table table-striped">
+         <thead>
+         <tr>
+            <td>id</td><td>photo</td><td>description</td><td>category</td><td>price</td><td>created at</td>
+         </tr>
+       </thead>
+     
+         <tbody>
+     {% for coffee in products%}
+         <tr>
+         <td>{{ coffee.id }}</td>
+         <td><img src="{{ coffee.photo_url }}" width="200" height="150" alt="coffee"/></td>
+         <td>{{ coffee.description }}</td>
+         <td>{{coffee.category}}</td>
+         <td>{{coffee.price}}</td>
+         <td>{{coffee.created_at}}</td>
+      </tr>
+      {%endfor%}
+      </tbody>
+      {% comment %} pagination here {% endcomment %}
+
+      {% comment %} end pagination... {% endcomment %}
+      {%elif users%}
+      <div class="users">
+        <table class='table table-striped'>
+          <thead>
+            <tr><td>user id</td><td>username</td><td>email</td><td>history purchases</td></tr>
+          </thead>
+          <tbody>
+            {%for user in users%}
+            <tr><td>{{user.id}}</td><td>{{user.username}}</td><td>{{user.email}}</td><td><a href="#">history purchases</a></td></tr>
+            {%endfor%}
+          </tbody>
+        </table>
       </div>
-      <div class="col-md-9" style="background-color:yellow;">right</div>
-   </div>
-   
-<div>
 
-{%endblock%}
+      </table>
+
+      </div>
+
+      {%endif%}  
+   </div>
+    {% comment %} {% if entries %}
+    <ul>
+       {%for entry in entries%}
+       <li><a href="{% url 'singlePage' entry %}">{{ entry }}</a></li>
+       {%endfor%}
+    </ul>
+    {%elif message %}
+    <p class="text-danger">{{message}}</p>
+    {% endif %} {% endcomment %}
+
+{% endblock %}
+
+
+
