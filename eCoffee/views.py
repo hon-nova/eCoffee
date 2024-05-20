@@ -33,7 +33,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             if user.is_superuser and user.username=='hon-admin':
-                return redirect('admin_dashboard')
+                return redirect('main_dashboard')
             return HttpResponseRedirect(reverse("index"))
         else:
             return render(request, "eCoffee/login_view.html", {
@@ -77,29 +77,31 @@ def register(request):
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
+
 @user_passes_test(is_admin)
-def admin_dashboard(request):
+def main_dashboard(request):
+    
+    return render(request,'eCoffee/main_dashboard.html',{'dashboard':'MY DASHBOARD CONTENT'})
+
+
+@user_passes_test(is_admin)
+def admin_products(request):
     products =Product.objects.all()
     products=products.order_by('-created_at')
-    return render(request,'eCoffee/admin_dashboard.html',{'products':products})
+    return render(request,'eCoffee/admin_products.html',{'products':products})
 
-def products(request):
+def home_products(request):
     
-    return render(request,'eCoffee/products.html',{'footer_data':footer_data})
+    return render(request,'eCoffee/home_products.html',{'footer_data':footer_data})
 
-def admin_products(request):
-    
-    
-    return render(request,'eCoffee/admin_products.html')
 
 def create_product(request):
     if request.method == "POST":
         if request.user.is_authenticated:
             form = ProductForm(request.POST)        
             if form.is_valid():                
-                listing = form.save(commit=False)                
-                listing.user = request.user               
-                listing.save()    
+                product = form.save(commit=False)  
+                product.save()    
                           
                 return HttpResponseRedirect(reverse("index"))
         else:
@@ -107,9 +109,9 @@ def create_product(request):
     
     else:
         form = ProductForm()
+    return render(request, "eCoffee/admin_products.html", {"form": form})
 
-    return render(request, "eCoffee/admin_dashboard.html", {"form": form})
-
-def users(request):
+@user_passes_test(is_admin)
+def admin_users(request):
     users=User.objects.exclude(username='hon-admin')
-    return render(request,'eCoffee/admin_dashboard.html',{'users':users})
+    return render(request,'eCoffee/admin_users.html',{'users':users})

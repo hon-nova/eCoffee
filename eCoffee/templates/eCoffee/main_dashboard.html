@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+      {%load static %}
+        <title>{% block title %}eCoffee Admin Dashboard{% endblock %}</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">   
+        <link href="{% static 'eCoffee/style.css' %}" rel="stylesheet">
+        <link href="{% static 'eCoffee/layout-style.css' %}" rel="stylesheet">
+        <link href="{% static 'eCoffee/index-style.css' %}" rel="stylesheet">
+        <link href="{% static 'eCoffee/admin-style.css' %}" rel="stylesheet"> 
+        {%block script%}{%endblock%}
+    </head>
+    <body>
+
+<div class="admin-container">
+   {% if request.user.is_authenticated%}
+   <div class="d-flex justify-content-between"><h1>Admin: {{user.username}}</h1> 
+      <div class="d-flex justify-content-center align-items-center">
+         <i class="bi bi-file-lock2"></i>
+         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
+      </div>
+     
+   </div>
+   {%endif%}
+   <div class="row mx-1">       
+      <div class="sidebar col-md-2" style="background-color:#0077b3;">
+         <ul>
+            <li class="sidebar-item"><i class="bi bi-speedometer"></i><a href="{% url 'main_dashboard' %}" class="admin">Dashboard</a></li>
+            <li class="sidebar-item"> <i class="bi bi-people-fill"></i><a href="{% url 'admin_users' %}" class="admin">Users</a></li>           
+            <li class="sidebar-item"><i class="bi bi-cup-straw"></i><a href="{% url 'admin_products' %}" class="admin">Products</a></li>
+            <li class="sidebar-item"><i class="bi bi-incognito"></i><a href="#" class="admin">Audit</a></li>
+         </ul>
+      </div>
+      {%block nav%} 
+      {%endblock%}
+      
+      <div class="main col-md-10" style="background-color:whitesmoke;"> 
+         {%if dashboard%}
+         {{ dashboard }}
+         {%endif%}
+
+         {%block body%}
+         {%endblock%}
+        </div>        
+      </div>     
+   </div>   
+<div>
+</body>

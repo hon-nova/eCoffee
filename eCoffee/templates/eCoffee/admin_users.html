@@ -1,0 +1,20 @@
+{% extends "eCoffee/main_dashboard.html" %}
+{% block title %}
+    Admin Users
+{% endblock %}
+{% block body %} 
+{%if users %}
+<div class="admin-user-container">
+   <table class='table table-striped'>
+      <thead>
+        <tr><td>user id</td><td>username</td><td>email</td><td>history purchases</td></tr>
+      </thead>
+      <tbody>
+        {%for user in users %}
+        <tr><td>{{user.id}}</td><td>{{user.username}}</td><td>{{user.email}}</td><td><a href="#">history purchases</a></td></tr>
+        {%endfor%}
+      </tbody>
+    </table>
+</div>
+{%endif%}
+{%endblock%}
