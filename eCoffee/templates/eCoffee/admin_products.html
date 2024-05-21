@@ -87,7 +87,13 @@
 				<td>{{coffee.created_at}}</td>
 				<td>
 					<div class="edit">
-						<button type="submit" class="pencil-circle" style="border:none;"><i class="bi bi-pencil-fill pencil" id="pen-icon"></i></button>
+						<form method="POST" action="{% url 'edit_product' coffee.id %}">
+							{%csrf_token%}
+						<button type="submit" class="pencil-circle" style="border:none;"
+						data-toggle="collapse" data-target="#editForm" aria-expanded="false" aria-controls="editForm"
+						onclick="editProduct({{coffee.id}})"
+						><i class="bi bi-pencil-fill pencil" id="pen-icon"></i></button>
+						</form>
 					</div>
 				</td>
 				<td>
@@ -104,24 +110,35 @@
       	</tr>			
       {%endfor%}
 		{%else%}
-				<tr><td>No items found</td></tr>
-			{%endif%}
+			<tr><td colspan="5" class="text-center">No items found</td></tr>
+		{%endif%}
       </tbody>
     </table>
       {% comment %} pagination here {% endcomment %}
 
-      {% comment %} end pagination... {% endcomment %}    
-     
+      {% comment %} end pagination... {% endcomment %}       
       </div>
 		{%endif%} 
       
    </div>
 	{%block script%}
 <script>
-	let clickBtn=document.querySelector("#clickBtn")
+	const editProduct = async(productId)=>{
+		await fetch(`/edit_product/${productId}`)
+		.then(response=>
+		
+		{console.log(response.json())
+			response.json()})
+		.then(data=>{
+			console.log(`data got from views.py::${data.category}`)
 
-	const openForm = ()=>{
-
+			document.querySelector('[name="description"]').value = data.description;
+         document.querySelector('[name="category"]').value = data.category;
+         document.querySelector('[name="price"]').value = data.price;
+         document.querySelector('[name="photo_url"]').value = data.photo_url;
+		})
+		.catch(error => console.error('Error fetching product data:', error));
+		
 	}
 </script>
 	{%endblock%}

@@ -141,3 +141,19 @@ def delete_product(request):
             product_to_delete.delete()
         return redirect('admin_products')    
     return render(request,'eCoffee/admin_products.html',{"products":products})
+
+@user_passes_test(is_admin)
+def edit_product(request,product_id):    
+    product=get_object_or_404(Product,pk=product_id)
+    if request.method=="POST":
+        data = {
+        'description': product.description,
+        'category': product.category,
+        'price': product.price,
+        'photo_url': product.photo_url,
+        }
+        logging.debug(f'data::{data}')
+        return JsonResponse(data)
+    else:
+        return JsonResponse({'error found::': 'Unknown backend errors'}, status=401)
+   
