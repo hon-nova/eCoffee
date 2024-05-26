@@ -12,7 +12,7 @@
 				{{ form.non_field_errors }}
 				<form method="POST" enctype="multipart/form-data" action="{% url 'save_product' %}"class="my-4">
 				  {% csrf_token %}   
-				  <input type='hidden' name='product_index' value="{{ index }}"/>      
+				  <input type='hidden' name='product_index' id='product_index' value=""/>      
 				  <div class="form-group row">
 					 {{ form.description.errors }}
 					 <label
@@ -97,13 +97,11 @@
 				<td>{{coffee.created_at}}</td>
 				<td>
 					<div class="edit">	
-						{% comment %} <form method="PUT" action="{% url 'admin_products' coffee.id %}">	
-							{%csrf_token%}				 {% endcomment %}
+						
 						<button type="submit" class="pencil-circle" style="border:none;"
-						data-toggle="collapse" data-target="#editForm" aria-expanded="false" aria-controls="editForm"
-						onclick="editProduct({{coffee.id}})"
-						><i class="bi bi-pencil-fill pencil" id="pen-icon"></i></button>	
-						{% comment %} </form>				 {% endcomment %}
+						data-toggle="collapse" data-target="#editForm" aria-expanded="false" aria-controls="editForm"						
+						onclick="editProduct({{ coffee.id }})">  
+						<i class="bi bi-pencil-fill pencil" id="pen-icon"></i></button>						
 					</div>
 				</td>
 				<td>
@@ -135,21 +133,22 @@
    </div>
 	{%block script%}
 <script>
-	const editProduct = async(productId)=>{
-		console.log('productId::',productId)
-		await fetch(`/get_product/${productId}`)
+	const editProduct = async(id)=>{
+		
+		await fetch(`/get_product/${id}`)
 		.then(response=>response.json())
 		.then(data=>{
 			console.log(`data got from views.py::${data.category}`)
-			console.log('productId::',productId)
+			
 			//console.log('data.id::',data.id)
+			document.getElementById('product_index').value=data.id
 			document.querySelector('[name="description"]').value = data.description;
          document.querySelector('[name="category"]').value = data.category;
          document.querySelector('[name="price"]').value = data.price;
 			document.querySelector('[name="quantity"]').value = data.quantity;
          document.querySelector('[name="photo_url"]').value = data.photo_url;
 
-			document.getElementById('productForm').action = `/save_product/${productId}/`;
+			document.getElementById('productForm').action = `/save_product/${id}/`;
 			$('#editForm').collapse('show');
 		})
 		.catch(error => console.error('Error fetching product data:', error));

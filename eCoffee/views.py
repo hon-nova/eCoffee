@@ -149,6 +149,7 @@ def get_product(request,product_id):
     
    
     data = {
+    'id':product.id,
     'description': product.description,
     'category': product.category,
     'price': product.price,
@@ -160,34 +161,23 @@ def get_product(request,product_id):
 @user_passes_test(is_admin)
 def save_product(request):  
     
-    products=Product.objects.all().order_by('-created_at')
-    logging.debug(f'outer products::{products}')
-    try:
-        logging.debug(f'inner products::{products}')
-        form_product_index= int(request.POST.get('product_index',''))
-        logging.debug(f'current index::{form_product_index}')
-        product_to_edit=products['form_product_index']
+    products=Product.objects.all().order_by('-created_at')    
+    
+    if request.method == 'POST':
+        product_index=request.POST.get('product_index','')
+        logging.debug(f'product_index::{product_index}')
+        product_instance =None
         
-        if form_product_index is not None:
-            form = ProductForm(request.POST, request.FILES, instance=product_to_edit)
-            if form.is_valid():
-                form.save()  
-                return redirect('admin_products') 
-        else:
-            if request.method == 'POST':
-                form = ProductForm(request.POST, request.FILES)
-                if form.is_valid():
-                    form.save()  
-                    return redirect('admin_products')  
-            else:
-                form = ProductForm()
-        
-            return render(request, "eCoffee/admin_products.html", {
-            "form": form,            
-        })
-   
-    except ValueError:
-        return redirect('admin_products')
+        if product_index:
+            product_instance=get_object_or_404(Product,pk=product_index)
+            
+        form=ProductForm(request.POST,request.FILES,instance = product_instance)
+        if form.is_valid():
+            form.save()
+            return redirect('admin_products')
+    else:
+        form=ProductForm()
+    return render(request,'eCoffee/admin_products.html',{'form':form,'products':products})
     
     
     
