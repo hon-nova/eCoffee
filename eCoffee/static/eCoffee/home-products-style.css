@@ -1,0 +1,35 @@
+.home-products-container {
+   background-color: #F2F0EB;
+   margin-right:20px;
+}
+.bottom {
+   border:1px solid #d0d0d5;
+   border-radius:15px;
+   padding:5px;
+   margin:5px;
+
+}
+.coffee-img {
+   display:flex;
+   justify-content: center;
+   padding: 5px;
+}
+.card {
+   height:480px;
+}
+.add-to-cart {
+   display:flex;
+   justify-content: center;
+   /* align-items: center; */
+   margin:auto;
+   border:1px solid rgb(186, 183, 183);
+   background-color: #F2F0EB;
+   border-radius: 15px;
+   padding: 8px;
+}
+.pagination-container {
+   margin: 20px auto;
+}
+.left-panel {
+   margin-left:10px;
+}

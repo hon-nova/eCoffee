@@ -89,7 +89,7 @@ def admin_products(request):
     # products_count=len(Product.objects.all())
     categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
     selected_category=request.GET.get('category','')
-    logging.debug(f'selected_category::{selected_category}')
+    # logging.debug(f'selected_category::{selected_category}')
     if selected_category:
         products=Product.objects.filter(category=selected_category)
         products=products.order_by('-created_at')
@@ -119,16 +119,26 @@ def admin_products(request):
         else:
             return redirect('login')    
     else:
-        form = ProductForm()
-        
+        form = ProductForm()        
     
     return render(request, "eCoffee/admin_products.html", {"form": form,'products':products,'categories':categories_filtered,'selected_category':selected_category,'products_count':products_count})
     
 
 def home_products(request):
     
+    categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
+    selected_category=request.GET.get('category','')
+    logging.debug(f'selected_category::{selected_category}')
     products=Product.objects.all().order_by('-created_at')
-    return render(request,'eCoffee/home_products.html',{'products':products,'footer_data':footer_data})
+    paginator = Paginator(products, 12) 
+    page = request.GET.get('page', 1)
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)   
+    return render(request,'eCoffee/home_products.html',{'products':products,'footer_data':footer_data,'categories':categories_filtered})
 
 @user_passes_test(is_admin)
 def admin_users(request):

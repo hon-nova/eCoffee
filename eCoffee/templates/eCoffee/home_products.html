@@ -3,40 +3,83 @@
 {%block title%}Product Page{%endblock%} 
 {%block body %}
 
-<div class="product-container">
-   <h1>eCoffee Products!</h1>  
+<div class="home-products-container">
+   <h1>eCoffee Products!</h1> 
  
    <div class="row">
-    <div class="col-md-2">
-        <!-- Left panel content goes here -->
-        Left panel
-    </div> 
-
+        <div class="col-md-2">
+            <!-- Left panel content goes here -->
+            {%if categories%}       
+            <div class="row d-flex">           
+                <select name="category">
+                    {%for cat in categories %}
+                    <input type="checkbox" name=""/>
+                    <option value="{{ cat }}">{{cat}}</option>
+                    {%endfor%}
+                </select>       
+            </div>      
+            {%endif %}
+        </div> 
+        {% comment %} dont touch following {% endcomment %}
     <div class="col-md-10">
         <div class="row">
             {% if products %}
                 {% for coffee in products %}
                     <div class="col-md-4 mb-2">
                         <div class="card">
-                            <img src="{{ coffee.photo_url }}" width="100" height="auto" alt="picture">
-                            <p>{{ coffee.description }}</p>
-                            <p>{{ coffee.price }}</p>
+                            <div class="coffee-img">
+                                <img src="{{ coffee.photo_url }}" width="260" height="auto" alt="picture">
+                            </div>                          
+                            <div class="bottom">
+                                <h6>{{ coffee.description }}</h6>
+                                <div class="d-flex justify-content-between">
+                                    <p>${{ coffee.price }}</p>
+                                    <a href="#">View details</a>
+                                </div> 
+                                <div><button class="add-to-cart">Add to Cart</button></div>
+                            </div>
+                           
                         </div>
                     </div>
                     {% if forloop.counter|divisibleby:3 and not forloop.last %}
                         </div><div class="row">
                     {% endif %}
                 {% endfor %}
+                         
             {% endif %}
         </div>
+         {% comment %} pagination section {% endcomment %}
+         {% comment %} pagination lands here... {% endcomment %}
+         <div class="pagination-container">       
+             {% if products.has_other_pages %}
+               <ul class="pagination justify-content-center">
+               {% if products.has_previous %}
+                 <li class="mx-3"><a href="?page={{ products.previous_page_number }}">Previous</a></li>
+               {% else %}
+                 <li class="disabled class="mx-3""><span>Previous</span></li>
+               {% endif %}
+               {% for i in products.paginator.page_range %}
+                 {% if products.number == i %}
+                   <li class="active mx-3"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                 {% else %}
+                   <li class="mx-3"><a href="?page={{ i }}">{{ i }}</a></li>
+                 {% endif %}
+               {% endfor %}
+               {% if products.has_next %}
+                 <li class="mx-3"><a href="?page={{ products.next_page_number }}">Next</a></li>
+               {% else %}
+                 <li class="disabled mx-3"><span>Next</span></li>
+               {% endif %}
+               </ul>
+            {% endif %}
+               </div>
+         {% comment %} end pagination {% endcomment %}  
     </div>
 </div>
 
   
 
-   {% comment %} pagination section {% endcomment %}
-   <div class="pagination">pagination lands here...</div>
-   {% comment %} end pagination {% endcomment %}
+   
    
    <div class="divider"></div>
    <div class="footer-section">
