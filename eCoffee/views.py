@@ -88,11 +88,11 @@ def admin_products(request):
     
     categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
     selected_category=request.GET.get('category','')
-    
+    logging.debug(f'selected_category::{selected_category}')
     if selected_category:
         products=Product.objects.filter(category=selected_category)
         products=products.order_by('-created_at')
-        logging.debug(f'products display based on selected category LIST::{products}')
+        # logging.debug(f'products display based on selected category LIST::{products}')
     # logging.debug(f'categories filtered from models::{categories_filtered}')
     # form
     else:
@@ -153,6 +153,7 @@ def get_product(request,product_id):
     'description': product.description,
     'category': product.category,
     'price': product.price,
+    'quantity':product.quantity,
     'photo_url': product.photo_url,
     }
     # logging.debug(f'data::{data}')
@@ -172,6 +173,7 @@ def save_product(request):
             product_instance=get_object_or_404(Product,pk=product_index)
             
         form=ProductForm(request.POST,request.FILES,instance = product_instance)
+        logging.debug(f'form inserted item::{form}')
         if form.is_valid():
             form.save()
             return redirect('admin_products')

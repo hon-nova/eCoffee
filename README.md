@@ -5,6 +5,12 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
 3. Complexity: Regarding its complexity, the website has included the automatic email sent to user when their transaction is a success. At this point, the Stripe payment transaction and the built email system must collaborate together to ship the end outcome.
    
 # 2. What’s contained in each file you created.
+
+1. `admin_product.html` 
+  - displayed all current products encompassing the CRUD operations. 
+  - added Pagination functionality at the end of the page
+2. `admin_user.html` showed registered users excluding the admin person
+3. 
 # 3. How to run your application.
 # 4. Any other additional information the staff should know about your project. 
 1.  The email address the user used to register for this website is considered the main vehicle used for communication with this user by the admin or a sales person
