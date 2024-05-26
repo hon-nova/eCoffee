@@ -4,10 +4,35 @@
 {%block body %}
 
 <div class="product-container">
-   <h1>eCoffee Products!</h1>
+   <h1>eCoffee Products!</h1>  
+ 
    <div class="row">
-     
-   </div>
+    <div class="col-md-2">
+        <!-- Left panel content goes here -->
+        Left panel
+    </div> 
+
+    <div class="col-md-10">
+        <div class="row">
+            {% if products %}
+                {% for coffee in products %}
+                    <div class="col-md-4 mb-2">
+                        <div class="card">
+                            <img src="{{ coffee.photo_url }}" width="100" height="auto" alt="picture">
+                            <p>{{ coffee.description }}</p>
+                            <p>{{ coffee.price }}</p>
+                        </div>
+                    </div>
+                    {% if forloop.counter|divisibleby:3 and not forloop.last %}
+                        </div><div class="row">
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+  
 
    {% comment %} pagination section {% endcomment %}
    <div class="pagination">pagination lands here...</div>

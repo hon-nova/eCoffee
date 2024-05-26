@@ -63,7 +63,10 @@
 			 </div>
 		</div>    		 
 		
-      <div class="products">All Coffees Table
+      <div class="products">
+			{%if products_count %}
+			<p>Products ({{ products_count }})</p>
+			{%endif%}
         <table class="table table-striped">
          <thead>
 				{%if categories %}
@@ -117,17 +120,41 @@
 				</td>
       	</tr>		
 		{%endwith%}	
+		
       {%endfor%}
+		   
 
 		{%else%}
 			<tr><td colspan="5" class="text-center">No items found</td></tr>
 		{%endif%}
       </tbody>
-		
+
     </table>
       {% comment %} pagination here {% endcomment %}
-
-      {% comment %} end pagination... {% endcomment %}       
+		<div class="pagination-container">       
+         {% if products.has_other_pages %}
+           <ul class="pagination justify-content-center">
+           {% if products.has_previous %}
+             <li class="mx-3"><a href="?page={{ products.previous_page_number }}">Previous</a></li>
+           {% else %}
+             <li class="disabled class="mx-3""><span>Previous</span></li>
+           {% endif %}
+           {% for i in products.paginator.page_range %}
+             {% if products.number == i %}
+               <li class="active mx-3"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+             {% else %}
+               <li class="mx-3"><a href="?page={{ i }}">{{ i }}</a></li>
+             {% endif %}
+           {% endfor %}
+           {% if products.has_next %}
+             <li class="mx-3"><a href="?page={{ products.next_page_number }}">Next</a></li>
+           {% else %}
+             <li class="disabled mx-3"><span>Next</span></li>
+           {% endif %}
+           </ul>
+        {% endif %}
+           </div>
+      {% comment %} end pagination... {% endcomment %}  
       </div>
 		{%endif%} 
       

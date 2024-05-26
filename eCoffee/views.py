@@ -8,6 +8,7 @@ from django.urls import reverse
 import logging
 from .models import User,Product
 from .forms import ProductForm
+from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 
 logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
@@ -85,20 +86,28 @@ def main_dashboard(request):
 
 @user_passes_test(is_admin)
 def admin_products(request):    
-    
+    # products_count=len(Product.objects.all())
     categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
     selected_category=request.GET.get('category','')
     logging.debug(f'selected_category::{selected_category}')
     if selected_category:
         products=Product.objects.filter(category=selected_category)
         products=products.order_by('-created_at')
-        # logging.debug(f'products display based on selected category LIST::{products}')
-    # logging.debug(f'categories filtered from models::{categories_filtered}')
-    # form
+        products_count=len(products)
+       
     else:
-        products =Product.objects.all()
+        products =Product.objects.all()        
         products=products.order_by('-created_at')
-    
+        products_count=len(products)
+        paginator = Paginator(products, 10) 
+        page = request.GET.get('page', 1)
+        try:
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)            
+    # products_count=len(products)
     if request.method == "POST":
         if request.user.is_authenticated:
             form = ProductForm(request.POST,request.FILES)        
@@ -108,16 +117,18 @@ def admin_products(request):
                           
                 return HttpResponseRedirect(reverse("admin_products"))
         else:
-            return redirect('login')
-    
+            return redirect('login')    
     else:
         form = ProductForm()
-    return render(request, "eCoffee/admin_products.html", {"form": form,'products':products,'categories':categories_filtered,'selected_category':selected_category})
+        
+    
+    return render(request, "eCoffee/admin_products.html", {"form": form,'products':products,'categories':categories_filtered,'selected_category':selected_category,'products_count':products_count})
     
 
 def home_products(request):
     
-    return render(request,'eCoffee/home_products.html',{'footer_data':footer_data})
+    products=Product.objects.all().order_by('-created_at')
+    return render(request,'eCoffee/home_products.html',{'products':products,'footer_data':footer_data})
 
 @user_passes_test(is_admin)
 def admin_users(request):
@@ -145,8 +156,7 @@ def delete_product(request):
 
 @user_passes_test(is_admin)
 def get_product(request,product_id):    
-    product=get_object_or_404(Product,pk=product_id)
-    
+    product=get_object_or_404(Product,pk=product_id)    
    
     data = {
     'id':product.id,
