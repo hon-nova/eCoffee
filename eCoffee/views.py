@@ -158,19 +158,36 @@ def get_product(request,product_id):
     return JsonResponse(data)
 
 @user_passes_test(is_admin)
-def edit_product(request,product_id):    
-    product=get_object_or_404(Product,pk=product_id)
+def save_product(request):  
     
-    if request.method == 'POST':
-        form = ProductForm(request.POST, request.FILES, instance=product)
-        if form.is_valid():
-            form.save()  
-            return redirect('admin_products')  
-    else:
-        form = ProductForm(instance=product)
-    
-    return render(request, "eCoffee/admin_products.html", {
-        "form": form,
-        "product_id": product_id,
-    })
+    products=Product.objects.all().order_by('-created_at')
+    logging.debug(f'outer products::{products}')
+    try:
+        logging.debug(f'inner products::{products}')
+        form_product_index= int(request.POST.get('product_index',''))
+        logging.debug(f'current index::{form_product_index}')
+        product_to_edit=products['form_product_index']
+        
+        if form_product_index is not None:
+            form = ProductForm(request.POST, request.FILES, instance=product_to_edit)
+            if form.is_valid():
+                form.save()  
+                return redirect('admin_products') 
+        else:
+            if request.method == 'POST':
+                form = ProductForm(request.POST, request.FILES)
+                if form.is_valid():
+                    form.save()  
+                    return redirect('admin_products')  
+            else:
+                form = ProductForm()
+        
+            return render(request, "eCoffee/admin_products.html", {
+            "form": form,            
+        })
    
+    except ValueError:
+        return redirect('admin_products')
+    
+    
+    

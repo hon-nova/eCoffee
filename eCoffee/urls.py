@@ -12,6 +12,6 @@ urlpatterns =[
    path('coffee_admin/users',views.admin_users,name='admin_users'),  
    path('home_products',views.home_products,name="products"),
    path('delete_product',views.delete_product,name="delete_product"),
-   path('edit_product/<int:product_id>',views.edit_product,name="edit_product")
+   path('save_product',views.save_product,name="save_product")
    
 ]
