@@ -130,30 +130,47 @@ def delete_product(request):
         form_product_index=request.POST.get('product_index')
         try:
             form_product_index=int(form_product_index)
-            # logging.debug(f'index from FORM 2:',form_product_index)
+            logging.debug(f'index from FORM::{form_product_index}')
         except(ValueError):
             return redirect('admin_products')       
 
         products= Product.objects.all()
+        products = products.order_by('-created_at')
         
-        if form_product_index<len(products):
+        if form_product_index < len(products):
             product_to_delete=products[form_product_index]
             product_to_delete.delete()
         return redirect('admin_products')    
     return render(request,'eCoffee/admin_products.html',{"products":products})
 
 @user_passes_test(is_admin)
+def get_product(request,product_id):    
+    product=get_object_or_404(Product,pk=product_id)
+    
+   
+    data = {
+    'description': product.description,
+    'category': product.category,
+    'price': product.price,
+    'photo_url': product.photo_url,
+    }
+    # logging.debug(f'data::{data}')
+    return JsonResponse(data)
+
+@user_passes_test(is_admin)
 def edit_product(request,product_id):    
     product=get_object_or_404(Product,pk=product_id)
-    if request.method=="POST":
-        data = {
-        'description': product.description,
-        'category': product.category,
-        'price': product.price,
-        'photo_url': product.photo_url,
-        }
-        logging.debug(f'data::{data}')
-        return JsonResponse(data)
+    
+    if request.method == 'POST':
+        form = ProductForm(request.POST, request.FILES, instance=product)
+        if form.is_valid():
+            form.save()  
+            return redirect('admin_products')  
     else:
-        return JsonResponse({'error found::': 'Unknown backend errors'}, status=401)
+        form = ProductForm(instance=product)
+    
+    return render(request, "eCoffee/admin_products.html", {
+        "form": form,
+        "product_id": product_id,
+    })
    

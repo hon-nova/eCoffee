@@ -27,6 +27,7 @@ class Product(models.Model):
     description=models.TextField()
     category=models.CharField(max_length=14,choices=CATEGORY_CHOICES)   
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    quantity=models.IntegerField()
     photo_url=models.URLField()
     created_at=models.DateTimeField(auto_now_add=True)
    
