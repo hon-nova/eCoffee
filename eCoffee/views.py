@@ -127,9 +127,17 @@ def admin_products(request):
 def home_products(request):
     
     categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
-    selected_category=request.GET.get('category','')
-    logging.debug(f'selected_category::{selected_category}')
-    products=Product.objects.all().order_by('-created_at')
+    selected_categories=request.GET.getlist('category')
+    
+    if selected_categories:
+        products=Product.objects.filter(category__in=selected_categories).order_by('-created_at')
+        logging.debug(f'selected_category::{selected_categories}')
+        logging.debug(f'products associated selected_category::{products}')
+        products_count=len(products)
+    else:
+        products=Product.objects.all().order_by('-created_at')    
+        products_count=len(products)
+    
     paginator = Paginator(products, 12) 
     page = request.GET.get('page', 1)
     try:
@@ -138,7 +146,7 @@ def home_products(request):
         products = paginator.page(1)
     except EmptyPage:
         products = paginator.page(paginator.num_pages)   
-    return render(request,'eCoffee/home_products.html',{'products':products,'footer_data':footer_data,'categories':categories_filtered})
+    return render(request,'eCoffee/home_products.html',{'products':products,'footer_data':footer_data,'categories':categories_filtered,'selected_categories':selected_categories,'products_count':products_count})
 
 @user_passes_test(is_admin)
 def admin_users(request):

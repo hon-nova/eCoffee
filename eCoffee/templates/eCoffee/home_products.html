@@ -5,26 +5,33 @@
 
 <div class="home-products-container">
    <h1>eCoffee Products!</h1> 
- 
+  
    <div class="row">
+   
         <div class="col-md-2">
             <!-- Left panel content goes here -->
             {%if categories%}   
-            <form method="POST" action="">    
-                {%csrf_token%}
+            <form method="GET" action="" id="categoryForm"> 
             {%for cat in categories %}
-            {%with forloop.counter0 as index %}
-            <div class="">                    
-                <input type="checkbox" name="" id="cat_{{ index }}" class="mx-2"/>
-                <label for="cat_{{ index }}">{{cat}}</label>
+            <div class="">                               
+                <input type="checkbox" name="category" id="cat_{{ forloop.counter0 }}" class="mx-2" value="{{ cat }}"
+                    {%if selected_categories %}
+                    {%if cat in selected_categories%}checked{%endif%}
+                    {%endif%}
+                onchange="this.form.submit();"/>
+                
+                <label for="cat_{{ forloop.counter0  }}">{{cat}}</label>
             </div> 
-            {%endwith%}
+          
             {%endfor%}
-        </form>     
+            </form>     
             {%endif %}
         </div> 
         {% comment %} dont touch following {% endcomment %}
     <div class="col-md-10">
+        {%if products_count >= 0%}
+        <p><i>Products({{ products_count }})</i></p>
+        {%endif%}
         <div class="row">
             {% if products %}
                 {% for coffee in products %}
@@ -84,10 +91,6 @@
          {% comment %} end pagination {% endcomment %}  
     </div>
 </div>
-
-  
-
-   
    
    <div class="divider"></div>
    <div class="footer-section">
@@ -106,4 +109,5 @@
       {% endif %}
    </div>
 </div>
+
 {% endblock %}
