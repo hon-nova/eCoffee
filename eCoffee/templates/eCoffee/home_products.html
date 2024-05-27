@@ -9,15 +9,18 @@
    <div class="row">
         <div class="col-md-2">
             <!-- Left panel content goes here -->
-            {%if categories%}       
-            <div class="row d-flex">           
-                <select name="category">
-                    {%for cat in categories %}
-                    <input type="checkbox" name=""/>
-                    <option value="{{ cat }}">{{cat}}</option>
-                    {%endfor%}
-                </select>       
-            </div>      
+            {%if categories%}   
+            <form method="POST" action="">    
+                {%csrf_token%}
+            {%for cat in categories %}
+            {%with forloop.counter0 as index %}
+            <div class="">                    
+                <input type="checkbox" name="" id="cat_{{ index }}" class="mx-2"/>
+                <label for="cat_{{ index }}">{{cat}}</label>
+            </div> 
+            {%endwith%}
+            {%endfor%}
+        </form>     
             {%endif %}
         </div> 
         {% comment %} dont touch following {% endcomment %}
@@ -36,7 +39,12 @@
                                     <p>${{ coffee.price }}</p>
                                     <a href="#">View details</a>
                                 </div> 
-                                <div><button class="add-to-cart">Add to Cart</button></div>
+                                <div>
+                                    <form method="POST" action="{% url 'add_to_cart' coffee.id %}">
+                                        {%csrf_token%}
+                                    <button type="submit" class="add-to-cart">Add to Cart</a>
+                                    </form>
+                                </div>
                             </div>
                            
                         </div>

@@ -200,6 +200,29 @@ def save_product(request):
     else:
         form=ProductForm()
     return render(request,'eCoffee/admin_products.html',{'form':form,'products':products})
+
+@login_required
+def add_to_cart(request,product_id):
+    if request.method=="POST":
+        if request.user.is_authenticated:
+            product=get_object_or_404(Product,pk=product_id)
+            # create a new listing
+            product_to_add=CartItem(product=product,user=request.user)
+            if product_to_add:            
+                product_to_add.save()                
+        else:
+            return redirect('login')
+    return HttpResponseRedirect(reverse('products', args=[product_to_add],)) 
+    
+def cart_items(request):
+    if request.user.is_authenticated:
+        cart_user=CartItem.objects.filter(user=request.user)
+        cart_items=cart_user.user_products.all()
+        return render(request,'eCoffee/cart.html',{'items':cart_items})       
+        
+        
+    else:
+        return redirect('login')
     
     
     
