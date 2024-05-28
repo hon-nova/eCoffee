@@ -12,10 +12,11 @@
         <link href="{% static 'eCoffee/layout-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/index-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/admin-style.css' %}" rel="stylesheet">
+        <link href="{% static 'eCoffee/home-products-style.css' %}" rel="stylesheet">
         {%block script%}{%endblock%}
     </head>
     <body>
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">            
+        <nav class="navbar navbar-expand-lg navbar-light bg-light" style="position:fixed;">            
             <div><a class="navbar-brand" href="/">eCoffee</a></div>
             <div>
               <ul class="navbar-nav mr-auto">               
@@ -28,7 +29,7 @@
                         </select>
                        
                     </li>
-                    <li class="nav-item"><i class="bi bi-cart3"></i><sup>0</sup></li>
+                    <li class="nav-item"><i class="bi bi-cart3"></i><sup>{{cart_length}}</sup></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>

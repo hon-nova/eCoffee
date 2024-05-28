@@ -6,16 +6,17 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
 import logging
-from .models import User,Product
+from .models import User,Product,CartItem,Cart
 from .forms import ProductForm
+from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 
 logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
 footer_data = [
-        ["Get to Know Us", "Careers", "Amazon and Our Planet", "Investor Relations", "Press Releases", "Amazon Science"],
-        ["Make Money with Us", "Sell on Amazon", "Supply to Amazon", "Become an Affiliate", "Protect & Build Your Brand", "Sell on Amazon Handmade", "Advertise Your Products", "Independently Publish with Us", "Host an Amazon Hub"],
-        ["Amazon Payment Products", "Amazon.ca Rewards Mastercard", "Shop with Points", "Reload Your Balance", "Amazon Currency Converter", "Gift Cards", "Amazon Cash"],
-        ["Let Us Help You", "Shipping Rates & Policies", "Amazon Prime", "Returns Are Easy", "Manage your Content and Devices", "Recalls and Product Safety Alerts", "Customer Service"]
+        ["Get to Know Us", "Careers", "Our Planet", "Investor Relations", "Press Releases", "Science"],
+        ["Make Money with Us", "Sell on eCoffee", "Supply to eCoffee", "Become an Affiliate", "Protect & Build Your Brand", "Sell Handmade", "Advertise Your Products", "Independently Publish with Us", "Host a Hub"],
+        ["Payment Products", "Rewards Mastercard", "Shop with Points", "Reload Your Balance", "Currency Converter", "Gift Cards", "Cash"],
+        ["Let Us Help You", "Shipping Rates & Policies", "Prime Card Holders", "Returns Are Easy", "Manage your Content and Devices", "Recalls and Product Safety Alerts", "Customer Service"]
     ]
 def index(request):
     logging.debug('index got invoked::')
@@ -23,24 +24,24 @@ def index(request):
 
 def login_view(request):
     if request.method == "POST":
-
-        # Attempt to sign user in
-        username = request.POST["username"]
-        password = request.POST["password"]
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+        next_url = request.POST.get("next")  # Get the next URL from POST data
         user = authenticate(request, username=username, password=password)
-
-        # Check if authentication successful
         if user is not None:
             login(request, user)
-            if user.is_superuser and user.username=='hon-admin':
-                return redirect('main_dashboard')
-            return HttpResponseRedirect(reverse("index"))
+            if next_url:
+                return HttpResponseRedirect(next_url) 
+            else:
+                return redirect("index") 
         else:
             return render(request, "eCoffee/login_view.html", {
-                "message": "Invalid username and/or password."
+                "message": "Invalid username and/or password.",
+                "next": next_url  
             })
     else:
-        return render(request, "eCoffee/login_view.html")
+        next_url = request.GET.get("next", "") 
+        return render(request, "eCoffee/login_view.html", {"next": next_url})
 
 def logout_view(request):
     logout(request)
@@ -85,20 +86,28 @@ def main_dashboard(request):
 
 @user_passes_test(is_admin)
 def admin_products(request):    
-    
+    # products_count=len(Product.objects.all())
     categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
     selected_category=request.GET.get('category','')
-    logging.debug(f'selected_category::{selected_category}')
+    # logging.debug(f'selected_category::{selected_category}')
     if selected_category:
         products=Product.objects.filter(category=selected_category)
         products=products.order_by('-created_at')
-        # logging.debug(f'products display based on selected category LIST::{products}')
-    # logging.debug(f'categories filtered from models::{categories_filtered}')
-    # form
+        products_count=len(products)
+       
     else:
-        products =Product.objects.all()
+        products =Product.objects.all()        
         products=products.order_by('-created_at')
-    
+        products_count=len(products)
+        paginator = Paginator(products, 10) 
+        page = request.GET.get('page', 1)
+        try:
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)            
+    # products_count=len(products)
     if request.method == "POST":
         if request.user.is_authenticated:
             form = ProductForm(request.POST,request.FILES)        
@@ -108,16 +117,36 @@ def admin_products(request):
                           
                 return HttpResponseRedirect(reverse("admin_products"))
         else:
-            return redirect('login')
-    
+            return redirect('login')    
     else:
-        form = ProductForm()
-    return render(request, "eCoffee/admin_products.html", {"form": form,'products':products,'categories':categories_filtered,'selected_category':selected_category})
+        form = ProductForm()        
+    
+    return render(request, "eCoffee/admin_products.html", {"form": form,'products':products,'categories':categories_filtered,'selected_category':selected_category,'products_count':products_count})
     
 
 def home_products(request):
     
-    return render(request,'eCoffee/home_products.html',{'footer_data':footer_data})
+    categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
+    selected_categories=request.GET.getlist('category')
+    
+    if selected_categories:
+        products=Product.objects.filter(category__in=selected_categories).order_by('-created_at')
+        logging.debug(f'selected_category::{selected_categories}')
+        # logging.debug(f'products associated selected_category::{products}')
+        products_count=len(products)
+    else:
+        products=Product.objects.all().order_by('-created_at')    
+        products_count=len(products)
+    
+    paginator = Paginator(products, 12) 
+    page = request.GET.get('page', 1)
+    try:
+        products = paginator.page(page)
+    except PageNotAnInteger:
+        products = paginator.page(1)
+    except EmptyPage:
+        products = paginator.page(paginator.num_pages)   
+    return render(request,'eCoffee/home_products.html',{'products':products,'footer_data':footer_data,'categories':categories_filtered,'selected_categories':selected_categories,'products_count':products_count})
 
 @user_passes_test(is_admin)
 def admin_users(request):
@@ -145,8 +174,7 @@ def delete_product(request):
 
 @user_passes_test(is_admin)
 def get_product(request,product_id):    
-    product=get_object_or_404(Product,pk=product_id)
-    
+    product=get_object_or_404(Product,pk=product_id)    
    
     data = {
     'id':product.id,
@@ -180,6 +208,31 @@ def save_product(request):
     else:
         form=ProductForm()
     return render(request,'eCoffee/admin_products.html',{'form':form,'products':products})
+
+@login_required
+def add_to_cart(request, product_id):
+    if request.method == "POST":
+        product = get_object_or_404(Product, pk=product_id)
+        cart, created=Cart.objects.get_or_create(user=request.user)
+        cart_item, created=CartItem.objects.get_or_create(cart=cart,product=product)
+        
+        cart_item.save()
+        
+        return HttpResponseRedirect(reverse('products'))
+    
+    # return redirect('products')
+    # return HttpResponseRedirect(reverse('products'))
+    return render(request, 'eCoffee/products.html')
+    
+def cart_items(request):
+    if request.user.is_authenticated:
+        cart_user=CartItem.objects.filter(user=request.user)
+        cart_items=cart_user.user_products.all()
+        return render(request,'eCoffee/cart.html',{'items':cart_items})       
+        
+        
+    else:
+        return redirect('login')
     
     
     

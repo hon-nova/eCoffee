@@ -6,16 +6,30 @@
 <div class="index-container">
    <h1>Hello eCoffee!</h1>
    <div class="row">
-      <div class="col-md-6" style="display:flex;margin:auto;justify-content:center;align-items:center;">
-        <img src="{% static 'eCoffee/images/gif.webp' %}" alt="gif"/>
-         <a href="{% url 'products' %}">View Products</a>
+      <div class="col-md-6" style="display:flex;margin:auto;justify-content:center;align-items:center;background-image: url('https://previews.123rf.com/images/lainen/lainen1702/lainen170200397/72291596-chilling-and-relaxing-in-vacation-at-guest-house-in-countryside-a-scene-of-balcony-coffee-table-and.jpg');background-size: cover;background-position: center;">
+        {% comment %} <img src="{% static 'eCoffee/images/gif.webp' %}" alt="gif"/> {% endcomment %}
+        <div class="">
+            <div class="coffee-bag">
+                <div class="cup-body"></div>
+                <div class="cup-handle"></div>
+            </div>
+            <div class="coffee-bag">
+                <div class="cup-body"></div>
+                <div class="cup-handle"></div>
+            </div>
+        </div>
+       
       </div>
       <div class="col-md-6">
          <img src="{% static 'eCoffee/images/coffee-homepage.jpg' %}" alt="coffee" width="700" heigth="auto"/>
+         <!-- Inject Coffee Bags Animation -->
+   
       </div>
+
    </div>
    <div class="divider"></div>
-   
+   <div class="d-flex justify-content-center"><a href="{% url 'products' %}">View Products</a></div>
+    
     <div class="footer-section">
         {% if footer_data %}
         <div class="row">

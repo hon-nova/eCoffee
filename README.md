@@ -10,7 +10,10 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
   - displayed all current products encompassing the CRUD operations. 
   - added Pagination functionality at the end of the page
 2. `admin_user.html` showed registered users excluding the admin person
-3. 
+3. `home_products.html` 
+  - displayed all products currently in the system
+  - added a checkbox functionality to filter out the products
+4. 
 # 3. How to run your application.
 # 4. Any other additional information the staff should know about your project. 
 1.  The email address the user used to register for this website is considered the main vehicle used for communication with this user by the admin or a sales person
@@ -28,4 +31,6 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
    pip install plotly
    pandas
    numPy
+   pip install stripe
+
 ```
