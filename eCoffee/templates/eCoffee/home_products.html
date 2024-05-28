@@ -6,8 +6,7 @@
 <div class="home-products-container">
    <h1>eCoffee Products!</h1> 
   
-   <div class="row">
-   
+   <div class="row">   
         <div class="col-md-2">
             <!-- Left panel content goes here -->
             {%if categories%}   
@@ -29,7 +28,7 @@
         </div> 
         {% comment %} dont touch following {% endcomment %}
     <div class="col-md-10">
-        {%if products_count >= 0%}
+        {%if products_count >= 0 %}
         <p><i>Products({{ products_count }})</i></p>
         {%endif%}
         <div class="row">
@@ -38,7 +37,7 @@
                     <div class="col-md-4 mb-2">
                         <div class="card">
                             <div class="coffee-img">
-                                <img src="{{ coffee.photo_url }}" width="260" height="auto" alt="picture">
+                                <img src="{{ coffee.photo_url }}" width="250" height="300" alt="picture">
                             </div>                          
                             <div class="bottom">
                                 <h6>{{ coffee.description }}</h6>
@@ -63,7 +62,6 @@
                          
             {% endif %}
         </div>
-         {% comment %} pagination section {% endcomment %}
          {% comment %} pagination lands here... {% endcomment %}
          <div class="pagination-container">       
              {% if products.has_other_pages %}

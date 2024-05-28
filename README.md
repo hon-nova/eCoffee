@@ -31,4 +31,6 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
    pip install plotly
    pandas
    numPy
+   pip install stripe
+
 ```

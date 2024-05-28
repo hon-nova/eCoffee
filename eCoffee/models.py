@@ -34,8 +34,56 @@ class Product(models.Model):
     
     def __str__(self):
         return f'product_id: {self.id} {self.description}, price ${self.price}'   
+
+
+class Cart(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE) 
+    
+    def __str__(self):
+        return f'this cart {self.id} is for username: {self.user.username}'
+    
+    def get_total_items(self):
+        return sum(item.quantity_purchased for item in self.cart_items.all())
+    
+    def get_total_price(self):
+        return 1.12*sum(item.product.price*item.quantity_purchased for item in self.cart_items.all())
+    
     
 class CartItem(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
-    products=models.ForeignKey(Product,on_delete=models.CASCADE,related_name="user_products")
-    amount_paid=models.DecimalField(decimal_places=2,max_digits=10)
+    # please note: 'cart_items' are all CartItem objects, meaning each object
+    # has an attribute `product`
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="cart_items")
+    product=models.ForeignKey(Product,on_delete=models.CASCADE)
+    quantity_purchased=models.PositiveIntegerField(default=1)
+    
+    def __str__(self):
+        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'
+    
+    
+class Order(models.Model):
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE)    
+    payment_status=models.BooleanField(default=False)
+    placed_order_at=models.DateTimeField(auto_now_add=True)
+    
+    def get_total_payment(self):
+        return self.cart.get_total_price()
+    
+    def __str__(self):
+        return f'Order id {self.id} for {self.cart.user.username} with status {"Paid" if self.payment_status else "Pending"}'
+    
+    # Please note:
+    # This calls the parent class's save method, which actually saves the Order instance to the database.
+    
+    # def save(self, *args, **kwargs):
+    #     if self.payment_status:
+    #         self.cart.cart_items.all().delete()
+    #     super().save(*args,**kwargs)
+        
+    # def mark_as_paid(self):
+    #     self.payment_status = True
+    #     self.save()
+    #     # Empty the cart
+    #     self.cart.cart_items.all().delete()
+        
+    
+    
