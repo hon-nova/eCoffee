@@ -5,6 +5,61 @@
 
 <div class="cart-container">
    <h1>CART page </h1>
+   {%if items %}
+   <div class="row mb-2">
+      <div class="col-md-7 mr-5">
+         {%for item in items %}
+         <div class="row">
+            <div class="d-flex justify-content-between w-100">
+               <div class="d-flex justify-content-center">
+                  <img src="{{ item.product.photo_url }}" width="150" height="110" alt="coffee" class="mr-1"/>
+                  <p>{{item.product.description}}</p></div>
+               <h5 class="subtotal">${{item.product.price}}</h5>
+            </div>
+         </div>
+         <div class="row">
+            <div class="d-flex justify-content-end w-100">              
+               <div class="d-flex">
+                  <a href="#"class="remove-btn">Remove</a>
+                  <button class="modify-quantity">-</button>
+                  <input type="number" name="quantity" value="{{ item.quantity }}" onchange="" class="modify-quantity"/>
+                  <button class="modify-quantity">+</button>
+               </div>
+            </div>
+         </div>
+         <hr class="my-5"/>
+         {%endfor%}
+      </div>
+      <div class="col-md-4 mx-4" style="background-color:#F2F0EB;">
+         <div class="d-flex justify-content-between">
+            <p>Subtotal</p>
+            <h5 class="subtotal">${{item.product.price}}</h5>
+         </div>
+         <div class="divider"></div>
+
+         <div class="d-flex justify-content-between">
+            <p>Taxes:</p>
+            <h5 class="subtotal">${{item.product.price}}</h5>
+         </div>
+         <div class="d-flex justify-content-between">
+            <p>5% GST:</p>
+            <p class="subtotal">${{item.product.price}}</p>
+         </div>
+         <div class="d-flex justify-content-between">
+            <p>7% HST:</p>
+            <p class="subtotal">${{item.product.price}}</p>
+         </div>
+         <div class="divider"></div>
+         <div class="d-flex justify-content-between">
+            <p>Estimated:</p>
+            <h5 class="total">${{item.product.price}}</h5>
+         </div>
+      </div>
+   </div>   
+   
+   {%else%}
+   <p>No items added yet.</p>
+   {%endif%}
 </div>
 
 {%endblock%}
