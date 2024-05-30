@@ -20,9 +20,12 @@
          <div class="row">
             <div class="d-flex justify-content-end w-100">              
                <div class="d-flex">
-                  <a href="#"class="remove-btn">Remove</a>
+                  <form method="POST" action="{% url 'cart_delete_item' item.product.id %}">
+                     {%csrf_token%}
+                  <button type="submit" class="remove-btn">Remove</button>
+                  </form>
                   <button class="modify-quantity">-</button>
-                  <input type="number" name="quantity" value="{{ item.quantity }}" onchange="" class="modify-quantity"/>
+                  <input type="number" name="quantity" min="1" max="10" value="{{ item.quantity }}" onchange="" class="modify-quantity"/>
                   <button class="modify-quantity">+</button>
                </div>
             </div>

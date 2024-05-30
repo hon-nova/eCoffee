@@ -232,13 +232,24 @@ def cart_items(request):
         cart_items_user=cart_user.cart_items.all()
         cart_items=[{"product":object.product,"quantity":object.quantity_purchased} for object in cart_items_user]
         # logging.debug(f'cart_items::{cart_items}')
-        
-        
-        return render(request,'eCoffee/cart.html',{'items':cart_items})       
-        
-        
+        return render(request,'eCoffee/cart.html',{'items':cart_items}) 
     else:
         return redirect('login')
+    
+@login_required
+def cart_delete_item(request,item_id):
+    if request.method=="POST":
+        my_cart=Cart.objects.get(user=request.user)
+        my_cart_items=my_cart.cart_items.all()         
+        # find the item (identified by item_id) in this my_cart_items
+        item_to_delete=my_cart_items.filter(product=get_object_or_404(Product,pk=item_id))
+        logging.debug(f'item_to_delete::{item_to_delete}')
+        if item_to_delete:
+            item_to_delete.delete()
+    
+    return HttpResponseRedirect(reverse('cart_items'))
+
+
     
     
     

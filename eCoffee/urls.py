@@ -14,6 +14,7 @@ urlpatterns =[
    path('delete_product',views.delete_product,name="delete_product"),
    path('save_product',views.save_product,name="save_product"),
    path('cart_items',views.cart_items,name="cart_items"),
-   path('cart/<int:product_id>',views.add_to_cart,name="add_to_cart")
+   path('cart/<int:product_id>',views.add_to_cart,name="add_to_cart"),
+   path('cart_items/<int:item_id>',views.cart_delete_item,name="cart_delete_item")
    
 ]
