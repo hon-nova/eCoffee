@@ -14,7 +14,8 @@
                <div class="d-flex justify-content-center">
                   <img src="{{ item.product.photo_url }}" width="150" height="110" alt="coffee" class="mr-1"/>
                   <p>{{item.product.description}}</p></div>
-               <h5 class="subtotal">${{item.product.price}}</h5>
+               <h5 class="subtotal">${{item.sub_total}}</h5>
+                 
             </div>
          </div>
          <div class="row">
@@ -22,40 +23,67 @@
                <div class="d-flex">
                   <form method="POST" action="{% url 'cart_delete_item' item.product.id %}">
                      {%csrf_token%}
-                  <button type="submit" class="remove-btn">Remove</button>
+                  <button type="submit" class="remove-btn">Remove All</button>
                   </form>
-                  <button class="modify-quantity">-</button>
+                  <form method="POST" action="{% url "update_cart_item" item.product.id %}">
+                     {%csrf_token%}
+                  <button 
+                           type="submit"
+                           class="modify-quantity"
+                           name="modify_quantity"
+                           value="decrease"
+                        >-</button>
                   <input type="number" name="quantity" min="1" max="10" value="{{ item.quantity }}" onchange="" class="modify-quantity"/>
-                  <button class="modify-quantity">+</button>
+                  <button
+                        type="submit"
+                        class="modify-quantity"
+                        name="modify_quantity"
+                        value="increase">+</button>
+                  </form>
                </div>
             </div>
          </div>
          <hr class="my-5"/>
          {%endfor%}
       </div>
-      <div class="col-md-4 mx-4" style="background-color:#F2F0EB;">
+      <div class="col-md-4 mx-4 amount">
          <div class="d-flex justify-content-between">
-            <p>Subtotal</p>
-            <h5 class="subtotal">${{item.product.price}}</h5>
+            <h5>Subtotal</h5>
+            {%if sum_sub_total%}
+            <h5 class="subtotal">${{sum_sub_total}}</h5>
+            {%endif%}
          </div>
          <div class="divider"></div>
 
-         <div class="d-flex justify-content-between">
-            <p>Taxes:</p>
-            <h5 class="subtotal">${{item.product.price}}</h5>
+         <div class="d-flex justify-content-between mt-4">
+            <h5>Taxes:</h5>
+            {%if taxes%}
+            <h5 class="subtotal">${{taxes|floatformat:2 }}</h5>
+            {%endif%}
          </div>
          <div class="d-flex justify-content-between">
-            <p>5% GST:</p>
-            <p class="subtotal">${{item.product.price}}</p>
+            <p class="taxes">5% GST:</p>
+            {%if tax5 %}
+            <p class="subtotal">${{tax5|floatformat:2}}</p>
+            {%endif%}
          </div>
          <div class="d-flex justify-content-between">
-            <p>7% HST:</p>
-            <p class="subtotal">${{item.product.price}}</p>
+            <p class="taxes">7% HST:</p>
+            {%if tax7|floatformat:2 %}
+            <p class="subtotal">${{tax7|floatformat:2 }}</p>
+            {%endif%}
          </div>
          <div class="divider"></div>
-         <div class="d-flex justify-content-between">
-            <p>Estimated:</p>
-            <h5 class="total">${{item.product.price}}</h5>
+         <div class="d-flex justify-content-between mt-3">
+            <h5>Estimated:</h5>
+            {%if total %}
+            <h5 class="total">${{total|floatformat:2 }}</h5>
+            {%endif%}
+         </div>
+         <div class="d-flex justify-content-center">
+            <form action="{% url 'checkout' %}">
+               <button class="checkout-btn">Continue to Checkout</button>
+            </form>
          </div>
       </div>
    </div>   

@@ -33,3 +33,11 @@ body {
 .subtotal {
    color:green;
 }
+.taxes {
+   font-style: italic;
+}
+.amount {
+   background-color:#F2F0EB;
+   padding:15px;
+   border-radius: 10px;
+}

@@ -9,6 +9,7 @@ import logging
 from .models import User,Product,CartItem,Cart
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
+from decimal import Decimal
 
 logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
@@ -230,9 +231,14 @@ def cart_items(request):
     if request.user.is_authenticated:
         cart_user=Cart.objects.get(user=request.user)
         cart_items_user=cart_user.cart_items.all()
-        cart_items=[{"product":object.product,"quantity":object.quantity_purchased} for object in cart_items_user]
-        # logging.debug(f'cart_items::{cart_items}')
-        return render(request,'eCoffee/cart.html',{'items':cart_items}) 
+        cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
+        sum_sub_total=sum(object.product.price*object.quantity_purchased for object in cart_items_user)
+        tax5=Decimal(0.05)*sum_sub_total
+        tax7=Decimal(0.07)*sum_sub_total
+        taxes=tax5+tax7
+        total=sum_sub_total+taxes
+        logging.debug(f'sum_sub_total::{sum_sub_total}')
+        return render(request,'eCoffee/cart.html',{'items':cart_items,'sum_sub_total':sum_sub_total,'tax5':tax5,'tax7':tax7,'taxes':taxes,'total':total}) 
     else:
         return redirect('login')
     
@@ -248,6 +254,28 @@ def cart_delete_item(request,item_id):
             item_to_delete.delete()
     
     return HttpResponseRedirect(reverse('cart_items'))
+
+@login_required
+def update_cart_item(request,product_id):
+    if request.method=="POST":
+        cart=get_object_or_404(Cart,user=request.user)
+        cart_item=get_object_or_404(CartItem,cart=cart,product=get_object_or_404(Product,pk=product_id))
+        logging.debug(f'UPDATE cart_item::{cart_item}')
+        if request.POST['modify_quantity']=="increase":
+            if cart_item.quantity_purchased <10:
+                cart_item.quantity_purchased +=1
+        elif request.POST['modify_quantity']=="decrease":
+            if cart_item.quantity_purchased >1:
+                cart_item.quantity_purchased -=1
+        
+        cart_item.save()
+        
+    return redirect('cart_items')
+
+def checkout(request):
+    
+    return render(request,'eCoffee/checkout.html')
+        
 
 
     
