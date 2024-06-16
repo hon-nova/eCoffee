@@ -12,7 +12,7 @@
             {%if categories%}   
             <form method="GET" action="" id="categoryForm"> 
             {%for cat in categories %}
-            <div class="">                               
+            <div class="ml-4">                               
                 <input type="checkbox" name="category" id="cat_{{ forloop.counter0 }}" class="mx-2" value="{{ cat }}"
                     {%if selected_categories %}
                     {%if cat in selected_categories%}checked{%endif%}
