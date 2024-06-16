@@ -12,7 +12,7 @@
             {%if categories%}   
             <form method="GET" action="" id="categoryForm"> 
             {%for cat in categories %}
-            <div class="">                               
+            <div class="ml-4">                               
                 <input type="checkbox" name="category" id="cat_{{ forloop.counter0 }}" class="mx-2" value="{{ cat }}"
                     {%if selected_categories %}
                     {%if cat in selected_categories%}checked{%endif%}
@@ -26,6 +26,7 @@
             </form>     
             {%endif %}
         </div> 
+        <hr/>
         {% comment %} dont touch following {% endcomment %}
     <div class="col-md-10">
         {%if products_count >= 0 %}
@@ -34,10 +35,11 @@
         <div class="row">
             {% if products %}
                 {% for coffee in products %}
-                    <div class="col-md-4 mb-2">
+                {%with forloop.counter0 as index %}
+                    <div class="col-md-4 mb-2 mx-0">
                         <div class="card">
                             <div class="coffee-img">
-                                <img src="{{ coffee.photo_url }}" width="250" height="300" alt="picture">
+                                <img src="{{ coffee.photo_url }}" width="280" height="300" alt="picture">
                             </div>                          
                             <div class="bottom">
                                 <h6>{{ coffee.description }}</h6>
@@ -46,7 +48,7 @@
                                     <a href="#">View details</a>
                                 </div> 
                                 <div>
-                                    <form method="POST" action="{% url 'add_to_cart' coffee.id %}">
+                                    <form method="POST" action="{% url 'add_to_cart' coffee.id%}">
                                         {%csrf_token%}
                                     <button type="submit" class="add-to-cart">Add to Cart</a>
                                     </form>
@@ -58,6 +60,7 @@
                     {% if forloop.counter|divisibleby:3 and not forloop.last %}
                         </div><div class="row">
                     {% endif %}
+                    {%endwith%}
                 {% endfor %}
                          
             {% endif %}

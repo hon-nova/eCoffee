@@ -9,6 +9,7 @@ import logging
 from .models import User,Product,CartItem,Cart
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
+from decimal import Decimal
 
 logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
@@ -19,16 +20,20 @@ footer_data = [
         ["Let Us Help You", "Shipping Rates & Policies", "Prime Card Holders", "Returns Are Easy", "Manage your Content and Devices", "Recalls and Product Safety Alerts", "Customer Service"]
     ]
 def index(request):
-    logging.debug('index got invoked::')
+    # logging.debug('index got invoked::')
     return render(request,'eCoffee/index.html',{'footer_data':footer_data})
 
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        next_url = request.POST.get("next")  # Get the next URL from POST data
+        next_url = request.POST.get("next")  
         user = authenticate(request, username=username, password=password)
         if user is not None:
+            if user.username=='hon-admin':
+                login(request, user)
+                return redirect('main_dashboard')
+            
             login(request, user)
             if next_url:
                 return HttpResponseRedirect(next_url) 
@@ -46,7 +51,6 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
-
 
 def register(request):
     if request.method == "POST":
@@ -78,7 +82,6 @@ def register(request):
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
-
 @user_passes_test(is_admin)
 def main_dashboard(request):
     
@@ -86,7 +89,6 @@ def main_dashboard(request):
 
 @user_passes_test(is_admin)
 def admin_products(request):    
-    # products_count=len(Product.objects.all())
     categories_filtered=[object[0] for object in Product.CATEGORY_CHOICES]
     selected_category=request.GET.get('category','')
     # logging.debug(f'selected_category::{selected_category}')
@@ -131,7 +133,7 @@ def home_products(request):
     
     if selected_categories:
         products=Product.objects.filter(category__in=selected_categories).order_by('-created_at')
-        logging.debug(f'selected_category::{selected_categories}')
+        # logging.debug(f'selected_category::{selected_categories}')
         # logging.debug(f'products associated selected_category::{products}')
         products_count=len(products)
     else:
@@ -159,7 +161,7 @@ def delete_product(request):
         form_product_index=request.POST.get('product_index')
         try:
             form_product_index=int(form_product_index)
-            logging.debug(f'index from FORM::{form_product_index}')
+            # logging.debug(f'index from FORM::{form_product_index}')
         except(ValueError):
             return redirect('admin_products')       
 
@@ -194,14 +196,14 @@ def save_product(request):
     
     if request.method == 'POST':
         product_index=request.POST.get('product_index','')
-        logging.debug(f'product_index::{product_index}')
+        # logging.debug(f'product_index::{product_index}')
         product_instance =None
         
         if product_index:
             product_instance=get_object_or_404(Product,pk=product_index)
             
         form=ProductForm(request.POST,request.FILES,instance = product_instance)
-        logging.debug(f'form inserted item::{form}')
+        # logging.debug(f'form inserted item::{form}')
         if form.is_valid():
             form.save()
             return redirect('admin_products')
@@ -215,7 +217,7 @@ def add_to_cart(request, product_id):
         product = get_object_or_404(Product, pk=product_id)
         cart, created=Cart.objects.get_or_create(user=request.user)
         cart_item, created=CartItem.objects.get_or_create(cart=cart,product=product)
-        
+        cart_item.quantity_purchased+=1
         cart_item.save()
         
         return HttpResponseRedirect(reverse('products'))
@@ -223,16 +225,59 @@ def add_to_cart(request, product_id):
     # return redirect('products')
     # return HttpResponseRedirect(reverse('products'))
     return render(request, 'eCoffee/products.html')
-    
+
+@login_required    
 def cart_items(request):
     if request.user.is_authenticated:
-        cart_user=CartItem.objects.filter(user=request.user)
-        cart_items=cart_user.user_products.all()
-        return render(request,'eCoffee/cart.html',{'items':cart_items})       
-        
-        
+        cart_user=Cart.objects.get(user=request.user)
+        cart_items_user=cart_user.cart_items.all()
+        cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
+        sum_sub_total=sum(object.product.price*object.quantity_purchased for object in cart_items_user)
+        tax5=Decimal(0.05)*sum_sub_total
+        tax7=Decimal(0.07)*sum_sub_total
+        taxes=tax5+tax7
+        total=sum_sub_total+taxes
+        logging.debug(f'sum_sub_total::{sum_sub_total}')
+        return render(request,'eCoffee/cart.html',{'items':cart_items,'sum_sub_total':sum_sub_total,'tax5':tax5,'tax7':tax7,'taxes':taxes,'total':total}) 
     else:
         return redirect('login')
+    
+@login_required
+def cart_delete_item(request,item_id):
+    if request.method=="POST":
+        my_cart=Cart.objects.get(user=request.user)
+        my_cart_items=my_cart.cart_items.all()         
+        # find the item (identified by item_id) in this my_cart_items
+        item_to_delete=my_cart_items.filter(product=get_object_or_404(Product,pk=item_id))
+        logging.debug(f'item_to_delete::{item_to_delete}')
+        if item_to_delete:
+            item_to_delete.delete()
+    
+    return HttpResponseRedirect(reverse('cart_items'))
+
+@login_required
+def update_cart_item(request,product_id):
+    if request.method=="POST":
+        cart=get_object_or_404(Cart,user=request.user)
+        cart_item=get_object_or_404(CartItem,cart=cart,product=get_object_or_404(Product,pk=product_id))
+        logging.debug(f'UPDATE cart_item::{cart_item}')
+        if request.POST['modify_quantity']=="increase":
+            if cart_item.quantity_purchased <10:
+                cart_item.quantity_purchased +=1
+        elif request.POST['modify_quantity']=="decrease":
+            if cart_item.quantity_purchased >1:
+                cart_item.quantity_purchased -=1
+        
+        cart_item.save()
+        
+    return redirect('cart_items')
+
+def checkout(request):
+    
+    return render(request,'eCoffee/checkout.html')
+        
+
+
     
     
     

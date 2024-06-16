@@ -54,7 +54,7 @@ class CartItem(models.Model):
     # has an attribute `product`
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="cart_items")
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
-    quantity_purchased=models.PositiveIntegerField(default=1)
+    quantity_purchased=models.PositiveIntegerField(default=0)
     
     def __str__(self):
         return f'item: {self.product.description} with quantity: {self.quantity_purchased}'

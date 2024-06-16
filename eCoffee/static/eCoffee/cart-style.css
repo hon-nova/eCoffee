@@ -1,0 +1,43 @@
+body {
+   box-sizing: border-box;
+}
+.cart-container {
+   border:5px solid orange;
+   padding:auto 15px;
+   margin:auto 15px;
+   max-width: 100%;
+}
+.modify-quantity {
+   width:50px;
+   height:50px;
+   text-align: center;
+   align-items: center;
+   font-weight: bold;
+   border:1px solid grey;
+}
+.remove-btn {
+   width:150px;
+   height:50px;
+   margin-right:20px;
+   display:flex;
+   align-items: center;  
+   justify-content: center;
+   border:1px solid grey;
+   /* border:none; */
+   border-radius: 10px; 
+   background-color: white;
+}
+.remove-btn:hover{
+   color:red;
+}
+.subtotal {
+   color:green;
+}
+.taxes {
+   font-style: italic;
+}
+.amount {
+   background-color:#F2F0EB;
+   padding:15px;
+   border-radius: 10px;
+}

@@ -13,6 +13,8 @@
         <link href="{% static 'eCoffee/index-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/admin-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/home-products-style.css' %}" rel="stylesheet">
+        <link href="{% static 'eCoffee/cart-style.css' %}" rel="stylesheet">
+        <link href="{% static 'eCoffee/checkout-style.css' %}" rel="stylesheet">
         {%block script%}{%endblock%}
     </head>
     <body>
@@ -29,7 +31,7 @@
                         </select>
                        
                     </li>
-                    <li class="nav-item"><i class="bi bi-cart3"></i><sup>{{cart_length}}</sup></li>
+                    <li class="nav-item"><a href="{%url 'cart_items'%}"><i class="bi bi-cart3" ></i><span class="cart-len"><sup>{{cart_length}}</sup></span></a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>
