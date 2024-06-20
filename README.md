@@ -15,6 +15,9 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
   - added a checkbox functionality to filter out the products
 4. 
 # 3. How to run your application.
+1. Create a virtual environment: `$pip -m venv final_env`
+2. Activate the virtual environemnt: `source ./final_env/bin/activate`
+3. Direct to your current working directory and run the command: `$python3 manage.py runserver`
 # 4. Any other additional information the staff should know about your project. 
 1.  The email address the user used to register for this website is considered the main vehicle used for communication with this user by the admin or a sales person
 2.  The app does use other Bootstrap libraries for collapsible task as shown
@@ -22,9 +25,7 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   
-  ```
-
-   
+  ```   
 # 5. Python Libraries used:
 
  ```python
@@ -32,5 +33,23 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
    pandas
    numPy
    pip install stripe
+   pip freeze > requirements.txt
 
 ```
+# 6. User Stories:
+1. As a visitor, I can surf the website and look for products that I want
+2. As a registered user, I can
+    -  save items in my profile for later purchase
+    -  delete items that I no longer want
+    -  add items into my cart
+    -  view all items before and after making a transaction
+    -  make an online transaction
+    -  contact the sale persons via email in case I want to make a complain
+    -  can talk to the chatbot regarding my current order status
+    -  view my history purchase
+    -  write a review
+    -  have an option to like or not to like a particular product
+3. As an admin person or a general manager/boss, I can
+    - view all current registered users encompassing their history purchases and account info (except password)
+    - view all available products
+    - perform all CRUD operations on products
