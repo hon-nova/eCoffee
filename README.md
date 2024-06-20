@@ -18,7 +18,7 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
 1. Create a virtual environment: `$pip -m venv final_env`
 2. Activate the virtual environemnt: `source ./final_env/bin/activate`
 3. Direct to your current working directory and run the command: `$python3 manage.py runserver`
-# 4. Any other additional information the staff should know about your project. 
+# 4. Supplementary information about your project. 
 1.  The email address the user used to register for this website is considered the main vehicle used for communication with this user by the admin or a sales person
 2.  The app does use other Bootstrap libraries for collapsible task as shown
   ```js
@@ -36,7 +36,7 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
    pip freeze > requirements.txt
 
 ```
-# 6. User Stories:
+# 6. Agile User Stories:
 1. As a visitor, I can surf the website and look for products that I want
 2. As a registered user, I can
     -  save items in my profile for later purchase
