@@ -235,15 +235,23 @@ def add_to_cart(request, product_id):
 
 @login_required    
 def cart_items(request):
+    
     if request.user.is_authenticated:
         cart_user=Cart.objects.get(user=request.user)
         cart_items_user=cart_user.cart_items.all()
+        
         cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
+        
         sum_sub_total=sum(object.product.price*object.quantity_purchased for object in cart_items_user)
         tax5=Decimal(0.05)*sum_sub_total
         tax7=Decimal(0.07)*sum_sub_total
         taxes=tax5+tax7
-        total=sum_sub_total+taxes
+        # total=sum_sub_total+taxes
+        cart_length=request.POST.get('cart_length')
+        total=request.POST.get('total')
+    
+        logging.debug(f'new total::{total}')
+        logging.debug(f'new cart_length::{cart_length}')
         logging.debug(f'sum_sub_total::{sum_sub_total}')
         return render(request,'eCoffee/cart.html',{'items':cart_items,'sum_sub_total':sum_sub_total,'tax5':tax5,'tax7':tax7,'taxes':taxes,'total':total}) 
     else:

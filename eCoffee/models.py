@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from decimal import Decimal
 
 class User(AbstractUser):
     pass 
@@ -28,8 +29,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity=models.IntegerField()
     photo_url=models.URLField()
-    created_at=models.DateTimeField(auto_now_add=True)
-   
+    created_at=models.DateTimeField(auto_now_add=True)   
     
     def __str__(self):
         return f'product_id: {self.id} {self.description}, price ${self.price}'   
@@ -45,7 +45,8 @@ class Cart(models.Model):
         return sum(item.quantity_purchased for item in self.cart_items.all())
     
     def get_total_price(self):
-        return 1.12*sum(item.product.price*item.quantity_purchased for item in self.cart_items.all())    
+    
+        return Decimal(1.12) * sum(Decimal(item.product.price)*item.quantity_purchased for item in self.cart_items.all())    
     
 class CartItem(models.Model):
     # please note: 'cart_items' are all CartItem objects, meaning each object
