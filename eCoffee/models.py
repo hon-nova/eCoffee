@@ -4,7 +4,6 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-
 class User(AbstractUser):
     pass 
 
@@ -46,8 +45,7 @@ class Cart(models.Model):
         return sum(item.quantity_purchased for item in self.cart_items.all())
     
     def get_total_price(self):
-        return 1.12*sum(item.product.price*item.quantity_purchased for item in self.cart_items.all())
-    
+        return 1.12*sum(item.product.price*item.quantity_purchased for item in self.cart_items.all())    
     
 class CartItem(models.Model):
     # please note: 'cart_items' are all CartItem objects, meaning each object
@@ -57,8 +55,7 @@ class CartItem(models.Model):
     quantity_purchased=models.PositiveIntegerField(default=0)
     
     def __str__(self):
-        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'
-    
+        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'    
     
 class Order(models.Model):
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE)    
