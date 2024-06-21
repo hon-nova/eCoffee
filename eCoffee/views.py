@@ -10,6 +10,13 @@ from .models import User,Product,CartItem,Cart
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from decimal import Decimal
+# from django.views import View
+import stripe
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+stripe.api_key=settings.STRIPE_SECRET_KEY
 
 logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
@@ -275,7 +282,36 @@ def update_cart_item(request,product_id):
 def checkout(request):
     
     return render(request,'eCoffee/checkout.html')
-        
+
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method=="POST":
+        session=stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                "price_data":{
+                    "product_data":{
+                        "currency":"cad",
+                        "name":"Coffee"
+                    },
+                    "unit_amount":999,
+                },   
+                "quantity":1
+            }],
+            mode="payment",
+            success_url="http://localhost:8000/success_transaction/",
+            cancel_url="http://localhost:8000/cancel_transaction/"
+        )
+    return redirect(session.url,code=303)
+
+def success_transaction(request):
+    
+    return render(request,'eCoffee/success_transaction.html')
+
+def cancel_transaction(request):
+    return render(request,'eCoffee/cancel_transaction.html')
+
+
 
 
     

@@ -55,7 +55,7 @@
          </div>
          <div class="divider"></div>
 
-         <div class="d-flex justify-content-between mt-4">
+         <div class="d-flex justify-content-between mt-f4">
             <h5>Taxes:</h5>
             {%if taxes%}
             <h5 class="subtotal">${{taxes|floatformat:2 }}</h5>
@@ -81,8 +81,9 @@
             {%endif%}
          </div>
          <div class="d-flex justify-content-center">
-            <form action="{% url 'checkout' %}">
-               <button class="checkout-btn">Continue to Checkout</button>
+            <form action="{% url 'create_checkout_session' %}" method="POST">
+               {%csrf_token%}
+               <button class="checkout-btn" type="submit">Continue to Checkout</button>
             </form>
          </div>
       </div>
