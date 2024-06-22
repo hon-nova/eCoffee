@@ -34,6 +34,8 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
    numPy
    pip install stripe
    pip freeze > requirements.txt
+   pip install python-dotenv
+
 
 ```
 # 6. Agile User Stories:

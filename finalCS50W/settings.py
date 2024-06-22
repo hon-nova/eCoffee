@@ -11,6 +11,15 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
+
+# Set Stripe keys from environment variables
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -124,6 +133,5 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STRIPE_PUBLIC_KEY="pk_test_51NJYdrA8hitTZ8gp9nhQgSPKIGpt2SekyIlLm3R5q5tFYzQYhj1tSfe10vbiiu1AhTMKFUWYTNgvBrPtX6KIA1eD00o9KBmRqC"
-STRIPE_SECRET_KEY="sk_test_51NJYdrA8hitTZ8gphViHkY15YjFfvEwhQXXlnRt36AxDUjiXDC2me9tHYZumwR34Bj0j5ho6rjn39MF7XOxXrGJS009pe2hhWs"
+
 STRIPE_WEBHOOK_SECRET=""
