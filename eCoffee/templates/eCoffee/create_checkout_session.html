@@ -1,0 +1,62 @@
+{% extends "eCoffee/layout.html" %}
+{% load static %}
+
+{% block title %}Checkout Page{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
+    <style>
+        /* Add custom styles for your checkout page */
+        .checkout-container {
+            padding: 20px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="checkout-container">
+    <h1>Stripe Payment Page</h1>
+    <button id="checkout-button">Pay with Card</button>
+</div>
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var stripe = Stripe('STRIPE_PUBLIC_KEY');  // Replace with your actual Stripe public key
+        var checkoutButton = document.getElementById('checkout-button');
+
+        checkoutButton.addEventListener('click', function() {
+      
+            fetch('/create_checkout_session/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    total: '{{ total }}',  
+                    cart_length: '{{ cart_length }}'  
+                })
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(session) {
+                
+                return stripe.redirectToCheckout({ sessionId: session.id });
+            })
+            .then(function(result) {
+                if (result.error) {
+                    
+                    console.error(result.error.message);
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+        });
+    });
+</script>
+{% endblock %}

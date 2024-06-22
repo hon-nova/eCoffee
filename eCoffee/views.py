@@ -10,6 +10,15 @@ from .models import User,Product,CartItem,Cart
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from decimal import Decimal
+# from django.views import View
+import stripe
+from django.conf import settings
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
+stripe.api_key = settings.STRIPE_SECRET_KEY
+
 
 logging.basicConfig(level=logging.DEBUG)
 # Create your views here.
@@ -228,15 +237,24 @@ def add_to_cart(request, product_id):
 
 @login_required    
 def cart_items(request):
+    
     if request.user.is_authenticated:
         cart_user=Cart.objects.get(user=request.user)
         cart_items_user=cart_user.cart_items.all()
+        
         cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
+        
         sum_sub_total=sum(object.product.price*object.quantity_purchased for object in cart_items_user)
         tax5=Decimal(0.05)*sum_sub_total
         tax7=Decimal(0.07)*sum_sub_total
         taxes=tax5+tax7
         total=sum_sub_total+taxes
+        cart_length=request.POST.get('cart_length')
+        # total=0
+        # total+=cart_user.get_total_price()
+    
+        logging.debug(f'new total::{total}')
+        logging.debug(f'new cart_length::{cart_length}')
         logging.debug(f'sum_sub_total::{sum_sub_total}')
         return render(request,'eCoffee/cart.html',{'items':cart_items,'sum_sub_total':sum_sub_total,'tax5':tax5,'tax7':tax7,'taxes':taxes,'total':total}) 
     else:
@@ -271,11 +289,45 @@ def update_cart_item(request,product_id):
         cart_item.save()
         
     return redirect('cart_items')
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == "POST":
+        total = request.POST.get('total')
+        cart_length = request.POST.get('cart_length')
 
-def checkout(request):
+        try:           
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    "price_data": {
+                        "currency": "cad",
+                        "product_data": {
+                            "name": f"{cart_length} items in cart"
+                        },
+                        "unit_amount": int(float(total) * 100),  
+                    },
+                    "quantity": 1
+                }],
+                mode="payment",
+                success_url="http://localhost:8000/success_transaction/",
+                cancel_url="http://localhost:8000/cancel_transaction/"
+            )
+
+            return redirect(session.url, code=303)  
+
+        except Exception as e:
+           
+            return redirect('cart_items')  
+
+    return redirect('cart_items') 
+def success_transaction(request):
     
-    return render(request,'eCoffee/checkout.html')
-        
+    return render(request,'eCoffee/success_transaction.html')
+
+def cancel_transaction(request):
+    return render(request,'eCoffee/cancel_transaction.html')
+
+
 
 
     
