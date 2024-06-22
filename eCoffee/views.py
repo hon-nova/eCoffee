@@ -246,9 +246,10 @@ def cart_items(request):
         tax5=Decimal(0.05)*sum_sub_total
         tax7=Decimal(0.07)*sum_sub_total
         taxes=tax5+tax7
-        # total=sum_sub_total+taxes
+        total=sum_sub_total+taxes
         cart_length=request.POST.get('cart_length')
-        total=cart_user.get_total_price()
+        # total=0
+        # total+=cart_user.get_total_price()
     
         logging.debug(f'new total::{total}')
         logging.debug(f'new cart_length::{cart_length}')

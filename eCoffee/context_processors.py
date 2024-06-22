@@ -3,6 +3,7 @@ from .models import Cart
 
 def send_cart_length(request):
     if request.user.is_authenticated:
+      cart_length=0
       total=0.0
       try:          
         cart=Cart.objects.get(user=request.user)
