@@ -248,7 +248,7 @@ def cart_items(request):
         taxes=tax5+tax7
         # total=sum_sub_total+taxes
         cart_length=request.POST.get('cart_length')
-        total=request.POST.get('total')
+        total=cart_user.get_total_price()
     
         logging.debug(f'new total::{total}')
         logging.debug(f'new cart_length::{cart_length}')
@@ -294,23 +294,32 @@ def checkout(request):
 @csrf_exempt
 def create_checkout_session(request):
     if request.method=="POST":
+        total=request.POST.get('total')
+        cart_length=request.POST.get('cart_length')
+        try:
+            total=int(total)
+            cart_length=int(cart_length)
+        except (ValueError,TypeError):
+            return redirect('cart_items')
+        
         session=stripe.checkout.Session.create(
             payment_method_types=['card'],
             line_items=[{
-                "price_data":{
-                    "product_data":{
-                        "currency":"cad",
-                        "name":"Coffee"
+                "price_data": {
+                    "currency": "cad",
+                    "product_data": {
+                        "name": f"{cart_length} items in cart"
                     },
-                    "unit_amount":999,
-                },   
-                "quantity":1
+                    "unit_amount": total,  
+                },
+                "quantity": cart_length
             }],
             mode="payment",
             success_url="http://localhost:8000/success_transaction/",
             cancel_url="http://localhost:8000/cancel_transaction/"
         )
     return redirect(session.url,code=303)
+    # return redirect('cart_items')
 
 def success_transaction(request):
     

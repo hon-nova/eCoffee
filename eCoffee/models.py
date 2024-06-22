@@ -46,7 +46,7 @@ class Cart(models.Model):
     
     def get_total_price(self):
     
-        return Decimal(1.12) * sum(Decimal(item.product.price)*item.quantity_purchased for item in self.cart_items.all())    
+        return int(100*Decimal(1.12) * sum(Decimal(item.product.price)*item.quantity_purchased for item in self.cart_items.all()))  
     
 class CartItem(models.Model):
     # please note: 'cart_items' are all CartItem objects, meaning each object

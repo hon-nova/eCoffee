@@ -83,7 +83,7 @@
          <div class="d-flex justify-content-center">
             <form action="{% url 'create_checkout_session' %}" method="POST">
                {%csrf_token%}
-               <input type="hidden" name="total" value="{{ total }}"/>
+               <input type="hidden" name="total" value="{{ total|floatformat:2 }}"/>
                <input type="hidden" name="cart_length" value="{{ cart_length }}"/>
                <button class="checkout-btn" type="submit">Continue to Checkout</button>
             </form>
