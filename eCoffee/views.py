@@ -327,6 +327,22 @@ def success_transaction(request):
 def cancel_transaction(request):
     return render(request,'eCoffee/cancel_transaction.html')
 
+@login_required
+def product_details(request, product_id):
+    
+    product=get_object_or_404(Product,pk=product_id)
+    user_cart=Cart.objects.get(user=request.user)
+    cart_items=user_cart.cart_items.all()
+    logging.debug(f'cart_items::{cart_items}')
+    cart_item_ids=[object.id for object in cart_items]
+    logging.debug(f'all ids::{cart_item_ids}')
+    existing_item=False
+    if product_id in cart_item_ids:
+        existing_item=True
+    
+    logging.debug(f'existing item??::{existing_item}')
+    return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
+
 
 
 

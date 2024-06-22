@@ -1,0 +1,16 @@
+
+body {
+   border: 5px solid green;
+}
+
+.product-details-right {
+   background-color: whitesmoke;
+   border:#d0d0d5;
+}
+.heart {
+   /* color: red; */
+   border:none;
+}
+#btnLike {
+   border:none;
+}
