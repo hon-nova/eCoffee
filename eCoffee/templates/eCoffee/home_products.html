@@ -50,6 +50,7 @@
                                 <div>
                                     <form method="POST" action="{% url 'add_to_cart' coffee.id%}">
                                         {%csrf_token%}
+                                        <input type="hidden" name="next" value="{{ request.path }}"/>
                                     <button type="submit" class="add-to-cart">Add to Cart</a>
                                     </form>
                                 </div>

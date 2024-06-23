@@ -229,10 +229,10 @@ def add_to_cart(request, product_id):
         cart_item.quantity_purchased+=1
         cart_item.save()
         
-        return HttpResponseRedirect(reverse('products'))
+        next_url=request.POST.get('next',reverse('products'))
+        
+        return HttpResponseRedirect(next_url)
     
-    # return redirect('products')
-    # return HttpResponseRedirect(reverse('products'))
     return render(request, 'eCoffee/products.html')
 
 @login_required    
@@ -270,8 +270,11 @@ def cart_delete_item(request,item_id):
         logging.debug(f'item_to_delete::{item_to_delete}')
         if item_to_delete:
             item_to_delete.delete()
+            
+        next_url=request.POST.get('three',reverse('cart_items'))
+        return HttpResponseRedirect(next_url)
     
-    return HttpResponseRedirect(reverse('cart_items'))
+    return render(request,'eCoffee/cart_items.html')
 
 @login_required
 def update_cart_item(request,product_id):
@@ -287,8 +290,13 @@ def update_cart_item(request,product_id):
                 cart_item.quantity_purchased -=1
         
         cart_item.save()
+        next_url=request.POST.get('three',reverse('cart_items'))
         
-    return redirect('cart_items')
+        return HttpResponseRedirect(next_url)
+        
+    # return redirect('cart_items')
+    return render(request, 'eCoffee/cart_items.html')
+
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == "POST":
@@ -334,12 +342,14 @@ def product_details(request, product_id):
     user_cart=Cart.objects.get(user=request.user)
     cart_items=user_cart.cart_items.all()
     logging.debug(f'cart_items::{cart_items}')
-    cart_item_ids=[object.id for object in cart_items]
-    logging.debug(f'all ids::{cart_item_ids}')
-    existing_item=False
-    if product_id in cart_item_ids:
-        existing_item=True
-    
+    # cart_item_ids=[object.id for object in cart_items]
+    # logging.debug(f'all ids::{cart_item_ids}')
+    existing_item= None
+    for item in cart_items:
+        if item.product==product:
+            existing_item= item
+            break
+        
     logging.debug(f'existing item??::{existing_item}')
     return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
 
