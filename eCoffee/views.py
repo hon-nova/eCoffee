@@ -353,6 +353,11 @@ def product_details(request, product_id):
     logging.debug(f'existing item??::{existing_item}')
     return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
 
+def profile(request,user_id):
+    
+    profile=User.objects.get(pk=user_id)
+    return render(request,'eCoffee/profile.html',{'profile':profile})
+
 
 
 
