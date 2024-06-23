@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
 import logging
-from .models import User,Product,CartItem,Cart
+from .models import User,Product,CartItem,Cart,Like
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from decimal import Decimal
@@ -229,10 +229,10 @@ def add_to_cart(request, product_id):
         cart_item.quantity_purchased+=1
         cart_item.save()
         
-        return HttpResponseRedirect(reverse('products'))
+        next_url=request.POST.get('next',reverse('products'))
+        
+        return HttpResponseRedirect(next_url)
     
-    # return redirect('products')
-    # return HttpResponseRedirect(reverse('products'))
     return render(request, 'eCoffee/products.html')
 
 @login_required    
@@ -270,8 +270,11 @@ def cart_delete_item(request,item_id):
         logging.debug(f'item_to_delete::{item_to_delete}')
         if item_to_delete:
             item_to_delete.delete()
+            
+        next_url=request.POST.get('three',reverse('cart_items'))
+        return HttpResponseRedirect(next_url)
     
-    return HttpResponseRedirect(reverse('cart_items'))
+    return render(request,'eCoffee/cart_items.html')
 
 @login_required
 def update_cart_item(request,product_id):
@@ -287,8 +290,13 @@ def update_cart_item(request,product_id):
                 cart_item.quantity_purchased -=1
         
         cart_item.save()
+        next_url=request.POST.get('three',reverse('cart_items'))
         
-    return redirect('cart_items')
+        return HttpResponseRedirect(next_url)
+        
+    # return redirect('cart_items')
+    return render(request, 'eCoffee/cart_items.html')
+
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == "POST":
@@ -326,6 +334,49 @@ def success_transaction(request):
 
 def cancel_transaction(request):
     return render(request,'eCoffee/cancel_transaction.html')
+
+@login_required
+def product_details(request, product_id):
+    
+    product=get_object_or_404(Product,pk=product_id)
+    user_cart=Cart.objects.get(user=request.user)
+    cart_items=user_cart.cart_items.all()
+    logging.debug(f'cart_items::{cart_items}')
+    # cart_item_ids=[object.id for object in cart_items]
+    # logging.debug(f'all ids::{cart_item_ids}')
+    existing_item= None
+    for item in cart_items:
+        if item.product==product:
+            existing_item= item
+            break
+        
+    logging.debug(f'existing item??::{existing_item}')
+    return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
+
+def profile(request,user_id):
+    
+    profile=User.objects.get(pk=user_id)
+    return render(request,'eCoffee/profile.html',{'profile':profile})
+
+@login_required
+def toggle_like(request, product_id):
+    if request.method == "POST":
+        product = get_object_or_404(Product, pk=product_id)
+        liked = False
+        
+        # create a like instance
+        like, created = Like.objects.get_or_create(user=request.user, product=product)
+        
+        if created:
+            liked = True            
+        else:
+            like.delete()
+            # logging.debug(f'No. Product {product_id} unliked by user {request.user}')
+        logging.debug(f'{liked}. Product {product_id} liked by user {request.user}')
+        return JsonResponse({'liked': liked})
+    
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+        
 
 
 

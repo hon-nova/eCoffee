@@ -45,11 +45,12 @@
                                 <h6>{{ coffee.description }}</h6>
                                 <div class="d-flex justify-content-between">
                                     <p>${{ coffee.price }}</p>
-                                    <a href="#">View details</a>
+                                    <a href="{% url 'product_details' coffee.id %}">View details</a>
                                 </div> 
                                 <div>
                                     <form method="POST" action="{% url 'add_to_cart' coffee.id%}">
                                         {%csrf_token%}
+                                        <input type="hidden" name="next" value="{{ request.path }}"/>
                                     <button type="submit" class="add-to-cart">Add to Cart</a>
                                     </form>
                                 </div>

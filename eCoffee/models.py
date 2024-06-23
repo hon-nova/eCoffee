@@ -56,9 +56,20 @@ class CartItem(models.Model):
     quantity_purchased=models.PositiveIntegerField(default=0)
     
     def __str__(self):
-        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'    
+        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'   
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_likes")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_likes")    
+
+    class Meta:
+        unique_together = ['user', 'product'] 
+        
+    def __str__(self):
+        return f'{self.user.username} likes this coffee brand {self.product.description}'
     
 class Order(models.Model):
+    # you can get the total price from Cart with get_total_price() after user's successful transaction
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE)    
     payment_status=models.BooleanField(default=False)
     placed_order_at=models.DateTimeField(auto_now_add=True)

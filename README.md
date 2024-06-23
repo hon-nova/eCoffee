@@ -55,3 +55,7 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
     - view all current registered users encompassing their history purchases and account info (except password)
     - view all available products
     - perform all CRUD operations on products
+
+# 7. Constraints:
+1. In the `like` icon in the product_details.html, the implementation was not that successful regarding multiple clicks on a particular product. If user wants to go back to its original state, keep refreshing the page might help
+2. 

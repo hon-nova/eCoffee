@@ -15,6 +15,7 @@
         <link href="{% static 'eCoffee/home-products-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/cart-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/checkout-style.css' %}" rel="stylesheet">
+        <link href="{% static 'eCoffee/product-details-style.css' %}" rel="stylesheet">
         {%block script%}{%endblock%}
     </head>
     <body>
@@ -23,19 +24,19 @@
             <div>
               <ul class="navbar-nav mr-auto">               
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
-                        <select id="profile">
-                            <option value=""> <a class="nav-link" style="color:blue;">{{user.username}}</a></option>
-                            <option value="settings">Settings</option>
-                            <option value="profile">Profile</option>
-                        </select>
-                       
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{ user.username }}
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="#">Settings</a>
+                            <a class="dropdown-item" href="{% url 'profile' user.id %}">Profile</a>
+                        </div>
                     </li>
                     <li class="nav-item"><a href="{%url 'cart_items'%}"><i class="bi bi-cart3" ></i><span class="cart-len"><sup>{{cart_length}}</sup></span></a></li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
-                    </li>
-                    
+                    </li>                    
                 {% else %}
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'login' %}">Log In</a>
@@ -53,5 +54,8 @@
             {% block body %}
             {% endblock %}
         </div>
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     </body>
 </html>

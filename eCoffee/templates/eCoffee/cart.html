@@ -27,6 +27,7 @@
                   </form>
                   <form method="POST" action="{% url "update_cart_item" item.product.id %}">
                      {%csrf_token%}
+                     <input type="hidden" name="three" value="{{ request.path }}"/>
                   <button 
                            type="submit"
                            class="modify-quantity"
