@@ -1,5 +1,6 @@
-{% extends "eCoffee/layout.html" %} 
 
+{% extends "eCoffee/layout.html" %} 
+{% load static %}
 {%block title%}Product Details Page{%endblock%} 
 {%block body %}
 
@@ -12,10 +13,11 @@
          <img src="{{ product.photo_url }}" alt="photo url"/>
       </div>
       <div class="col-md-5 product-details-right">
-         <div class="d-flex justify-content-end like">       
-            <button type="button" data-post-id="{{ post.id }}" class="like-btn liked" id="btnLike">
-            <i class="bi bi-heart heart" id="heart-icon-{{ post.id }}"></i>
-          </button>  
+         <div class="d-flex justify-content-end like"> 
+                 
+            <button type="button" data-product-id="{{ product.id }}" class="like-btn" id="btnLike">
+            <i class="bi bi-heart heart-icon-{{ product.id }} heart {% if liked %}liked{% endif %}"></i>
+             </button>             
          </div>
       <h5>{{ product.description }}</h5>
       <div class="d-flex justify-content-between reviews">
@@ -70,5 +72,10 @@
       <div class="col-md-1" >right</div>
       {%endif%}
    </div>
+   {%block script%}
+  <script>const csrfToken = "{{ csrf_token }}"</script>
+  <script src="{% static 'eCoffee/index.js' %}"></script> 
+  {%endblock%}
 </div>
+
 {%endblock%}

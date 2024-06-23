@@ -21,6 +21,7 @@ urlpatterns =[
    path('create_checkout_session/',views.create_checkout_session,name="create_checkout_session"),
    path('success_transaction/',views.success_transaction,name="success_transaction"),
    path('cancel_transaction/',views.cancel_transaction,name="cancel_transaction"),
-   path('profile/<int:user_id>',views.profile,name="profile")
+   path('profile/<int:user_id>',views.profile,name="profile"),
+   path('likes/<int:product_id>', views.toggle_like, name="likes"),
    
 ]

@@ -1,4 +1,3 @@
-
 body {
    border: 5px solid green;
 }
@@ -7,10 +6,17 @@ body {
    background-color: whitesmoke;
    border:#d0d0d5;
 }
+
+
 .heart {
-   /* color: red; */
-   border:none;
+   border: blue; /* Default color */
 }
+
+.heart.liked {
+   color: red; /* Color when liked */
+}
+
+
 #btnLike {
    border:none;
 }

@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
 import logging
-from .models import User,Product,CartItem,Cart
+from .models import User,Product,CartItem,Cart,Like
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from decimal import Decimal
@@ -357,6 +357,26 @@ def profile(request,user_id):
     
     profile=User.objects.get(pk=user_id)
     return render(request,'eCoffee/profile.html',{'profile':profile})
+
+@login_required
+def toggle_like(request, product_id):
+    if request.method == "POST":
+        product = get_object_or_404(Product, pk=product_id)
+        liked = False
+        
+        # create a like instance
+        like, created = Like.objects.get_or_create(user=request.user, product=product)
+        
+        if created:
+            liked = True            
+        else:
+            like.delete()
+            # logging.debug(f'No. Product {product_id} unliked by user {request.user}')
+        logging.debug(f'{liked}. Product {product_id} liked by user {request.user}')
+        return JsonResponse({'liked': liked})
+    
+    return JsonResponse({'error': 'Invalid request'}, status=400)
+        
 
 
 
