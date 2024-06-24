@@ -32,9 +32,18 @@ class Product(models.Model):
     created_at=models.DateTimeField(auto_now_add=True)   
     
     def __str__(self):
-        return f'product_id: {self.id} {self.description}, price ${self.price}'   
+        return f'product_id: {self.id} {self.description}, price ${self.price}'
+    
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_likes")
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_likes")    
 
-
+    class Meta:
+        unique_together = ['user', 'product'] 
+        
+    def __str__(self):
+        return f'{self.user.username} likes this coffee brand {self.product.description}'
+     
 class Cart(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE) 
     
@@ -56,20 +65,10 @@ class CartItem(models.Model):
     quantity_purchased=models.PositiveIntegerField(default=0)
     
     def __str__(self):
-        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'   
-
-class Like(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user_likes")
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_likes")    
-
-    class Meta:
-        unique_together = ['user', 'product'] 
-        
-    def __str__(self):
-        return f'{self.user.username} likes this coffee brand {self.product.description}'
+        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'  
     
 class Order(models.Model):
-    # you can get the total price from Cart with get_total_price() after user's successful transaction
+
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE)    
     payment_status=models.BooleanField(default=False)
     placed_order_at=models.DateTimeField(auto_now_add=True)
@@ -78,7 +77,7 @@ class Order(models.Model):
         return self.cart.get_total_price()
     
     def __str__(self):
-        return f'Order id {self.id} for {self.cart.user.username} with status {"Paid" if self.payment_status else "Pending"}'
+        return f'Order id {self.id} for {self.cart.user.username} with status {"successful" if self.payment_status else "canceled"}'
     
     # Please note:
     # This calls the parent class's save method, which actually saves the Order instance to the database.
@@ -93,6 +92,10 @@ class Order(models.Model):
     #     self.save()
     #     # Empty the cart
     #     self.cart.cart_items.all().delete()
+    
+class Profile(models.Model):
+    user=models.OneToOneField(User,on_delete=models.CASCADE)
+    order=models.ForeignKey(Order,on_delete=models.CASCADE)
         
     
     

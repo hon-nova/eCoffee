@@ -32,12 +32,29 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
    pip install plotly
    pandas
    numPy
+```
+1. Install Stripe
+   ```python
    pip install stripe
+   ```
+2. Install Stripe CLI globally
+   ```python
+   $ brew install stripe/stripe-cli/stripe  
+   ```
+3. To get the Stripe webhook secret, run
+   ```python
+    $ stripe login
+   ```
+4. Stripe Packages
+   ```
+   payment_intent.succeeded
+   payment_intent.payment_failed
+   ```
+5. Other packages for deployment purposes
+   ```python
    pip freeze > requirements.txt
    pip install python-dotenv
-
-
-```
+   ```
 # 6. Agile User Stories:
 1. As a visitor, I can surf the website and look for products that I want
 2. As a registered user, I can

@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
 import logging
-from .models import User,Product,CartItem,Cart,Like
+from .models import User,Product,CartItem,Cart,Like, Order
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from decimal import Decimal
@@ -18,6 +18,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
+endpoint_secret= settings.STRIPE_WEBHOOK_SECRET
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -323,11 +324,10 @@ def create_checkout_session(request):
 
             return redirect(session.url, code=303)  
 
-        except Exception as e:
-           
-            return redirect('cart_items')  
-
+        except Exception as e:           
+            return redirect('cart_items')
     return redirect('cart_items') 
+
 def success_transaction(request):
     
     return render(request,'eCoffee/success_transaction.html')
@@ -342,7 +342,6 @@ def product_details(request, product_id):
     user_cart=Cart.objects.get(user=request.user)
     cart_items=user_cart.cart_items.all()
     logging.debug(f'cart_items::{cart_items}')
-    # cart_item_ids=[object.id for object in cart_items]
     # logging.debug(f'all ids::{cart_item_ids}')
     existing_item= None
     for item in cart_items:
@@ -376,7 +375,56 @@ def toggle_like(request, product_id):
         return JsonResponse({'liked': liked})
     
     return JsonResponse({'error': 'Invalid request'}, status=400)
-        
+
+@csrf_exempt        
+def stripe_webhook(request):
+    payload =request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+    
+    try:
+        event = stripe.Webhook.construct_event(
+            payload,sig_header,endpoint_secret
+        )
+    except ValueError as e:
+        return HttpResponse(status=400)
+    
+    except stripe.error.SignatureVerificationError as e:
+        return HttpResponse(status=400)
+    
+    # Handle the event
+    if event['type'] == 'payment_intent.payment_failed':
+      payment_intent = event['data']['object']
+      handle_payment_intent_failed(payment_intent)
+    elif event['type'] == 'payment_intent.succeeded':
+      payment_intent = event['data']['object']
+      handle_payment_intent_succeeded(payment_intent)
+    
+    else:
+      print('Unhandled event type {}'.format(event['type']))
+      logging.debug(f'Unhandled event type::{event['type']}')
+      
+    return JsonResponse({'success': True})
+
+def handle_payment_intent_failed(payment_intent):
+    
+    order_id = payment_intent['metadata']['order_id']
+    try:
+        order = Order.objects.get(id=order_id)
+        order.payment_status= False
+        order.save()
+    except Order.DoesNotExist:
+        pass
+
+def handle_payment_intent_succeeded(payment_intent):
+    order_id = payment_intent['metadata']['order_id']
+    try:
+        order= Order.objects.get(id=order_id)
+        order.payment_status=True
+        order.save()
+    except Order.DoesNotExist:
+        pass
+    
 
 
 
