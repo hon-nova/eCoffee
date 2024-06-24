@@ -2,21 +2,21 @@
    max-width: 600px;
    margin: auto;
    padding: 40px;
-   background-color: #d4edda; /* Bootstrap success background color */
-   border: 2px solid #c3e6cb; /* Bootstrap success border color */
+   background-color: #d4edda; 
+   border: 2px solid #c3e6cb; 
    border-radius: 10px;
    text-align: center;
 }
 .success-container h1 {
    font-size: 2.5em;
    margin-bottom: 20px;
-   color: #155724; /* Bootstrap success text color */
+   color: #155724;
 }
 .success-container p {
    font-size: 1.2em;
    margin-bottom: 20px;
-   color: #155724; /* Bootstrap success text color */
+   color: #155724; 
 }
 .success-container a:hover {
-   color: #0c3d1c; /* Darker shade on hover */
+   color: #0c3d1c; 
 }
