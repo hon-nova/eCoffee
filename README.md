@@ -50,6 +50,16 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
    payment_intent.succeeded
    payment_intent.payment_failed
    ```
+   **__Use Cases__**
+
+   **success**
+
+   ![success](./eCoffee/static/eCoffee/demo/success_transaction.png)
+
+   **failure**
+
+   ![failure](./eCoffee/static/eCoffee/demo/failure_transaction.png)
+
 5. Other packages for deployment purposes
    ```python
    pip freeze > requirements.txt

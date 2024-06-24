@@ -15,10 +15,17 @@ import stripe
 from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+import os
+from dotenv import load_dotenv
+from django.conf import settings
 
+# Load environment variables from .env file
+load_dotenv()
 
-stripe.api_key = settings.STRIPE_SECRET_KEY
-endpoint_secret= settings.STRIPE_WEBHOOK_SECRET
+# Stripe keys
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
+stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
+endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -301,13 +308,13 @@ def update_cart_item(request,product_id):
 @csrf_exempt
 def create_checkout_session(request):
     if request.method == "POST":
-        total = request.POST.get('total')
-        cart_length = request.POST.get('cart_length')
+         total = request.POST.get('total')
+         cart_length = request.POST.get('cart_length')
 
-        try:           
+         try:           
             session = stripe.checkout.Session.create(
-                payment_method_types=['card'],
-                line_items=[{
+               payment_method_types=['card'],
+               line_items=[{
                     "price_data": {
                         "currency": "cad",
                         "product_data": {
@@ -317,15 +324,21 @@ def create_checkout_session(request):
                     },
                     "quantity": 1
                 }],
-                mode="payment",
-                success_url="http://localhost:8000/success_transaction/",
-                cancel_url="http://localhost:8000/cancel_transaction/"
+               mode="payment",
+               success_url="http://localhost:8000/success_transaction/",
+               cancel_url="http://localhost:8000/cancel_transaction/"
             )
-
             return redirect(session.url, code=303)  
+         except stripe.error.StripeError as e:
+            print(f"Stripe Error: {e}")
+            logging.debug(f'Stripe Error Page: {e}')
+            return redirect('cancel_transaction')
 
-        except Exception as e:           
-            return redirect('cart_items')
+         except Exception as e:
+            print(f"Exception: {e}")
+            logging.debug(f'Stripe Success Page: {e}')
+            return redirect('cancel_transaction')
+        
     return redirect('cart_items') 
 
 def success_transaction(request):
@@ -334,7 +347,7 @@ def success_transaction(request):
 
 def cancel_transaction(request):
     return render(request,'eCoffee/cancel_transaction.html')
-
+ 
 @login_required
 def product_details(request, product_id):
     
@@ -378,52 +391,53 @@ def toggle_like(request, product_id):
 
 @csrf_exempt        
 def stripe_webhook(request):
-    payload =request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-    event = None
+   payload =request.body
+   sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+   event = None
     
-    try:
+   try:
         event = stripe.Webhook.construct_event(
             payload,sig_header,endpoint_secret
         )
-    except ValueError as e:
-        return HttpResponse(status=400)
+   except ValueError as e:
+      return HttpResponse(status=400)
     
-    except stripe.error.SignatureVerificationError as e:
-        return HttpResponse(status=400)
+   except stripe.error.SignatureVerificationError as e:
+      return HttpResponse(status=400)
     
     # Handle the event
-    if event['type'] == 'payment_intent.payment_failed':
+   if event['type'] == 'payment_intent.payment_failed':
       payment_intent = event['data']['object']
       handle_payment_intent_failed(payment_intent)
-    elif event['type'] == 'payment_intent.succeeded':
+   elif event['type'] == 'payment_intent.succeeded':
       payment_intent = event['data']['object']
       handle_payment_intent_succeeded(payment_intent)
     
-    else:
+   else:
       print('Unhandled event type {}'.format(event['type']))
-      logging.debug(f'Unhandled event type::{event['type']}')
+      logging.debug(f"Unhandled event type::{event['type']}")
       
-    return JsonResponse({'success': True})
+   return JsonResponse({'success': True})
 
 def handle_payment_intent_failed(payment_intent):
     
-    order_id = payment_intent['metadata']['order_id']
-    try:
-        order = Order.objects.get(id=order_id)
-        order.payment_status= False
-        order.save()
-    except Order.DoesNotExist:
-        pass
+   order_id = payment_intent['metadata']['order_id']
+   try:
+      order = Order.objects.get(id=order_id)
+      order.payment_status= False
+      order.save()
+   except Order.DoesNotExist:
+      pass
 
 def handle_payment_intent_succeeded(payment_intent):
-    order_id = payment_intent['metadata']['order_id']
-    try:
-        order= Order.objects.get(id=order_id)
-        order.payment_status=True
-        order.save()
-    except Order.DoesNotExist:
-        pass
+   order_id = payment_intent['metadata']['order_id']
+   try:
+      order= Order.objects.get(id=order_id)
+      order.payment_status=True
+      order.save()
+      
+   except Order.DoesNotExist:
+      pass
     
 
 
