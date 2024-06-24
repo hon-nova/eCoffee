@@ -72,6 +72,7 @@ class Order(models.Model):
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE)    
     payment_status=models.BooleanField(default=False)
     placed_order_at=models.DateTimeField(auto_now_add=True)
+    payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
     
     def get_total_payment(self):
         return self.cart.get_total_price()

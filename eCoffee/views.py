@@ -366,34 +366,22 @@ def create_checkout_session(request):
                 }],
                mode="payment",
                success_url="http://localhost:8000/success_transaction/",
-               cancel_url="http://localhost:8000/cancel_transaction/"
+               cancel_url="http://localhost:8000/failure_transaction/",
+               metadata={
+                    "order_id": "pi_3PVJrdA8hitTZ8gp1taJrOib"  
+                }
             )
             return redirect(session.url, code=303)  
          
          except stripe.error.StripeError as e:
             print(f"Stripe Error: {e}")
             logging.debug(f'Stripe Error Page: {e}')
-            return redirect('cancel_transaction')
-
-         except stripe.error.InvalidRequestError as e:
-            # Invalid parameters were supplied to Stripe's API
-            logging.debug(f"Invalid parameters: {e}")
-            return redirect('cancel_transaction')
-
-         except stripe.error.AuthenticationError as e:
-            # Authentication with Stripe's API failed
-            logging.debug(f"Authentication failed: {e}")
-            return redirect('cancel_transaction')
-
-         except stripe.error.APIConnectionError as e:
-            # Network communication with Stripe failed
-            logging.debug(f"Network communication failed: {e}")
-            return redirect('cancel_transaction')
+            return redirect('failure_transaction')
          
          except Exception as e:
             print(f"Exception: {e}")
-            logging.debug(f'Stripe Success Page: {e}')
-            return redirect('cancel_transaction')
+            logging.debug(f'cart_items: The transaction was not successful.{e}')
+            return redirect('cart_items')
 
    return redirect('cart_items') 
 
@@ -401,8 +389,8 @@ def success_transaction(request):
     
     return render(request,'eCoffee/success_transaction.html')
 
-def cancel_transaction(request):
-    return render(request,'eCoffee/cancel_transaction.html')
+def failure_transaction(request):
+    return render(request,'eCoffee/failure_transaction.html')
  
 
 
@@ -425,12 +413,25 @@ def stripe_webhook(request):
     # Handle the event
    if event['type'] == 'payment_intent.payment_failed':
       payment_intent = event['data']['object']
-      handle_payment_intent_failed(payment_intent)
+      # handle_payment_intent_failed(payment_intent)
+      try:
+         # order_id = payment_intent['metadata']['order_id']
+         payment_intent_id = payment_intent['id']
+         logging.debug(f'order_id::{payment_intent_id}')
+         try:
+            order = Order.objects.get(payment_intent_id=payment_intent_id)        
+            order.payment_status = False
+            order.save()
+         except Order.DoesNotExist:
+            return redirect('failure_transaction')
+      except KeyError:
+         # logging.error("Metadata or order_id not found in payment_intent.")
+         pass
       
-      return redirect('cancel_transaction')
+      return redirect('cart_items')
    elif event['type'] == 'payment_intent.succeeded':
       payment_intent = event['data']['object']
-      handle_payment_intent_succeeded(payment_intent)
+      # handle_payment_intent_succeeded(payment_intent)
       
       return redirect('success_transaction')
    else:
