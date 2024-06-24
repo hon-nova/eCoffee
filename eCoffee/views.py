@@ -132,8 +132,7 @@ def admin_products(request):
             form = ProductForm(request.POST,request.FILES)        
             if form.is_valid():                
                 product = form.save(commit=False)  
-                product.save()    
-                          
+                product.save()                          
                 return HttpResponseRedirect(reverse("admin_products"))
         else:
             return redirect('login')    
@@ -261,9 +260,9 @@ def cart_items(request):
         # total=0
         # total+=cart_user.get_total_price()
     
-        logging.debug(f'new total::{total}')
-        logging.debug(f'new cart_length::{cart_length}')
-        logging.debug(f'sum_sub_total::{sum_sub_total}')
+      #   logging.debug(f'new total::{total}')
+      #   logging.debug(f'new cart_length::{cart_length}')
+      #   logging.debug(f'sum_sub_total::{sum_sub_total}')
         return render(request,'eCoffee/cart.html',{'items':cart_items,'sum_sub_total':sum_sub_total,'tax5':tax5,'tax7':tax7,'taxes':taxes,'total':total}) 
     else:
         return redirect('login')
@@ -275,7 +274,7 @@ def cart_delete_item(request,item_id):
         my_cart_items=my_cart.cart_items.all()         
         # find the item (identified by item_id) in this my_cart_items
         item_to_delete=my_cart_items.filter(product=get_object_or_404(Product,pk=item_id))
-        logging.debug(f'item_to_delete::{item_to_delete}')
+      #   logging.debug(f'item_to_delete::{item_to_delete}')
         if item_to_delete:
             item_to_delete.delete()
             
@@ -304,10 +303,51 @@ def update_cart_item(request,product_id):
         
     # return redirect('cart_items')
     return render(request, 'eCoffee/cart_items.html')
+ 
+@login_required
+def product_details(request, product_id):
+    
+    product=get_object_or_404(Product,pk=product_id)
+    user_cart=Cart.objects.get(user=request.user)
+    cart_items=user_cart.cart_items.all()
+   #  logging.debug(f'cart_items::{cart_items}')
+    # logging.debug(f'all ids::{cart_item_ids}')
+    existing_item= None
+    for item in cart_items:
+        if item.product==product:
+            existing_item= item
+            break
+        
+   #  logging.debug(f'existing item??::{existing_item}')
+    return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
+
+def profile(request,user_id):
+    
+    profile=User.objects.get(pk=user_id)
+    return render(request,'eCoffee/profile.html',{'profile':profile})
+
+@login_required
+def toggle_like(request, product_id):
+   if request.method == "POST":
+      product = get_object_or_404(Product, pk=product_id)
+      liked = False
+        
+        # create a like instance
+      like, created = Like.objects.get_or_create(user=request.user, product=product)
+        
+      if created:
+         liked = True            
+      else:
+         like.delete()
+            # logging.debug(f'No. Product {product_id} unliked by user {request.user}')
+      logging.debug(f'{liked}. Product {product_id} liked by user {request.user}')
+      return JsonResponse({'liked': liked})
+    
+   return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @csrf_exempt
 def create_checkout_session(request):
-    if request.method == "POST":
+   if request.method == "POST":
          total = request.POST.get('total')
          cart_length = request.POST.get('cart_length')
 
@@ -329,17 +369,33 @@ def create_checkout_session(request):
                cancel_url="http://localhost:8000/cancel_transaction/"
             )
             return redirect(session.url, code=303)  
+         
          except stripe.error.StripeError as e:
             print(f"Stripe Error: {e}")
             logging.debug(f'Stripe Error Page: {e}')
             return redirect('cancel_transaction')
 
+         except stripe.error.InvalidRequestError as e:
+            # Invalid parameters were supplied to Stripe's API
+            logging.debug(f"Invalid parameters: {e}")
+            return redirect('cancel_transaction')
+
+         except stripe.error.AuthenticationError as e:
+            # Authentication with Stripe's API failed
+            logging.debug(f"Authentication failed: {e}")
+            return redirect('cancel_transaction')
+
+         except stripe.error.APIConnectionError as e:
+            # Network communication with Stripe failed
+            logging.debug(f"Network communication failed: {e}")
+            return redirect('cancel_transaction')
+         
          except Exception as e:
             print(f"Exception: {e}")
             logging.debug(f'Stripe Success Page: {e}')
             return redirect('cancel_transaction')
-        
-    return redirect('cart_items') 
+
+   return redirect('cart_items') 
 
 def success_transaction(request):
     
@@ -348,46 +404,7 @@ def success_transaction(request):
 def cancel_transaction(request):
     return render(request,'eCoffee/cancel_transaction.html')
  
-@login_required
-def product_details(request, product_id):
-    
-    product=get_object_or_404(Product,pk=product_id)
-    user_cart=Cart.objects.get(user=request.user)
-    cart_items=user_cart.cart_items.all()
-    logging.debug(f'cart_items::{cart_items}')
-    # logging.debug(f'all ids::{cart_item_ids}')
-    existing_item= None
-    for item in cart_items:
-        if item.product==product:
-            existing_item= item
-            break
-        
-    logging.debug(f'existing item??::{existing_item}')
-    return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
 
-def profile(request,user_id):
-    
-    profile=User.objects.get(pk=user_id)
-    return render(request,'eCoffee/profile.html',{'profile':profile})
-
-@login_required
-def toggle_like(request, product_id):
-    if request.method == "POST":
-        product = get_object_or_404(Product, pk=product_id)
-        liked = False
-        
-        # create a like instance
-        like, created = Like.objects.get_or_create(user=request.user, product=product)
-        
-        if created:
-            liked = True            
-        else:
-            like.delete()
-            # logging.debug(f'No. Product {product_id} unliked by user {request.user}')
-        logging.debug(f'{liked}. Product {product_id} liked by user {request.user}')
-        return JsonResponse({'liked': liked})
-    
-    return JsonResponse({'error': 'Invalid request'}, status=400)
 
 @csrf_exempt        
 def stripe_webhook(request):
@@ -409,25 +426,33 @@ def stripe_webhook(request):
    if event['type'] == 'payment_intent.payment_failed':
       payment_intent = event['data']['object']
       handle_payment_intent_failed(payment_intent)
+      
+      return redirect('cancel_transaction')
    elif event['type'] == 'payment_intent.succeeded':
       payment_intent = event['data']['object']
       handle_payment_intent_succeeded(payment_intent)
-    
+      
+      return redirect('success_transaction')
    else:
-      print('Unhandled event type {}'.format(event['type']))
+      # print('Unhandled event type {}'.format(event['type']))
       logging.debug(f"Unhandled event type::{event['type']}")
       
    return JsonResponse({'success': True})
 
 def handle_payment_intent_failed(payment_intent):
-    
-   order_id = payment_intent['metadata']['order_id']
    try:
-      order = Order.objects.get(id=order_id)
-      order.payment_status= False
-      order.save()
-   except Order.DoesNotExist:
-      pass
+      order_id = payment_intent['metadata']['order_id']
+      logging.debug(f'order_id::{order_id}')
+      try:
+         order = Order.objects.get(id=order_id)
+        
+         order.payment_status = False
+         order.save()
+      except Order.DoesNotExist:
+         logging.error(f"Order with id {order_id} does not exist.")
+   except KeyError:
+         logging.error("Metadata or order_id not found in payment_intent.")
+      
 
 def handle_payment_intent_succeeded(payment_intent):
    order_id = payment_intent['metadata']['order_id']
