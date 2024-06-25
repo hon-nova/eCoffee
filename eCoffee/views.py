@@ -26,6 +26,7 @@ load_dotenv()
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
+endpoint_secret_success=os.getenv('SUCCESS_TRANSACTION_WEBHOOK_SECRET')
 
 
 logging.basicConfig(level=logging.DEBUG)
@@ -387,9 +388,109 @@ def create_checkout_session(request):
 
    return redirect('cart_items') 
 
+@csrf_exempt
 def success_transaction(request):
     
-    return render(request,'eCoffee/success_transaction.html')
+    payload =request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+    
+    # try:
+    #     event = stripe.Webhook.construct_event(
+    #         payload,sig_header,endpoint_secret
+    #     )
+    # except ValueError as e:
+    #    logging.debug(f'Error Stripe webhook::{e}')
+    #    return HttpResponse(status=400)
+    
+    # except stripe.error.SignatureVerificationError as e:
+    #    return HttpResponse(status=400)
+    
+    # # Handle the event
+   
+    # payment_intent = event['data']['object']
+    
+    # payment_intent_id = payment_intent['id']
+    # logging.debug(f'payment_intent_id::{payment_intent_id}')
+    # amount = payment_intent['amount']
+    # logging.debug(f'amount paid: {amount}')
+    # amount =Decimal(amount/100)  
+
+    # cart = get_object_or_404(Cart, user=request.user)
+    # cart_items = cart.cart_items.all()
+    
+    # try:
+    #     # Create or update the order in your database
+    #     order = Order.objects.create(
+    #         payment_intent_id=payment_intent_id,
+    #         amount=amount,
+    #         cart=cart,
+    #         payment_status=True
+    #         # Add other relevant fields as needed
+    #     )
+    #     logging.debug(f'order created::{order}')
+    #     order.save()
+    #     # Optionally, clear the user's cart after successful order creation
+    #     cart_items.delete()
+    #     logging.debug(f'cart_items deleted!!!')
+        
+    #     # Render a success page with order details
+    #     return render(request, 'eCoffee/success_transaction.html', {'order': order})
+    
+    # except Exception as e:
+    #     # Handle errors gracefully
+    #     logging.debug(f"Error creating order: {e}")
+    #     return redirect('failure_transaction')  # Redirect to failure page or handle as needed 
+    try:
+        if sig_header:
+            pass
+    except KeyError:
+         # logging.error("Metadata or order_id not found in payment_intent.")
+        pass
+    try:
+        event = stripe.Webhook.construct_event(
+            payload, sig_header, endpoint_secret_success
+        )
+    except ValueError as e:
+        logging.error(f'Error Stripe webhook: {e}')
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        return HttpResponse(status=400)
+
+    # Handle the event
+    if event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        payment_intent_id = payment_intent['id']
+        amount = payment_intent['amount']
+        amount_decimal = Decimal(amount / 100) 
+        
+        cart = get_object_or_404(Cart, user=request.user)
+        cart_items = cart.cart_items.all()
+        
+        try:
+            # Create order in database
+            order = Order.objects.create(
+                payment_intent_id=payment_intent_id,
+                amount=amount_decimal,
+                cart=cart,
+                payment_status=True  # Assuming payment is successful
+                # Add other relevant fields as needed
+            )
+            order.save()
+            
+            cart_items.delete()
+            
+            return render(request, 'eCoffee/success_transaction.html', {'order': order})
+        
+        except Exception as e:
+            logging.error(f"Error creating order: {e}")
+            return redirect('failure_transaction')  # Redirect to failure page or handle error
+
+    # If event type is not handled or unexpected, log and return success
+    logging.debug(f"Unhandled event type: {event['type']}")
+    return HttpResponse(status=200)
+    
+    
 
 def failure_transaction(request):
     return render(request,'eCoffee/failure_transaction.html')
