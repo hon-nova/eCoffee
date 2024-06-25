@@ -322,8 +322,10 @@ def product_details(request, product_id):
     return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
 
 def profile(request,user_id):
-    
+    cart=Cart.objects.get(user=request.user)
     profile=User.objects.get(pk=user_id)
+    orders=Order.objects.filter(cart=cart,payment_status=True)
+    logging.debug(f'user True orders::{orders}')
     return render(request,'eCoffee/profile.html',{'profile':profile})
 
 @login_required
@@ -348,13 +350,12 @@ def toggle_like(request, product_id):
 @csrf_exempt
 def create_checkout_session(request):
    if request.method == "POST":
-         total = request.POST.get('total')
-         cart_length = request.POST.get('cart_length')
-
-         try:           
+        total = request.POST.get('total')
+        cart_length = request.POST.get('cart_length')
+        try:           
             session = stripe.checkout.Session.create(
-               payment_method_types=['card'],
-               line_items=[{
+                payment_method_types=['card'],
+                line_items=[{
                     "price_data": {
                         "currency": "cad",
                         "product_data": {
@@ -364,21 +365,22 @@ def create_checkout_session(request):
                     },
                     "quantity": 1
                 }],
-               mode="payment",
-               success_url="http://localhost:8000/success_transaction/",
-               cancel_url="http://localhost:8000/failure_transaction/",
-               metadata={
+                mode="payment",
+                cancel_url="http://localhost:8000/failure_transaction/",
+                success_url="http://localhost:8000/success_transaction/",
+               
+                metadata={
                     "order_id": "pi_3PVJrdA8hitTZ8gp1taJrOib"  
                 }
             )
             return redirect(session.url, code=303)  
          
-         except stripe.error.StripeError as e:
+        except stripe.error.StripeError as e:
             print(f"Stripe Error: {e}")
             logging.debug(f'Stripe Error Page: {e}')
             return redirect('failure_transaction')
          
-         except Exception as e:
+        except Exception as e:
             print(f"Exception: {e}")
             logging.debug(f'cart_items: The transaction was not successful.{e}')
             return redirect('cart_items')
@@ -391,54 +393,52 @@ def success_transaction(request):
 
 def failure_transaction(request):
     return render(request,'eCoffee/failure_transaction.html')
- 
 
 
 @csrf_exempt        
 def stripe_webhook(request):
-   payload =request.body
-   sig_header = request.META['HTTP_STRIPE_SIGNATURE']
-   event = None
+    payload =request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
     
-   try:
+    try:
         event = stripe.Webhook.construct_event(
             payload,sig_header,endpoint_secret
         )
-   except ValueError as e:
-      return HttpResponse(status=400)
+    except ValueError as e:
+       logging.debug(f'Error Stripe webhook::{e}')
+       return HttpResponse(status=400)
     
-   except stripe.error.SignatureVerificationError as e:
-      return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+       return HttpResponse(status=400)
     
     # Handle the event
-   if event['type'] == 'payment_intent.payment_failed':
-      payment_intent = event['data']['object']
-      # handle_payment_intent_failed(payment_intent)
-      try:
-         # order_id = payment_intent['metadata']['order_id']
-         payment_intent_id = payment_intent['id']
-         logging.debug(f'order_id::{payment_intent_id}')
-         try:
-            order = Order.objects.get(payment_intent_id=payment_intent_id)        
-            order.payment_status = False
-            order.save()
-         except Order.DoesNotExist:
-            return redirect('failure_transaction')
-      except KeyError:
+    if event['type'] == 'payment_intent.payment_failed':
+        payment_intent = event['data']['object']     
+        try:
+            payment_intent_id = payment_intent['id']
+            logging.debug(f'order_id::{payment_intent_id}')
+            try:
+                order = Order.objects.get(payment_intent_id=payment_intent_id)        
+                order.payment_status = False
+                order.save()
+            except Order.DoesNotExist:
+                return redirect('failure_transaction')
+        except KeyError:
          # logging.error("Metadata or order_id not found in payment_intent.")
-         pass
+            pass
       
-      return redirect('cart_items')
-   elif event['type'] == 'payment_intent.succeeded':
-      payment_intent = event['data']['object']
-      # handle_payment_intent_succeeded(payment_intent)
+        return redirect('cart_items')
+    elif event['type'] == 'payment_intent.succeeded':
+        payment_intent = event['data']['object']
+        handle_payment_intent_succeeded(request,payment_intent)
       
-      return redirect('success_transaction')
-   else:
+        return redirect('success_transaction')
+    else:
       # print('Unhandled event type {}'.format(event['type']))
-      logging.debug(f"Unhandled event type::{event['type']}")
+        logging.debug(f"Unhandled event type::{event['type']}")
       
-   return JsonResponse({'success': True})
+        return JsonResponse({'success': True})
 
 def handle_payment_intent_failed(payment_intent):
    try:
@@ -454,16 +454,33 @@ def handle_payment_intent_failed(payment_intent):
    except KeyError:
          logging.error("Metadata or order_id not found in payment_intent.")
       
+@login_required
+def handle_payment_intent_succeeded(request,payment_intent):    
+    try:
+        logging.debug(f'handle_payment_intent_succeeded got triggered')
+        payment_intent_id = payment_intent['id']
+        amount = payment_intent['amount']
+        amount =Decimal(amount/100)
+        cart=get_object_or_404(Cart,user=request.user)
+        cart_items_user=cart.cart_items.all()
+        try:
+                order= Order.objects.get(payment_intent_id=payment_intent_id,cart=cart)
+                order.amount=amount
+                order.payment_status=True  
+                order.payment_intent_id=payment_intent_id
+                logging.debug(f'amount paid::{order.amount}')    
+                order.save()
+                
+                cart_items_user.delete()
+                logging.debug('Cart items deleted after successful payment')
+            
+        except Order.DoesNotExist:
+            pass
+    except KeyError as e:
+        logging.error(f'KeyError: {e} in payment_intent')
+    return HttpResponse(status=200)
+  
 
-def handle_payment_intent_succeeded(payment_intent):
-   order_id = payment_intent['metadata']['order_id']
-   try:
-      order= Order.objects.get(id=order_id)
-      order.payment_status=True
-      order.save()
-      
-   except Order.DoesNotExist:
-      pass
     
 
 

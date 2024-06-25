@@ -73,26 +73,14 @@ class Order(models.Model):
     payment_status=models.BooleanField(default=False)
     placed_order_at=models.DateTimeField(auto_now_add=True)
     payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
+    amount=models.FloatField()
     
     def get_total_payment(self):
         return self.cart.get_total_price()
     
     def __str__(self):
         return f'Order id {self.id} for {self.cart.user.username} with status {"successful" if self.payment_status else "canceled"}'
-    
-    # Please note:
-    # This calls the parent class's save method, which actually saves the Order instance to the database.
-    
-    # def save(self, *args, **kwargs):
-    #     if self.payment_status:
-    #         self.cart.cart_items.all().delete()
-    #     super().save(*args,**kwargs)
-        
-    # def mark_as_paid(self):
-    #     self.payment_status = True
-    #     self.save()
-    #     # Empty the cart
-    #     self.cart.cart_items.all().delete()
+ 
     
 class Profile(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
