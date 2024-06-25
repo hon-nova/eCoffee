@@ -1,9 +1,14 @@
-{% extends "eCoffee/layout.html" %} 
-<!-- {% load static %} -->
-{%block title%}Success Transaction Page{%endblock%} 
-{%block body %}
 
+{% extends "eCoffee/layout.html" %}
+{% load static %}
+
+{% block title %}Success Transaction Page{% endblock %}
+
+{% block body %}
 <div class="success-container">
-<h1>Success Transaction</h1>
+    <h1>Success Transaction</h1>
+    <p>Thank you for shopping with us. A notification has been sent to your mailbox.</p>
+    <div><a href="{% url 'index' %}" class="btn btn-success">Back to Homepage</a></div>
 </div>
-{%endblock%}
+{% endblock %}
+

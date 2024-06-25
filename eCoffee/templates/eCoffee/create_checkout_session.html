@@ -6,7 +6,6 @@
 {% block extra_css %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css">
     <style>
-        /* Add custom styles for your checkout page */
         .checkout-container {
             padding: 20px;
             background-color: #f8f9fa;
@@ -25,7 +24,7 @@
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-        var stripe = Stripe('STRIPE_PUBLIC_KEY');  // Replace with your actual Stripe public key
+        var stripe = Stripe('STRIPE_PUBLIC_KEY');  
         var checkoutButton = document.getElementById('checkout-button');
 
         checkoutButton.addEventListener('click', function() {

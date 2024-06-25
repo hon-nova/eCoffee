@@ -1,0 +1,80 @@
+
+{% extends "eCoffee/layout.html" %} 
+{% load static %}
+{%block title%}Product Details Page{%endblock%} 
+{%block body %}
+
+<div class="product-details-container">
+   <h1>Hello Product Details Page!</h1>
+   <div class="row">
+      {%if product%}
+      <div class="col-md-1">left</div>
+      <div class="col-md-4" style="border:1px solid #d0d0d5;border-radius:30px;">
+         <img src="{{ product.photo_url }}" alt="photo url" width="480" height="auto"/>
+      </div>
+      <div class="col-md-6 product-details-right ml-3">
+         <div class="d-flex justify-content-end like">                  
+            <button type="button" data-product-id="{{ product.id }}" class="like-btn" id="btnLike">
+            <i class="bi bi-heart heart-icon-{{ product.id }} heart {% if liked %}liked{% endif %}"></i>
+             </button>             
+         </div>
+         <h5 class="mt-3">{{ product.description }}</h5>
+         <div class="d-flex justify-content-between reviews">
+            <a href="#">Reviews(33)</a>
+            <a href="#">Write a review</a>
+         </div>
+         <form action="" method="POST" style="display:none;">
+            {%csrf_token%}
+            <textarea name="review" row="4" col="15">
+            </textarea>
+            <button type="submit">Submit</button>
+         </form>
+      <h4>${{ product.price }}</h4>
+      {%if existing_item %}
+      <div class="row ml-2 existing-item">         
+            <div class="d-flex justify-content-center w-100">              
+               <div class="d-flex justify-content-between w-100">
+         <form method="POST" action="{% url "update_cart_item" product.id %}">
+            {%csrf_token%}
+            <input type="hidden" name="three" value="{{ request.path }}"/>
+            <button 
+                  type="submit"
+                  class="modify-quantity"
+                  name="modify_quantity"
+                  value="decrease"
+               >-</button>
+            <input type="number" name="quantity" min="1" max="10" value="{{ existing_item.quantity_purchased }}" onchange="" class="modify-quantity"/>
+            <button
+               type="submit"
+               class="modify-quantity"
+               name="modify_quantity"
+               value="increase">+</button>
+         </form>
+         <form method="POST" action="{% url 'cart_delete_item' product.id %}">
+            {%csrf_token%}
+            <input type="hidden" name="three" value="{{ request.path }}"/>
+            <button type="submit" class="remove-btn">Remove</button>
+         </form>   
+      </div>
+   </div>
+</div>
+      {%else%}
+      <div class="new-item">
+         <form method="POST" action="{% url 'add_to_cart' product.id%}">
+            {%csrf_token%}
+            <input type="hidden" name="next" value="{{ request.path }}"/>
+        <button type="submit" class="add-to-cart">Add to Cart</a>
+        </form>
+      </div>
+      {%endif%}        
+      </div>
+      <div class="col-md-1" >right</div>
+      {%endif%}
+   </div>
+   {%block script%}
+  <script>const csrfToken = "{{ csrf_token }}"</script>
+  <script src="{% static 'eCoffee/index.js' %}"></script> 
+  {%endblock%}
+</div>
+
+{%endblock%}

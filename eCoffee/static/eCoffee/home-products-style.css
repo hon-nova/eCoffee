@@ -30,6 +30,7 @@
    background-color:rgb(252, 226, 29);
    border-radius: 15px;
    padding: 8px;
+   padding:8px 20px;
 }
 .pagination-container {
    margin: 20px auto;

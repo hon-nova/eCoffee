@@ -1,0 +1,12 @@
+{% extends "eCoffee/layout.html" %}
+{% load static %}
+
+{% block title %}Cancel Transaction Page{% endblock %}
+
+{% block body %}
+<div class="cancel-container">
+    <h1>Cancelled Transaction</h1>
+    <p>Error Found: The transaction was not completed. Try again later!</p>
+    <div><a href="{% url 'index' %}" class="btn btn-primary">Back to Homepage</a></div>
+</div>
+{% endblock %}
