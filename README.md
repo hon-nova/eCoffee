@@ -78,6 +78,8 @@ __**js:**__
    ```python
     $ stripe login
     $ stripe listen --forward-to localhost:8080/webhook/
+    $ stripe listen --forward-to localhost:8080/success_transaction/
+    $ stripe listen --forward-to localhost:8080/failure_transaction/
    ```
 4. Stripe Event Packages
    ```

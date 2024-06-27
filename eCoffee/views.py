@@ -380,12 +380,18 @@ def create_checkout_session(request):
         except stripe.error.StripeError as e:
             print(f"Stripe Error: {e}")
             logging.debug(f'Stripe Error Page: {e}')
-            return redirect('failure_transaction')
+            return render(request,'eCoffee/failure_transaction.html')
+        
+        except KeyError as e:
+            logging.error(f'KeyError: {e} in payment_intent')
+           
+            return render(request,'eCoffee/failure_transaction.html')
          
         except Exception as e:
             print(f"Exception: {e}")
             logging.debug(f'cart_items: The transaction was not successful.{e}')
-            return redirect('cart_items')
+            
+            return render(request,'eCoffee/failure_transaction.html')
 
    return redirect('cart_items') 
 
@@ -491,11 +497,9 @@ def handle_payment_intent_failed(payment_intent):
         logging.debug(f'ID FAILED::{payment_intent_id}')
         payment_email = payment_intent['last_payment_error']['payment_method']['billing_details']['email']
         
-        # Assume cart_id is passed in metadata
         user=get_object_or_404(User,email=payment_email)
         cart = Cart.objects.get(user=user)
-
-        # Create or update the order with payment status failed
+        
         order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
             defaults={'cart': cart, 'payment_status': False}
