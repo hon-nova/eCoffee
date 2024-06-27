@@ -58,8 +58,7 @@ class Cart(models.Model):
         return int(100*Decimal(1.12) * sum(Decimal(item.product.price)*item.quantity_purchased for item in self.cart_items.all()))  
     
 class CartItem(models.Model):
-    # please note: 'cart_items' are all CartItem objects, meaning each object
-    # has an attribute `product`
+
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="cart_items")
     product=models.ForeignKey(Product,on_delete=models.CASCADE)
     quantity_purchased=models.PositiveIntegerField(default=0)
@@ -69,7 +68,9 @@ class CartItem(models.Model):
     
 class Order(models.Model):
     
-    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="user_orders")    
+    '''cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="user_orders") 
+    '''  
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE)   
     payment_status=models.BooleanField(default=False)
     placed_order_at=models.DateTimeField(auto_now_add=True)
     

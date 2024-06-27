@@ -322,29 +322,27 @@ def product_details(request, product_id):
    #  logging.debug(f'existing item??::{existing_item}')
     return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
 
-def profile(request,user_id):
-   
-    logging.debug(f' Profile got triggered')
-    my_cart=get_object_or_404(Cart, user__id=user_id)
+def profile(request, user_id):
+    logging.debug('Profile got triggered')
+    my_cart = get_object_or_404(Cart, user__id=user_id)
     logging.debug(f'my_cart::{my_cart}')
-    each_order_items=[]
-    my_orders=my_cart.user_orders.all().filter(payment_status=True)
-   
+    each_order_items = []
+
+    my_orders = Order.objects.filter(cart=my_cart, payment_status=True)
+    logging.debug(f'my_orders first::{my_orders}')
+
+    # Iterate through each order to fetch cart items
     for order in my_orders:
         logging.debug(f'order id::{order.id}')
-        my_cart_items=CartItem.objects.filter(cart=order.cart)
-        
-        items=get_object_or_404(CartItem,cart=my_cart)
-        # items=order.cart.cart_items.all()
-        for item in items:
-            logging.debug(f'each order id with items::{item.quantity_purchased}')
-        
-        logging.debug(f'my_cart_items::{my_cart_items}')
+        logging.debug(f'order cart::{order.cart}')
+        # my_cart_items = CartItem.objects.all()
+        my_cart_items=[{object.id: object.cart.cart_items.all()} for object in my_orders]
+        # each_order_items.extend(my_cart_items)  # Extend the list with queryset results
+
+        # Logging each item's quantity_purchased for debugging
         for item in my_cart_items:
-            if item.product:
-                logging.debug(f'product::{item.product.description}')
-            else:
-                logging.debug(f'item itself::{item}')
+            logging.debug(f'product:: {item}')
+
     return render(request, 'eCoffee/profile.html')
 
 @login_required
