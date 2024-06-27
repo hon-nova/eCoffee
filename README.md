@@ -4,7 +4,9 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
 2. Furthermore, it's added some new features such as: integration with a third-party Stripe payment; usage of prescriptive data analysis to display its trend of the popular products based on the dataset from the users's input
 3. Complexity: Regarding its complexity, the website has included the automatic email sent to user when their transaction is a success. At this point, the Stripe payment transaction and the built email system must collaborate together to ship the end outcome.   
    
-# 2. What’s contained in each file you created
+# 2. File Contents: .html, .py, .js Extensions
+
+__**html:**__
 
 1. `admin_product.html` 
   - displayed all current products encompassing the CRUD operations. 
@@ -13,7 +15,11 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
 3. `home_products.html` 
   - displayed all products currently in the system
   - added a checkbox functionality to filter out the products
-4. 
+
+__**py:**__
+
+
+__**js:**__
 # 3. How to run your application
 1. Create a virtual environment named as final_env: 
    ```python
@@ -68,9 +74,12 @@ Defence: Why you believe your project satisfies the distinctiveness and complexi
    ```python
    $ brew install stripe/stripe-cli/stripe  
    ```
-3. To get the Stripe webhook secret, run
+3. Run your terminal shell to get the Stripe webhook secret(s)
    ```python
     $ stripe login
+    $ stripe listen --forward-to localhost:8080/webhook/
+    $ stripe listen --forward-to localhost:8080/success_transaction/
+    $ stripe listen --forward-to localhost:8080/failure_transaction/
    ```
 4. Stripe Event Packages
    ```

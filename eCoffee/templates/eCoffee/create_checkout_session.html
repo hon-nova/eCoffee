@@ -20,6 +20,7 @@
     <h1>Stripe Payment Page</h1>
     <button id="checkout-button">Pay with Card</button>
 </div>
+{%block script%}
 <script src="https://js.stripe.com/v3/"></script>
 
 <script>
@@ -50,12 +51,15 @@
                 if (result.error) {
                     
                     console.error(result.error.message);
+                    window.location.href = "/failure_transaction/";
                 }
             })
             .catch(function(error) {
                 console.error('Error:', error);
+                window.location.href = "/failure_transaction/";
             });
         });
     });
 </script>
+{%endblock%}
 {% endblock %}
