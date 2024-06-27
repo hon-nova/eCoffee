@@ -323,11 +323,29 @@ def product_details(request, product_id):
     return render(request, "eCoffee/product_details.html",{'product':product,'existing_item':existing_item})
 
 def profile(request,user_id):
-    cart=Cart.objects.get(user=request.user)
-    profile=User.objects.get(pk=user_id)
-    orders=Order.objects.filter(cart=cart,payment_status=True)
-    logging.debug(f'user True orders::{orders}')
-    return render(request,'eCoffee/profile.html',{'profile':profile})
+   
+    logging.debug(f' Profile got triggered')
+    my_cart=get_object_or_404(Cart, user__id=user_id)
+    logging.debug(f'my_cart::{my_cart}')
+    each_order_items=[]
+    my_orders=my_cart.user_orders.all().filter(payment_status=True)
+   
+    for order in my_orders:
+        logging.debug(f'order id::{order.id}')
+        my_cart_items=CartItem.objects.filter(cart=order.cart)
+        
+        items=get_object_or_404(CartItem,cart=my_cart)
+        # items=order.cart.cart_items.all()
+        for item in items:
+            logging.debug(f'each order id with items::{item.quantity_purchased}')
+        
+        logging.debug(f'my_cart_items::{my_cart_items}')
+        for item in my_cart_items:
+            if item.product:
+                logging.debug(f'product::{item.product.description}')
+            else:
+                logging.debug(f'item itself::{item}')
+    return render(request, 'eCoffee/profile.html')
 
 @login_required
 def toggle_like(request, product_id):
@@ -375,7 +393,7 @@ def create_checkout_session(request):
                     "email": user_email 
                 }
             )
-            return redirect(session.url, code=303)  
+            return redirect(session.url, code=303) 
          
         except stripe.error.StripeError as e:
             print(f"Stripe Error: {e}")
@@ -397,10 +415,9 @@ def create_checkout_session(request):
 
 @csrf_exempt
 def success_transaction(request):    
-       
-    return render(request,'eCoffee/success_transaction.html')   
+    return render(request,'eCoffee/success_transaction.html')  
     
-
+@csrf_exempt
 def failure_transaction(request):
     return render(request,'eCoffee/failure_transaction.html')
 
@@ -440,8 +457,7 @@ def stripe_webhook(request):
     else:
         logging.debug(f"Unhandled event type::{event['type']}")
         return JsonResponse({'success': True})
-
-      
+    
 @csrf_exempt
 def handle_payment_intent_succeeded(payment_intent):
     logging.debug('SUCCESS triggered handle_payment_intent_succeeded')
@@ -479,8 +495,7 @@ def handle_payment_intent_succeeded(payment_intent):
             user_cart_items=cart.cart_items.all()
             user_cart_items.delete()
             logging.debug(f'SUCCESS cart_items deleted')
-            logging.debug(f'Order processed for successful payment: {order}')
-        
+            logging.debug(f'Order processed for successful payment: {order}')       
     
     except KeyError as e:
         logging.error(f'KeyError: {e} in payment_intent')

@@ -65,26 +65,25 @@ class CartItem(models.Model):
     quantity_purchased=models.PositiveIntegerField(default=0)
     
     def __str__(self):
-        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'  
+        return f'item: {self.product.description} with quantity: {self.quantity_purchased}'   
     
 class Order(models.Model):
-
-    cart=models.ForeignKey(Cart,on_delete=models.CASCADE)    
+    
+    cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="user_orders")    
     payment_status=models.BooleanField(default=False)
     placed_order_at=models.DateTimeField(auto_now_add=True)
+    
     payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
-    amount=models.FloatField(default=0)
+    amount=models.FloatField(default=0)  
     
     def get_total_payment(self):
         return self.cart.get_total_price()
     
     def __str__(self):
-        return f'Order id {self.id} for {self.cart.user.username} with status {"successful" if self.payment_status else "canceled"}'
+        return f'Order id {self.id} for {self.cart.user.username} with status {"successful" if self.payment_status else "canceled"} with amount received CAD$ {self.amount}'
  
     
-class Profile(models.Model):
-    user=models.OneToOneField(User,on_delete=models.CASCADE)
-    order=models.ForeignKey(Order,on_delete=models.CASCADE)
+
         
     
     

@@ -51,10 +51,12 @@
                 if (result.error) {
                     
                     console.error(result.error.message);
+                    window.location.href = "/failure_transaction/";
                 }
             })
             .catch(function(error) {
                 console.error('Error:', error);
+                window.location.href = "/failure_transaction/";
             });
         });
     });
