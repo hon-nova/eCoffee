@@ -20,6 +20,7 @@
     <h1>Stripe Payment Page</h1>
     <button id="checkout-button">Pay with Card</button>
 </div>
+{%block script%}
 <script src="https://js.stripe.com/v3/"></script>
 
 <script>
@@ -58,4 +59,5 @@
         });
     });
 </script>
+{%endblock%}
 {% endblock %}

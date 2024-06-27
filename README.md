@@ -77,8 +77,7 @@ __**js:**__
 3. Run your terminal shell to get the Stripe webhook secret(s)
    ```python
     $ stripe login
-    $ stripe listen --forward-to localhost:8080/webhook
-    $ stripe listen --forward-to localhost:8080/success_transaction
+    $ stripe listen --forward-to localhost:8080/webhook/
    ```
 4. Stripe Event Packages
    ```

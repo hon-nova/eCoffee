@@ -402,7 +402,7 @@ def failure_transaction(request):
 def stripe_webhook(request):
     logging.debug('Webhook called')
     payload = request.body
-    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event = None
 
     try:
@@ -419,57 +419,100 @@ def stripe_webhook(request):
     if event['type'] == 'payment_intent.payment_failed':
         payment_intent = event['data']['object']
         logging.debug(f'payment_intent.payment_failed event received: {payment_intent}')
-        return redirect('failure_transaction')
+        logging.debug(f'ID: {payment_intent["id"]}')
+        logging.debug(f'AMOUNT RECEIVED::{payment_intent["amount_received"]}')
+        handle_payment_intent_failed(payment_intent)
+        
+        return HttpResponse(status=200)
     elif event['type'] == 'payment_intent.succeeded':
         payment_intent = event['data']['object']
-        logging.debug(f'payment_intent.succeeded event received: {payment_intent}')
+        logging.debug(f'SUCCESS payment_intent.succeeded event received: {payment_intent}')
         handle_payment_intent_succeeded(payment_intent)
-        return redirect('success_transaction')
+        logging.debug('END Called handle_payment_intent_succeeded')
+        return HttpResponse(status=200)
+        
     else:
         logging.debug(f"Unhandled event type::{event['type']}")
         return JsonResponse({'success': True})
 
       
 @csrf_exempt
-@login_required
 def handle_payment_intent_succeeded(payment_intent):
+    logging.debug('SUCCESS triggered handle_payment_intent_succeeded')
     try:
-        logging.debug('handle_payment_intent_succeeded triggered')
-        
+        logging.debug('SUCCESS Handling payment_intent.succeeded')
         payment_intent_id = payment_intent['id']
-        amount = payment_intent['amount']
+        amount = payment_intent['amount_received'] / 100.0  
        
-        amount_decimal = Decimal(amount / 100)  # Convert amount to Decimal
-        logging.debug(f'amount::{amount_decimal}')
-        
-        payment_email=payment_intent['metadata']['email']
-        # user=User.objects.get(email=payment_email)
-        user=get_object_or_404(User,email=payment_email)
-        cart = get_object_or_404(Cart,user=user)
-        cart_items = cart.cart_items.all()
-        
-        # Create an Order object
-        order = Order.objects.create(
+        logging.debug(f'SUCCESS ID: {payment_intent["id"]}')
+        logging.debug(f'SUCCESS AMOUNT RECEIVED::{amount}')        
+
+       # Retrieve the user based on the payment_intent
+        payment_method = payment_intent['payment_method']
+        logging.debug(f'payment_method::{payment_method}')
+        if payment_method:
+            payment_method_obj = stripe.PaymentMethod.retrieve(payment_method)
+            logging.debug(f'payment_method_object::{payment_method_obj}')
+            payment_email = payment_method_obj['billing_details']['email']
+            
+            user=get_object_or_404(User,email=payment_email)
+            cart=get_object_or_404(Cart,user=user)
+            
+            order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
-            cart=cart,
-            amount=amount_decimal,
-            payment_status=True 
-        )        
-        order.save()
+            defaults={'cart':cart,'amount': amount, 'payment_status': True})
+            
+            logging.debug(f'SUCCESS order???::{order}')
+            logging.debug(f'SUCCESS created???::{created}') 
+
+            if not created:
+                order.payment_status = True
+                order.amount = amount
+                order.save()
+                
+            user_cart_items=cart.cart_items.all()
+            user_cart_items.delete()
+            logging.debug(f'SUCCESS cart_items deleted')
+            logging.debug(f'Order processed for successful payment: {order}')
         
-        # Clear user's cart after successful order creation
-        cart_items.delete()
-        logging.debug('Cart items deleted after successful payment')
-        
+    
     except KeyError as e:
         logging.error(f'KeyError: {e} in payment_intent')
-        return HttpResponse(status=400)
-    except Exception as e:
-        logging.error(f'Error creating order: {e}')
-        return HttpResponse(status=500)
     
-    return HttpResponse(status=200)
+    except Exception as e:
+        logging.error(f'Error handling payment intent success: {e}')
+    
 
+@csrf_exempt
+def handle_payment_intent_failed(payment_intent):
+    try:
+        logging.debug('Handling payment_intent.payment_failed')
+        payment_intent_id = payment_intent['id']
+        logging.debug(f'ID FAILED::{payment_intent_id}')
+        payment_email = payment_intent['last_payment_error']['payment_method']['billing_details']['email']
+        
+        # Assume cart_id is passed in metadata
+        user=get_object_or_404(User,email=payment_email)
+        cart = Cart.objects.get(user=user)
+
+        # Create or update the order with payment status failed
+        order, created = Order.objects.get_or_create(
+            payment_intent_id=payment_intent_id,
+            defaults={'cart': cart, 'payment_status': False}
+        )
+        logging.debug(f'order???:: {order}')
+        logging.debug(f'created???:: {created}')
+
+        if not created:
+            order.payment_status = False
+            order.save()
+
+        logging.debug(f'Order processed for failed payment: {order}')
+    except KeyError as e:
+        logging.error(f'KeyError: {e} in payment_intent')
+    
+    except Exception as e:
+        logging.error(f'Error handling payment intent failure: {e}')
     
 
 
