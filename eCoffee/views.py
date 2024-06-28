@@ -488,7 +488,7 @@ def handle_payment_intent_succeeded(payment_intent):
             payment_email = payment_method_obj['billing_details']['email']
             
             user=get_object_or_404(User,email=payment_email)
-            cart=get_object_or_404(Cart,user=user)          
+            cart=get_object_or_404(Cart,user=user)         
             
             
             order, created = Order.objects.get_or_create(
