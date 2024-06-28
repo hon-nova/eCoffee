@@ -57,7 +57,7 @@ __**py:**__
       - The Meta class within ProductForm specifies that the form is based on the Product model.
       The form includes the fields `description, category, price, quantity, and photo_url` from the `Product` model. The Django form itself serves as a `Constructor` of the `Product` class.
 4. `models.py`
-      - Consists of core models of the backbone project
+
       - `User`: Extends AbstractUser with no additional fields
       - `Product`: Represents a product with a description, category (choices provided), price, quantity, photo URL, and creation timestamp
       - `Like`: Tracks which users like which products, with a unique constraint on the user-product pair
@@ -65,7 +65,8 @@ __**py:**__
       - `CartItem`: Represents items in a cart, linked to Cart and Product, with a quantity field
       - `Order`: Linked to Cart, includes fields for payment status, order placement timestamp, payment intent ID, amount, and a method to get the total payment.
 5. `urls.py`
-      - This urlpatterns list defines the routing paths for URLs in a Django application:
+      This urlpatterns list defines the routing paths for URLs in a Django application:
+
   
    |       url                 | description                                                         | 
    |     --------              | ----------                                                          | 
@@ -91,32 +92,32 @@ __**py:**__
    | "profile/<int:user_id>"| Shows the profile of a user using views.profile based on their ID|
    | "likes/<int:product_id>"| Handles toggling of product likes using views.toggle_like based on the product's ID|
    |"webhook/"                | Handles webhook events from Stripe using views.stripe_webhook|
-6. `views.py`
+1. `views.py`
       - The views.py file in a Django application serves as the backbone, defining various view functions that handle different aspects of the application's functionality. Each view function is responsible for processing requests, interacting with the database through models, and rendering appropriate responses or templates to users. All functions are defined as follows:
   
 
    |Name|Function|Description|
    |----|--------|------------|
    |Index View|`index`|Renders the homepage of the application| 
-   |**Authentication Views**|||
+   |**Authentication Views**||
    |Login View|`login_view`|Handles user authentication and renders the login page|
    |Logout View|`logout_view`|Logs out the user and redirects to the homepage|
    |Register View|`register`|Manages user registration and renders the registration form|
-   |**Admin Dashboard Views**|||
+   |**Admin Dashboard Views**||
    |Main Dashboard|`main_dashboard`|Renders the main administrative dashboard|
    |Admin Products|`admin_products`|Manages products within the administrative interface|
    |Admin Users|`admin_users`|Manages user-related tasks within the administrative interface|
-   |**Product Views**|||
+   |**Product Views**||
    |Get Product|`get_product`|Retrieves and displays details of a specific product|
    |Delete Product|`delete_product`|Deletes a product from the database|
    |Product Details|`product_details`|Shows detailed information about a product|
    |Save Product|`save_product`|Handles the creation or update of product information|
-   |**Cart Views**|||
+   |**Cart Views**||
    |Cart Items|`cart_items`|Manages items in the user's shopping cart|
    |Add to Cart|`add_to_cart`|Adds a product to the user's cart|
    |Cart Delete Item|`cart_delete_item`|Removes an item from the user's cart|
    |Update Cart Item|`update_cart_item`|Updates the quantity of an item in the user's cart|
-   |**Checkout Views**|||
+   |**Checkout Views**||
    |Create Checkout Session|`create_checkout_session`|Initiates a checkout session for payment processing|
    |Success Transaction|`success_transaction`|Displays a success message after a successful transaction|
    |Failure Transaction|`failure_transaction`|Displays a failure message after an unsuccessful transaction|
@@ -228,4 +229,3 @@ Indicate preferences by liking or disliking a product.
 
 # 7. Constraints:
 1. The implementation of the `like` icon in product_details.html is currently not fully effective in handling multiple clicks on a particular product. To revert the like icon to its original state, users may need to refresh the page.
-2. 
