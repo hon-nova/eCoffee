@@ -3,8 +3,31 @@
 {%block title%}Profile Page{%endblock%} 
 {%block body %}
 
-<div class="index-container">
+<div class="profile-container">
    <h1>Hello Profile</h1>
-
+   <div class="">
+      {%if orders_with_items%}
+      {% for order in orders_with_items %}
+      <div class="order">
+         {%if order.order_id and order.order_amount%}
+          <h3>Order ID: {{ order.order_id }}, total paid: ${{order.order_amount}}</h3>
+          {%endif%}
+          {%if order.items %}
+          <div class="order-items">
+              {% for item in order.items %}
+                  <div class="product">
+                      <img src="{{ item.photo_url }}" alt="{{ item.description }}" width="100" height="auto">
+                      <p>Description: {{ item.description }}</p>
+                      <p>Category: {{ item.category }}</p>
+                      <p>Price: ${{ item.price }}</p>
+                      <p>Quantity Purchased: {{ item.quantity_purchased }}</p>
+                  </div>
+              {% endfor %}
+          </div>
+          {%endif%}
+      </div>
+      {% endfor %}
+      {%endif%}
+   </div>
 </div>
 {%endblock%}

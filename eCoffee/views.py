@@ -258,10 +258,7 @@ def cart_items(request):
         taxes=tax5+tax7
         total=sum_sub_total+taxes
         cart_length=request.POST.get('cart_length')
-        # total=0
-        # total+=cart_user.get_total_price()
-    
-      #   logging.debug(f'new total::{total}')
+       
       #   logging.debug(f'new cart_length::{cart_length}')
       #   logging.debug(f'sum_sub_total::{sum_sub_total}')
         return render(request,'eCoffee/cart.html',{'items':cart_items,'sum_sub_total':sum_sub_total,'tax5':tax5,'tax7':tax7,'taxes':taxes,'total':total}) 
@@ -325,25 +322,39 @@ def product_details(request, product_id):
 def profile(request, user_id):
     logging.debug('Profile got triggered')
     my_cart = get_object_or_404(Cart, user__id=user_id)
-    logging.debug(f'my_cart::{my_cart}')
-    each_order_items = []
+    
+    orders_with_items = [{}]
 
     my_orders = Order.objects.filter(cart=my_cart, payment_status=True)
-    logging.debug(f'my_orders first::{my_orders}')
-
-    # Iterate through each order to fetch cart items
     for order in my_orders:
-        logging.debug(f'order id::{order.id}')
-        logging.debug(f'order cart::{order.cart}')
-        # my_cart_items = CartItem.objects.all()
-        my_cart_items=[{object.id: object.cart.cart_items.all()} for object in my_orders]
-        # each_order_items.extend(my_cart_items)  # Extend the list with queryset results
+        order_items = []        
+        cart_items = CartItem.objects.filter(cart=order.cart)       
+       
+        logging.debug(f'Cart items for order {order.id}: {list(cart_items)}')
+    
+        
+        for item in cart_items:
+            logging.debug(f'Product: {item.product.description}, Quantity Purchased: {item.quantity_purchased}')
+            product_details = {
+                'description': item.product.description,
+                'category': item.product.category,
+                'price': item.product.price,
+                'quantity_purchased': item.quantity_purchased,
+                'photo_url': item.product.photo_url
+            }
+            order_items.append(product_details)
+            # logging.debug(f'Product details added: {product_details}')
+        
+        orders_with_items.append({
+            'order_id': order.id,
+            'order_amount':order.amount,
+            'items': order_items
+        })
 
-        # Logging each item's quantity_purchased for debugging
-        for item in my_cart_items:
-            logging.debug(f'product:: {item}')
-
-    return render(request, 'eCoffee/profile.html')
+    context = {
+        'orders_with_items': orders_with_items,
+    }
+    return render(request, 'eCoffee/profile.html', context)
 
 @login_required
 def toggle_like(request, product_id):
@@ -465,8 +476,8 @@ def handle_payment_intent_succeeded(payment_intent):
         amount = payment_intent['amount_received'] / 100.0  
        
         logging.debug(f'SUCCESS ID: {payment_intent["id"]}')
-        logging.debug(f'SUCCESS AMOUNT RECEIVED::{amount}')        
-
+        logging.debug(f'SUCCESS AMOUNT RECEIVED::{amount}')  
+        
        # Retrieve the user based on the payment_intent
         payment_method = payment_intent['payment_method']
         logging.debug(f'payment_method::{payment_method}')
@@ -477,21 +488,36 @@ def handle_payment_intent_succeeded(payment_intent):
             
             user=get_object_or_404(User,email=payment_email)
             cart=get_object_or_404(Cart,user=user)
+            cart_items_user=cart.cart_items.all()           
+            
+            '''For saving cart items into db'''  
+            
+            # cart_items_to_save=[]
+            cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
+            
+            for item in cart_items:
+                items_to_save=CartItem.objects.create(cart=cart,product=item.product,quantity_purchased=item.quantity) 
+                
+                items_to_save.save()
             
             order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
             defaults={'cart':cart,'amount': amount, 'payment_status': True})
             
+            '''
             logging.debug(f'SUCCESS order???::{order}')
             logging.debug(f'SUCCESS created???::{created}') 
+            '''           
 
             if not created:
                 order.payment_status = True
                 order.amount = amount
                 order.save()
-                
+             
+            cart=None    
             user_cart_items=cart.cart_items.all()
             user_cart_items.delete()
+            
             logging.debug(f'SUCCESS cart_items deleted')
             logging.debug(f'Order processed for successful payment: {order}')       
     
