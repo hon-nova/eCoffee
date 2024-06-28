@@ -326,10 +326,11 @@ def profile(request, user_id):
     orders_with_items = [{}]
 
     my_orders = Order.objects.filter(cart=my_cart, payment_status=True)
-    my_orders = my_orders.order_by('-placed_order_at')
+    # my_orders = my_orders.order_by('-placed_order_at')
     for order in my_orders:
         order_items = []        
-        cart_items = CartItem.objects.filter(cart=order.cart)       
+        # cart_items = CartItem.objects.filter(cart=order.cart)  
+        cart_items= order.cart.cart_items.all()     
        
         logging.debug(f'Cart items for order {order.id}: {list(cart_items)}')    
         
@@ -437,7 +438,6 @@ def stripe_webhook(request):
     payload = request.body
     sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
     event = None
-
     try:
         event = stripe.Webhook.construct_event(
             payload, sig_header, endpoint_secret
@@ -488,18 +488,8 @@ def handle_payment_intent_succeeded(payment_intent):
             payment_email = payment_method_obj['billing_details']['email']
             
             user=get_object_or_404(User,email=payment_email)
-            cart=get_object_or_404(Cart,user=user)
-            cart_items_user=cart.cart_items.all()           
+            cart=get_object_or_404(Cart,user=user)          
             
-            '''For saving cart items into db'''  
-            
-            # cart_items_to_save=[]
-            cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
-            items=[]
-            for item in cart_items:
-                items_to_save=CartItem.objects.create(cart=cart,product=item.product,quantity_purchased=item.quantity) 
-            
-                items.append(items_to_save)
             
             order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
@@ -508,12 +498,22 @@ def handle_payment_intent_succeeded(payment_intent):
             '''
             logging.debug(f'SUCCESS order???::{order}')
             logging.debug(f'SUCCESS created???::{created}') 
-            '''           
+            '''          
 
             if not created:
                 order.payment_status = True
                 order.amount = amount
                 order.save()
+                
+            # cart_items_to_save=[]
+            '''For saving cart items into db''' 
+            cart_items_user=cart.cart_items.all()  
+            cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
+            items=[]
+            for item in cart_items:
+                items_to_save=CartItem.objects.create(cart=cart,product=item.product,quantity_purchased=item.quantity) 
+            
+                items.append(items_to_save)
              
              # Delete all cart items associated with the cart
             cart.cart_items.all().delete()

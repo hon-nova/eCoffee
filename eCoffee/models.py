@@ -67,9 +67,7 @@ class CartItem(models.Model):
         return f'item: {self.product.description} with quantity: {self.quantity_purchased}'   
     
 class Order(models.Model):
-    
-    '''cart=models.ForeignKey(Cart,on_delete=models.CASCADE,related_name="user_orders") 
-    '''  
+
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE)   
     payment_status=models.BooleanField(default=False)
     placed_order_at=models.DateTimeField(auto_now_add=True)
