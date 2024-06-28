@@ -192,20 +192,28 @@ B) Admin Route:
    ```python
    $ pip freeze > requirements.txt
    ```
-6. **__Applied credentials:__**<br/>
+
+# 4. Supplementary information about the project
+
+0. The package for security & deployment purposes
    
+   ```python   
+   $ pip install python-dotenv
+   ```
+
+1.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them
+   
+2.  **__Applied credentials:__**<br/>
+   
+    
    |                    | username      | password    |
    |     --------       | --------      | -------     |
    | user route         | hon           | useruser11  |
    | admin route        | hon-admin     | useruser11  |
    | Django admin route | hon-admin     | useruser11  |
-  
 
-# 4. Supplementary information about the project
-
-1.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them
    
-2.  The app does use other Bootstrap libraries for collapsible task as shown
+3.  The app does use other Bootstrap libraries for collapsible task as shown
   ```js
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
@@ -248,28 +256,21 @@ B) Admin Route:
 
    ![failure](./eCoffee/static/eCoffee/demo/failure_transaction.png)
 
-5. Other packages for deployment purposes
-   ```python   
-   pip install python-dotenv
-   ```
+
 # 6. Agile User Stories:
 1. As a visitor, I can surf the website and look for products that I want
 2. As a registered user, I can
    - Save items in my cart for future purchase.
    - Remove unwanted items from my cart
    - Add items to my cart
-   - View all items in my cart before and after completing a transaction
-   - Conduct online transactions
-   - Contact sales representatives via email for any complaints
-   - Interact with the chatbot to check the status of my current order
+   - Make online transactions
+   - View all items in my cart before and after completing a transaction   
    - Review my purchase history
-   - Write product reviews
-Indicate preferences by liking or disliking a product.
-1. As an admin person or a general manager, I can
-    - Access and review all current registered users' purchase histories and account information (excluding passwords)
-   - View all available products
+   - Indicate preferences by liking or disliking a product
+3. As an admin person or a general manager, I can
+   - Access and review all current registered users' purchase history and account information (excluding passwords)
    - Perform all CRUD (Create, Read, Update, Delete) operations on products
 
 # 7. Constraints:
-1. The implementation of the `like` icon in product_details.html is currently not fully effective in handling multiple clicks on a particular product. To revert the like icon to its original state, users may need to refresh the page.
-2. The author of the project does not implement a 'forgot password' feature. In case users encounter this situation, they are advised to contact the Django admin person for further instructions.
+1. The implementation of the `like` icon in product_details.html is currently not fully effective in handling multiple clicks on a particular product. To revert the like icon to its original state, users may need to refresh the page
+2. The project does not contain nor implement a 'forgot password' feature. In case users encounter this situation, they are advised to contact the Django admin person for further instructions
