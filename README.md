@@ -15,7 +15,7 @@
 
    The project’s complexity is evident through the following advanced features and implementations:
    1. Sales Reporting: The website includes functionality to generate detailed sales reports, accessible through the admin dashboard. This feature leverages data aggregation and visualization techniques to provide insights into sales performance.
-   2. User Profiles and Orders Management: The site allows users to manage their profiles and view all past orders, integrating complex querying and data retrieval processes.
+   2. User Profiles and Orders Management: The site allows users to view all past orders, integrating complex querying and data retrieval processes.
    3. Custom User Authentication: Implementation of a custom user authentication system using AbstractUser, enhancing security and allowing for extended user functionalities.
    4. Cart and Order Management: The project includes comprehensive cart and order management systems, enabling users to add items to their cart, adjust quantities, and proceed to checkout seamlessly.
    5. Responsive Design: The frontend is designed to be fully responsive with Bootstrap support features, ensuring a smooth user experience across different screen sizes.
@@ -59,19 +59,22 @@ A) User Route:
 5. `success_transaction.html`
      - Displayed a success transaction message and allowed user to go back to HomePage
 6. `failure_transaction.html`
-7.   - Displayed a reason for a failure transaction
+     - Displayed a reason for a failure transaction
    
-8. `product_details.html`
+7. `product_details.html`
      - Showed the product information in great details
      - Allowed user to add the item; increase, decrease the number of the particular item; or remove all of them at once
-9.  `profile.html`
+8.  `profile.html`
      -  Mainly displayed the info all of the items and that have been purchased based on `order_id` encompassing amount paid for each order
     
-B) Admin Route:    
-1.  `admin_products.html` 
+B) Admin Route: 
+
+1. `main_dashboard.html`
+      - contains all sections of the admin route encompassing admin dashboard, admin products and admin user pages for convenient navigation
+2.  `admin_products.html` 
       - displayed all current products encompassing the CRUD operations 
       - added Pagination functionality at the end of the page
-2.  `admin_user.html` 
+3.  `admin_user.html` 
       - showed all registered users excluding the admin person
 
 ### py:
@@ -269,3 +272,4 @@ Indicate preferences by liking or disliking a product.
 
 # 7. Constraints:
 1. The implementation of the `like` icon in product_details.html is currently not fully effective in handling multiple clicks on a particular product. To revert the like icon to its original state, users may need to refresh the page.
+2. The author of the project does not implement a 'forgot password' feature. In case users encounter this situation, they are advised to contact the Django admin person for further instructions.
