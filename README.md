@@ -1,5 +1,5 @@
 # 1. Distinctiveness and Complexity
-**Distinctiveness:**
+## **Distinctiveness:**
 
    This project is an e-commerce website dedicated to selling coffee online, which allows registered users to make purchases via Stripe payment. The distinctiveness of this website is demonstrated through the integration of various comprehensive features that go beyond basic e-commerce functionalities:
 
@@ -9,7 +9,10 @@
       - Stripe Payment Integration: Secure and reliable payment processing through Stripe, enhancing user trust and transaction safety.
       - User Purchase History: Registered users can view their purchase history, providing a personalized shopping experience.
       - Admin Dashboard: A robust admin interface that allows administrators to manage products, view sales data, and generate reports.
-**Complexity:**
+  
+## **Complexity:**
+
+
    The project’s complexity is evident through the following advanced features and implementations:
    1. Sales Reporting: The website includes functionality to generate detailed sales reports, accessible through the admin dashboard. This feature leverages data aggregation and visualization techniques to provide insights into sales performance.
    2. User Profiles and Orders Management: The site allows users to manage their profiles and view all past orders, integrating complex querying and data retrieval processes.
@@ -19,27 +22,60 @@
    
 # 2. File Contents: .html, .py, .js Extensions
 
-__**html:**__
+### html:
 
 A) User Route:
+
+
+0. `layout.html`:
+   
+     - Template Inheritance: It sets up blocks that other templates can inherit using {% extends "eCoffee/layout.html" %}. This allows consistent structure and styling across multiple pages
+     - Navigation Bar: Includes a navigation bar that provides links to various routes:
+         - eCoffee: Likely the homepage or main section of the website
+         - Login: Link to the login page for user authentication
+         - Register: Link to the registration page for new users
+         - Profile: Link to the user's profile page for managing personal information
+         - Cart Icon: Displays an icon associated with the user's cart, showing the total number of items currently in the cart. This allows quick access and visibility of cart contents
+  
 1. `index.html`   
+     - displayed the intro. page of the eCoffee website
+
 2. `home_products.html` 
-     - displayed all products currently in the system
-     - added a checkbox functionality to filter out the products
+     - Displayed all products currently in the system
+     - Added a checkbox functionality to filter out the products
+     - Inluding the pagination functionality at the end of the page
 3. `cart.html`
+     - Displaying Selected Items: It lists all selected items from the user's cart, allowing them to increase, decrease quantities, or remove items entirely
+     - Dynamic Updates: Based on user interactions (increasing, decreasing quantities, or removing items), the page dynamically updates the sub-total, taxes, and total amounts to reflect these changes
+     - Checkout Button: It provides a prominent "Continue to Checkout" button, enabling users to proceed to payment services, indicating readiness to complete their purchase
 4. `create_checkout_session.html`
+     - The file includes the `script` tag used to initiate the process for a user to checkout and make a payment for their selected items. The tag also triggered the Stripe template sheet for payment
+     - Session parameters contain
+         - Line items: Products being purchased
+         - Payment details: Amount to be charged, currency, total items in cart
+         - Success and failure URLs directions 
+     - Return Session ID: Sends back the session ID or URL to the client-side, typically as a JSON response
+   
 5. `success_transaction.html`
+     - Displayed a success transaction message and allowed user to go back to HomePage
 6. `failure_transaction.html`
-7. 
+7.   - Displayed a reason for a failure transaction
+   
 8. `product_details.html`
+     - Showed the product information in great details
+     - Allowed user to add the item; increase, decrease the number of the particular item; or remove all of them at once
 9.  `profile.html`
+     -  Mainly displayed the info all of the items and that have been purchased based on `order_id` encompassing amount paid for each order
+    
 B) Admin Route:    
 1.  `admin_products.html` 
       - displayed all current products encompassing the CRUD operations 
       - added Pagination functionality at the end of the page
-2.  `admin_user.html` showed all registered users excluding the admin person
+2.  `admin_user.html` 
+      - showed all registered users excluding the admin person
 
-__**py:**__
+### py:
+
 1. `admin.py`:
       - This file registers the `User, Product, Cart, CartItem, Like, and Order` models with the Django admin site. As a result, these models can be managed via the Django admin interface, allowing administrators to view, add, modify, and delete instances of these models through a web-based interface.
 2. `context_processors.py`
@@ -70,28 +106,28 @@ __**py:**__
   
    |       url                 | description                                                         | 
    |     --------              | ----------                                                          | 
-   |         ''                | Points to views.index for the root URL, typically the homepage       | 
-   | "accounts/login/"         | Links to views.login_view for user login functionality        |
-   | "logout"                  | Connects to views.logout_view for user logout        | 
+   |         ''                | Points to `views.index` for the root URL, typically the homepage       | 
+   | "accounts/login/"         | Links to `views.login_view` for user login functionality        |
+   | "logout"                  | Connects to `views.logout_view` for user logout        | 
    | "register"                |  Routes to `views.register` for user registration |
-   | "coffee_admin"            |Directs to views.main_dashboard for the main administrative dashboard|
-   | "coffee_admin/products"   |Maps to views.admin_products for managing products in the admin dashboard|
-   | "get_product/<int:product_id>"|Fetches a specific product using views.get_product based on its ID|
-   | "coffee_admin/users"      |Points to views.admin_users for viewing user accounts in the admin dashboard|
+   | "coffee_admin"            |Directs to `views.main_dashboard` for the main administrative dashboard|
+   | "coffee_admin/products"   |Maps to `views.admin_products` for managing products in the admin dashboard|
+   | "get_product/<int:product_id>"|Fetches a specific product using `views.get_product` based on its ID|
+   | "coffee_admin/users"      |Points to `views.admin_users` for viewing user accounts in the admin dashboard|
    | "home_products"           |Points to the products page                   |
-   | "delete_product"          |Routes to views.delete_product for deleting a product|
-   | "product_details/<int:product_id>" | Shows details of a specific product using views.product_details|
-   | "save_product"            | Connects to views.save_product for saving product details|
-   | "cart_items"              | Links to views.cart_items for managing items in the shopping cart|
-   | "cart/<int:product_id>"   | Adds a product to the cart using views.add_to_cart based on its ID|
-   | "cart_items/<int:item_id>"|Deletes an item from the cart using views.cart_delete_item based on its ID |
-   |"update_cart_item/<int:product_id>" |Updates the quantity of an item in the cart using views.update_cart_item based on its ID|
-   | "create_checkout_session/"| Initiates a checkout session using views.create_checkout_session|
-   |"success_transaction/" |Displays a success message for a completed transaction using views.success_transaction |
-   | "failure_transaction/"| Displays a failure message for a failed transaction using views.failure_transaction|
-   | "profile/<int:user_id>"| Shows the profile of a user using views.profile based on their ID|
-   | "likes/<int:product_id>"| Handles toggling of product likes using views.toggle_like based on the product's ID|
-   |"webhook/"                | Handles webhook events from Stripe using views.stripe_webhook|
+   | "delete_product"          |Routes to `views.delete_product` for deleting a product|
+   | "product_details/<int:product_id>" | Shows details of a specific product using `views.product_details`|
+   | "save_product"            | Connects to `views.save_product` for saving product details|
+   | "cart_items"              | Links to `views.cart_items` for managing items in the shopping cart|
+   | "cart/<int:product_id>"   | Adds a product to the cart using `views.add_to_cart` based on its ID|
+   | "cart_items/<int:item_id>"|Deletes an item from the cart using `views.cart_delete_item` based on its ID |
+   |"update_cart_item/<int:product_id>" |Updates the quantity of an item in the cart using `views.update_cart_item` based on its ID|
+   | "create_checkout_session/"| Initiates a checkout session using `views.create_checkout_session`|
+   |"success_transaction/" |Displays a success message for a completed transaction using `views.success_transaction` |
+   | "failure_transaction/"| Displays a failure message for a failed transaction using `views.failure_transaction`|
+   | "profile/<int:user_id>"| Shows the profile of a user using `views.profile` based on their ID|
+   | "likes/<int:product_id>"| Handles toggling of product likes using `views.toggle_like` based on the product's ID|
+   |"webhook/"                | Handles webhook events from Stripe using `views.stripe_webhook`|
 1. `views.py`
       - The views.py file in a Django application serves as the backbone, defining various view functions that handle different aspects of the application's functionality. Each view function is responsible for processing requests, interacting with the database through models, and rendering appropriate responses or templates to users. All functions are defined as follows:
   
@@ -126,7 +162,10 @@ __**py:**__
    |**Webhook Terminal**|`stripe_webhook`|Handles webhook events from Stripe for payment notifications and updates|
 
 
-__**js:**__
+### js:
+
+
+
 1. `index.js`
       - This script is responsible for handling the `like` functionality on an e-commerce website. When a user clicks a like button for a product, it sends a request to the server Django to update the `like` status. Depending on the response, it updates the UI to reflect whether the product is liked or not by toggling a liked class on the corresponding `heart` icon. The script includes error handling to log any issues that occur during the process.
 # 3. How to run your application
@@ -161,7 +200,8 @@ __**js:**__
 
 # 4. Supplementary information about the project
 
-1.  The email address the user used to register for this website is considered the main vehicle used for communication with this user by the admin or a sales person
+1.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them
+   
 2.  The app does use other Bootstrap libraries for collapsible task as shown
   ```js
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
