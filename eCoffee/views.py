@@ -326,12 +326,12 @@ def profile(request, user_id):
     orders_with_items = [{}]
 
     my_orders = Order.objects.filter(cart=my_cart, payment_status=True)
+    my_orders = my_orders.order_by('-placed_order_at')
     for order in my_orders:
         order_items = []        
         cart_items = CartItem.objects.filter(cart=order.cart)       
        
-        logging.debug(f'Cart items for order {order.id}: {list(cart_items)}')
-    
+        logging.debug(f'Cart items for order {order.id}: {list(cart_items)}')    
         
         for item in cart_items:
             logging.debug(f'Product: {item.product.description}, Quantity Purchased: {item.quantity_purchased}')
@@ -348,6 +348,7 @@ def profile(request, user_id):
         orders_with_items.append({
             'order_id': order.id,
             'order_amount':order.amount,
+            'placed_order_at':order.placed_order_at,
             'items': order_items
         })
 
@@ -494,11 +495,11 @@ def handle_payment_intent_succeeded(payment_intent):
             
             # cart_items_to_save=[]
             cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
-            
+            items=[]
             for item in cart_items:
                 items_to_save=CartItem.objects.create(cart=cart,product=item.product,quantity_purchased=item.quantity) 
-                
-                items_to_save.save()
+            
+                items.append(items_to_save)
             
             order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
@@ -514,9 +515,8 @@ def handle_payment_intent_succeeded(payment_intent):
                 order.amount = amount
                 order.save()
              
-            cart=None    
-            user_cart_items=cart.cart_items.all()
-            user_cart_items.delete()
+             # Delete all cart items associated with the cart
+            cart.cart_items.all().delete()
             
             logging.debug(f'SUCCESS cart_items deleted')
             logging.debug(f'Order processed for successful payment: {order}')       
