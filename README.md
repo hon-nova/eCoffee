@@ -86,7 +86,9 @@ B) Admin Route:
 ### py:
 
 1. `admin.py`:
-      - This file registers the `User, Product, Cart, CartItem, Like, Order, and OrderItem` models with the Django admin site. As a result, these models can be managed via the Django admin interface, allowing administrators to view, add, modify, and delete instances of these models through a web-based interface.
+      - This file registers the `User, Product, Cart, CartItem, Like, Order,OrderItem, and OrderAdmin` models with the Django admin site. As a result, these models can be managed via the Django admin interface, allowing administrators to view, add, modify, and delete instances of these models through a web-based interface
+      - The `OrderAdmin` class is created in this file that is used to manage how the model `Order` is diplayed and customised in the Django admin interface. The fields selected are `'cart', 'payment_status', 'placed_order_at', 'payment_intent_id', 'amount'`
+  
 2. `context_processors.py`
       - Defines a context processor function `send_cart_length` that provides cart-related information to all **templates**. Specifically, it adds the total number of items in the cart (cart_length) and the total price of the items in the cart (total) to the context. This function is registered in the settings.py as follows
   
@@ -97,10 +99,14 @@ B) Admin Route:
             ],
       ```
 3. `forms.py`
-      - The forms.py file defines a ProductForm class that inherits from forms.ModelForm. This form is used to create or update instances of the Product model.
+      - The forms.py file defines a:
+         -  `ProductForm`class that inherits from forms.ModelForm. This form is used to create or update instances of the Product model
 
-      - The Meta class within ProductForm specifies that the form is based on the Product model.
-      The form includes the fields `description, category, price, quantity, and photo_url` from the `Product` model. The Django form itself serves as a `Constructor` of the `Product` class.
+         - The Meta class within ProductForm specifies that the form is based on the Product model. The form includes the fields `description, category, price, quantity, and photo_url` from the `Product` model. The Django form itself serves as a `Constructor` of the `Product` class
+
+         - `OrderForm` class is used to create a custom form for the Django admin interface specifically to allow for a customizable placed_order_at field for testing sales report purposes
+         - The Meta class includes all fields `(fields = '__all__')` from the Order model
+  
 4. `models.py`
 
       - `User`: Extends AbstractUser with no additional fields
@@ -138,7 +144,10 @@ B) Admin Route:
    | "profile/<int:user_id>"| Shows the profile of a user using `views.profile` based on their ID|
    | "likes/<int:product_id>"| Handles toggling of product likes using `views.toggle_like` based on the product's ID|
    |"webhook/"                | Handles webhook events from Stripe using `views.stripe_webhook`|
-1. `views.py`
+   |"api/sales-data/"|Handles sending data from Django backend to the frontend event using `views.sales_data`|
+
+
+6. `views.py`
       - The views.py file in a Django application serves as the backbone, defining various view functions that handle different aspects of the application's functionality. Each view function is responsible for processing requests, interacting with the database through models, and rendering appropriate responses or templates to users. All functions are defined as follows:
   
   
@@ -171,6 +180,9 @@ B) Admin Route:
       |**Profile View**|`profile`|Renders and manages user history purchases information|
       |**Like View**|`toggle_like`|Handles toggling of product likes by users|
       |**Webhook Terminal**|`stripe_webhook`|Handles webhook events from Stripe for payment notifications and updates|
+      |**Sales Report**||
+      |Get Monthly Sales|`get_monthly_sales`|Returns a list of dict representing the sales data grouped by month|
+      |Sales Data|`sales_data`|Sends a `JsonResponse` data object to the frontend|
 
 
 ### js:
@@ -178,7 +190,12 @@ B) Admin Route:
 
 
 1. `index.js`
-      - This script is responsible for handling the `like` functionality on an e-commerce website. When a user clicks a like button for a product, it sends a request to the server Django to update the `like` status. Depending on the response, it updates the UI to reflect whether the product is liked or not by toggling a liked class on the corresponding `heart` icon. The script includes error handling to log any issues that occur during the process.
+      - There are a few functionalities:
+          - First, one script is responsible for handling the `like` functionality on an e-commerce website. When a user clicks a like button for a product, it sends a request to the server Django to update the `like` status. Depending on the response, it updates the UI to reflect whether the product is liked or not by toggling a liked class on the corresponding `heart` icon. The script includes error handling to log any issues that occur during the process.
+          - Second, a function call `getSalesData()` that is used for:
+            - fetch monthly sales data from `/api/sales-data` backend Django
+            - rendered a Chart.js bar chart (myChart) on main_dashboard.html using fetched data
+            - used JavaScript to dynamically update the chart with monthly sales data
 # 3. How to run your application
 1. Create a virtual environment named as final_env: 
    ```python
@@ -194,9 +211,14 @@ B) Admin Route:
    ```
 4. Start the Django development server by executing the command:
    ```python
-   $ python3 manage.py runserver
+   $ python3 manage.py runserver 8000
    ```
-5. Use `pip` to create a requirements.txt file: 
+5. After making changes with database in models.py, update the database by running:
+   ```python
+   $ python3 manage.py makemigrations eCoffee
+   $ python3 manage.py migrate
+   ```
+6. Use `pip` to create a requirements.txt file: 
    ```python
    $ pip freeze > requirements.txt
    ```
@@ -229,40 +251,36 @@ B) Admin Route:
   ```   
 # 5. Python Libraries used:
 
- ```python
-   pip install plotly
-   pandas
-   numPy
-```
-1. Install Stripe
-   ```python
-   pip install stripe
-   ```
-2. Install Stripe CLI globally
-   ```python
-   $ brew install stripe/stripe-cli/stripe  
-   ```
-3. Run your terminal shell to get the Stripe webhook secret(s)
-   ```python
-    $ stripe login
-    $ stripe listen --forward-to localhost:8080/webhook/
-    $ stripe listen --forward-to localhost:8080/success_transaction/
-    $ stripe listen --forward-to localhost:8080/failure_transaction/
-   ```
-4. Stripe Event Packages
-   ```
-   payment_intent.succeeded
-   payment_intent.payment_failed
-   ```
-   **__Use Cases__**
 
-   **success**
+   1. Install Stripe
+      ```python
+      pip install stripe
+      ```
+   2. Install Stripe CLI globally
+      ```python
+      $ brew install stripe/stripe-cli/stripe  
+      ```
+   3. Run your terminal shell to get the Stripe webhook secret(s)
+      ```python
+      $ stripe login
+      $ stripe listen --forward-to localhost:8000/webhook/
+      $ stripe listen --forward-to localhost:8000/success_transaction/
+      $ stripe listen --forward-to localhost:8000/failure_transaction/
+      ```
+   4. Stripe Event Packages
+      ```
+      payment_intent.succeeded
+      payment_intent.payment_failed
+      ```
+      **__Use Cases__**
 
-   ![success](./eCoffee/static/eCoffee/demo/success_transaction.png)
+      **success**
 
-   **failure**
+      ![success](./eCoffee/static/eCoffee/demo/success_transaction.png)
 
-   ![failure](./eCoffee/static/eCoffee/demo/failure_transaction.png)
+      **failure**
+
+      ![failure](./eCoffee/static/eCoffee/demo/failure_transaction.png)
 
 
 # 6. Agile User Stories:
@@ -276,9 +294,17 @@ B) Admin Route:
    - Review my purchase history
    - Indicate preferences by liking or disliking a product
 3. As an admin person or a general manager, I can
+   - View the visual sales report
    - Access and review all current registered users' purchase history and account information (excluding passwords)
    - Perform all CRUD (Create, Read, Update, Delete) operations on products
 
-# 7. Constraints:
+# 7. Tech Stack:
+   0. JavaScript
+   1. The DOM
+   2. Django's ORM
+   3. Django Rest Framework (DRF) for APIs
+   4. Sqlite3
+
+# 8. Constraints:
 1. The implementation of the `like` icon in product_details.html is currently not fully effective in handling multiple clicks on a particular product. To revert the like icon to its original state, users may need to refresh the page
 2. The project does not contain nor implement a 'forgot password' feature. In case users encounter this situation, they are advised to contact the Django admin person for further instructions
