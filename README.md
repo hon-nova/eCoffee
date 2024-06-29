@@ -144,7 +144,7 @@ B) Admin Route:
    | "profile/<int:user_id>"| Shows the profile of a user using `views.profile` based on their ID|
    | "likes/<int:product_id>"| Handles toggling of product likes using `views.toggle_like` based on the product's ID|
    |"webhook/"                | Handles webhook events from Stripe using `views.stripe_webhook`|
-   |"api/sales-data/"|Handles sending data from Django backend to the froontend event using `views.sales_data`|
+   |"api/sales-data/"|Handles sending data from Django backend to the frontend event using `views.sales_data`|
 
 
 6. `views.py`
@@ -251,40 +251,36 @@ B) Admin Route:
   ```   
 # 5. Python Libraries used:
 
- ```python
-   pip install plotly
-   pandas
-   numPy
-```
-1. Install Stripe
-   ```python
-   pip install stripe
-   ```
-2. Install Stripe CLI globally
-   ```python
-   $ brew install stripe/stripe-cli/stripe  
-   ```
-3. Run your terminal shell to get the Stripe webhook secret(s)
-   ```python
-    $ stripe login
-    $ stripe listen --forward-to localhost:8000/webhook/
-    $ stripe listen --forward-to localhost:8000/success_transaction/
-    $ stripe listen --forward-to localhost:8000/failure_transaction/
-   ```
-4. Stripe Event Packages
-   ```
-   payment_intent.succeeded
-   payment_intent.payment_failed
-   ```
-   **__Use Cases__**
 
-   **success**
+   1. Install Stripe
+      ```python
+      pip install stripe
+      ```
+   2. Install Stripe CLI globally
+      ```python
+      $ brew install stripe/stripe-cli/stripe  
+      ```
+   3. Run your terminal shell to get the Stripe webhook secret(s)
+      ```python
+      $ stripe login
+      $ stripe listen --forward-to localhost:8000/webhook/
+      $ stripe listen --forward-to localhost:8000/success_transaction/
+      $ stripe listen --forward-to localhost:8000/failure_transaction/
+      ```
+   4. Stripe Event Packages
+      ```
+      payment_intent.succeeded
+      payment_intent.payment_failed
+      ```
+      **__Use Cases__**
 
-   ![success](./eCoffee/static/eCoffee/demo/success_transaction.png)
+      **success**
 
-   **failure**
+      ![success](./eCoffee/static/eCoffee/demo/success_transaction.png)
 
-   ![failure](./eCoffee/static/eCoffee/demo/failure_transaction.png)
+      **failure**
+
+      ![failure](./eCoffee/static/eCoffee/demo/failure_transaction.png)
 
 
 # 6. Agile User Stories:
@@ -298,7 +294,7 @@ B) Admin Route:
    - Review my purchase history
    - Indicate preferences by liking or disliking a product
 3. As an admin person or a general manager, I can
-   - View and interact with the Dashboard with sales report
+   - View the visual sales report
    - Access and review all current registered users' purchase history and account information (excluding passwords)
    - Perform all CRUD (Create, Read, Update, Delete) operations on products
 
