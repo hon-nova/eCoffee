@@ -23,6 +23,7 @@ urlpatterns =[
    path('failure_transaction/',views.failure_transaction,name="failure_transaction"),
    path('profile/<int:user_id>',views.profile,name="profile"),
    path('likes/<int:product_id>', views.toggle_like, name="likes"),
-   path('webhook/',views.stripe_webhook, name="stripe_webhook")
+   path('webhook/',views.stripe_webhook, name="stripe_webhook"),
+   path('api/sales-data',views.sales_data,name="sales_data")
    
 ]

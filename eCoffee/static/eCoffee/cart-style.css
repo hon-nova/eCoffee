@@ -2,7 +2,7 @@ body {
    box-sizing: border-box;
 }
 .cart-container {
-   border:5px solid orange;
+   /* border:5px solid orange; */
    padding:auto 15px;
    margin:auto 15px;
    max-width: 100%;
@@ -23,7 +23,6 @@ body {
    align-items: center;  
    justify-content: center;
    border:1px solid grey;
-   /* border:none; */
    border-radius: 10px; 
    background-color: white;
 }

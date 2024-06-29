@@ -4,7 +4,7 @@
 {%block body %}
 
 <div class="index-container">
-   <h1>Hello eCoffee!</h1>
+   <h1 style="color:brown;">Hello eCoffee!</h1>
    <div class="row">
       <div class="col-md-6" style="display:flex;margin:auto;justify-content:center;align-items:center;background-image: url('https://previews.123rf.com/images/lainen/lainen1702/lainen170200397/72291596-chilling-and-relaxing-in-vacation-at-guest-house-in-countryside-a-scene-of-balcony-coffee-table-and.jpg');background-size: cover;background-position: center;">
         {% comment %} <img src="{% static 'eCoffee/images/gif.webp' %}" alt="gif"/> {% endcomment %}
@@ -21,15 +21,60 @@
        
       </div>
       <div class="col-md-6">
-         <img src="{% static 'eCoffee/images/coffee-homepage.jpg' %}" alt="coffee" width="700" heigth="auto"/>
-         <!-- Inject Coffee Bags Animation -->
-   
+         <img src="{% static 'eCoffee/images/coffee-homepage.jpg' %}" alt="coffee" width="680" heigth="auto"/>
       </div>
-
    </div>
    <div class="divider"></div>
-   <div class="d-flex justify-content-center"><a href="{% url 'products' %}">View Products</a></div>
-    
+   <div class="my-3 view-coffee"><a href="{% url 'products' %}">View Products</a></div>
+   <div class="row mb-3">
+    <div class="col-md-6">
+        <img src="https://cdn.pixabay.com/photo/2020/06/02/19/37/coffee-5252372_1280.jpg" alt="coffee" width="600" height="700"/>
+    </div>
+    <div class="col-md-5 d-flex justify-content-center align-items-center coffee-me">
+        <p class="mr-1">When you're brewing to install some packages on your Mac Pro, remember to brew a cup of fresh coffee first—because coffee fuels both code and creativity!</p>
+    </div>
+   </div>
+  
+   <div class="row mb-3">
+    <div class="col-md-5 d-flex justify-content-center align-items-center coffee-me">
+        <p class="ml-2">Coffee: because without it, even Django developers might accidentally create a site that doesn't support dark mode!</p>
+    </div>
+    <div class="col-md-6">
+        <img src="https://cdn.pixabay.com/photo/2020/08/17/14/37/coffee-5495609_1280.jpg" width="750" height="700" alt="coffee2"/>
+    </div>
+   </div>
+   <div class="divider"></div>
+   <div class="my-3 faq">Frequent Asked Questions</a></div>
+   {% comment %} FAQ {% endcomment %}
+   {% if faq %}
+    <div class="row mb-3" style="max-width:1000px;margin:auto;">
+        {% for object in faq %}
+            <div class="col-md-6">
+                <div class="accordion" id="accordionExample{{ forloop.counter }}">
+                    <div class="card">
+                        <div class="card-header" id="heading{{ forloop.counter }}">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapse{{ forloop.counter }}" aria-expanded="true" aria-controls="collapse{{ forloop.counter }}">
+                                    {{ object.question }}
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="collapse{{ forloop.counter }}" class="collapse" aria-labelledby="heading{{ forloop.counter }}" data-parent="#accordionExample{{ forloop.counter }}">
+                            <div class="card-body">
+                                {{ object.answer }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% if forloop.counter|divisibleby:2 %}
+            </div><div class="row mb-3">
+        {% endif %}
+    {% endfor %}
+    </div>
+{% endif %}
+
+  {% comment %} end FAQ {% endcomment %}
     <div class="footer-section">
         {% if footer_data %}
         <div class="row">

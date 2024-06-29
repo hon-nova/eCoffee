@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
 import logging
-from .models import User,Product,CartItem,Cart,Like, Order
+from .models import User,Product,CartItem,Cart,Like, Order, OrderItem
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from decimal import Decimal
@@ -19,10 +19,9 @@ import os
 from dotenv import load_dotenv
 from django.conf import settings
 
-# Load environment variables from .env file
+
 load_dotenv()
 
-# Stripe keys
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
@@ -37,9 +36,15 @@ footer_data = [
         ["Payment Products", "Rewards Mastercard", "Shop with Points", "Reload Your Balance", "Currency Converter", "Gift Cards", "Cash"],
         ["Let Us Help You", "Shipping Rates & Policies", "Prime Card Holders", "Returns Are Easy", "Manage your Content and Devices", "Recalls and Product Safety Alerts", "Customer Service"]
     ]
+faq=[{"question":"How do I purchase coffee from eCoffee online?","answer":"To purchase coffee from eCoffee, simply browse our product selection, add your desired items to your cart, and proceed to checkout. You will need to create an account or log in if you already have one."},    
+    {"question":"Does eCoffee offer discounts or promotional offers?","answer":"Currently, eCoffee does not offer discounts or promotional offers. We are exploring options to provide benefits to our patrons in the future. Stay tuned for updates on any upcoming promotions or special offers."},]
+
+
 def index(request):
     # logging.debug('index got invoked::')
-    return render(request,'eCoffee/index.html',{'footer_data':footer_data})
+    for object in faq:
+        logging.debug(f'{object["question"]}: {object["answer"]}')
+    return render(request,'eCoffee/index.html',{'footer_data':footer_data,'faq':faq})
 
 def login_view(request):
     if request.method == "POST":
@@ -99,6 +104,23 @@ def register(request):
     
 def is_admin(user):
     return user.is_authenticated and user.is_staff
+
+
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from datetime import datetime
+
+
+def get_monthly_sales():       
+    monthly_sales = Order.objects.annotate(month=TruncMonth('placed_order_at')).values('month').annotate(total=Sum('amount')).order_by('month')    
+    
+    return list(monthly_sales)
+
+def sales_data(request):
+    
+    monthly_sales = get_monthly_sales()
+    logging.debug(f'monthly_sales::{monthly_sales}')
+    return JsonResponse(monthly_sales, safe=False)
 
 @user_passes_test(is_admin)
 def main_dashboard(request):
@@ -321,21 +343,23 @@ def product_details(request, product_id):
 
 def profile(request, user_id):
     logging.debug('Profile got triggered')
-    my_cart = get_object_or_404(Cart, user__id=user_id)
     
-    orders_with_items = [{}]
+    my_cart = get_object_or_404(Cart, user__id=user_id)
+    '''
+    WORK ON THIS TOMORROW
+    identity= get_object_or_404(User,user__id=user_id)
+    # logging.debug(f'who am I::{identity.username}')
+    '''
+    orders_with_items = []
 
-    my_orders = Order.objects.filter(cart=my_cart, payment_status=True)
-    # my_orders = my_orders.order_by('-placed_order_at')
+    my_orders = Order.objects.filter(cart=my_cart, payment_status=True).order_by('-placed_order_at')
+    
     for order in my_orders:
-        order_items = []        
-        # cart_items = CartItem.objects.filter(cart=order.cart)  
-        cart_items= order.cart.cart_items.all()     
+        order_items = []
        
-        logging.debug(f'Cart items for order {order.id}: {list(cart_items)}')    
+        order_items_queryset = OrderItem.objects.filter(order=order)
         
-        for item in cart_items:
-            logging.debug(f'Product: {item.product.description}, Quantity Purchased: {item.quantity_purchased}')
+        for item in order_items_queryset:
             product_details = {
                 'description': item.product.description,
                 'category': item.product.category,
@@ -344,18 +368,18 @@ def profile(request, user_id):
                 'photo_url': item.product.photo_url
             }
             order_items.append(product_details)
-            # logging.debug(f'Product details added: {product_details}')
         
         orders_with_items.append({
             'order_id': order.id,
-            'order_amount':order.amount,
-            'placed_order_at':order.placed_order_at,
+            'order_amount': order.amount,
+            'placed_order_at': order.placed_order_at,
             'items': order_items
         })
-
+    
     context = {
         'orders_with_items': orders_with_items,
     }
+    
     return render(request, 'eCoffee/profile.html', context)
 
 @login_required
@@ -493,34 +517,27 @@ def handle_payment_intent_succeeded(payment_intent):
             
             order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
-            defaults={'cart':cart,'amount': amount, 'payment_status': True})
-            
-            '''
-            logging.debug(f'SUCCESS order???::{order}')
-            logging.debug(f'SUCCESS created???::{created}') 
-            '''          
+            defaults={'cart':cart,'amount': amount, 'payment_status': True})        
 
             if not created:
                 order.payment_status = True
                 order.amount = amount
                 order.save()
                 
-            # cart_items_to_save=[]
-            '''For saving cart items into db''' 
-            cart_items_user=cart.cart_items.all()  
-            cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
-            items=[]
-            for item in cart_items:
-                items_to_save=CartItem.objects.create(cart=cart,product=item.product,quantity_purchased=item.quantity) 
-            
-                items.append(items_to_save)
-             
-             # Delete all cart items associated with the cart
+            # use OrderItem
+            cart_items = cart.cart_items.all()
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity_purchased=cart_item.quantity_purchased
+                )
+            # Clear the cart after the success transaction
             cart.cart_items.all().delete()
             
-            logging.debug(f'SUCCESS cart_items deleted')
-            logging.debug(f'Order processed for successful payment: {order}')       
-    
+            logging.debug('SUCCESS: Cart items deleted')
+            logging.debug(f'Order processed for successful payment: {order}')  
+
     except KeyError as e:
         logging.error(f'KeyError: {e} in payment_intent')
     

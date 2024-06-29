@@ -10,16 +10,17 @@
          <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
          <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
          <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+         {% comment %} chart.js {% endcomment %}
+         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+         
          
         <link href="{% static 'eCoffee/style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/layout-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/index-style.css' %}" rel="stylesheet">
         <link href="{% static 'eCoffee/admin-style.css' %}" rel="stylesheet"> 
-        <link href="{% static 'eCoffee/admin-products-style.css' %}" rel="stylesheet"> 
-        {%block script%}{%endblock%}
+        <link href="{% static 'eCoffee/admin-products-style.css' %}" rel="stylesheet">        
     </head>
     <body>
-
 <div class="admin-container">
    {% if request.user.is_authenticated%}
    <div class="d-flex justify-content-between"><h1>Admin: {{user.username}}</h1> 
@@ -44,6 +45,12 @@
       <div class="main col-md-10" style="background-color:whitesmoke;"> 
          {%if dashboard %}
          {{ dashboard }}
+         {% comment %} Place the SALES REPORT and SELECT OPTION HERE {% endcomment %}
+         <canvas id="myChart" width="700" height="400"></canvas>
+
+
+         {% comment %} end SALES REPORT AND SELECT OPTION {% endcomment %}
+        
          {%endif%}
 
          {%block body%}
@@ -52,4 +59,8 @@
       </div>     
    </div>   
 <div>
+   {%block script%}
+   
+   <script src="{%  static 'eCoffee/index.js' %}"></script>
+   {%endblock%}
 </body>
