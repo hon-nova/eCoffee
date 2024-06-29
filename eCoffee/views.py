@@ -328,18 +328,18 @@ def profile(request, user_id):
     logging.debug('Profile got triggered')
     
     my_cart = get_object_or_404(Cart, user__id=user_id)
-    
-    # Initialize a list to store orders with their items
+    '''
+    WORK ON THIS TOMORROW
+    identity= get_object_or_404(User,user__id=user_id)
+    # logging.debug(f'who am I::{identity.username}')
+    '''
     orders_with_items = []
-    
-    # Retrieve all orders for the user's cart that have been successfully paid
+
     my_orders = Order.objects.filter(cart=my_cart, payment_status=True).order_by('-placed_order_at')
     
-    # Loop through each order to retrieve associated items
     for order in my_orders:
         order_items = []
-        
-        # Retrieve order items associated with the current order
+       
         order_items_queryset = OrderItem.objects.filter(order=order)
         
         for item in order_items_queryset:
@@ -352,7 +352,6 @@ def profile(request, user_id):
             }
             order_items.append(product_details)
         
-        # Append order details along with its items to the list
         orders_with_items.append({
             'order_id': order.id,
             'order_amount': order.amount,
@@ -360,7 +359,6 @@ def profile(request, user_id):
             'items': order_items
         })
     
-    # Prepare context to pass to the template
     context = {
         'orders_with_items': orders_with_items,
     }
@@ -502,31 +500,14 @@ def handle_payment_intent_succeeded(payment_intent):
             
             order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
-            defaults={'cart':cart,'amount': amount, 'payment_status': True})
-            
-            '''
-            logging.debug(f'SUCCESS order???::{order}')
-            logging.debug(f'SUCCESS created???::{created}') 
-            '''          
+            defaults={'cart':cart,'amount': amount, 'payment_status': True})        
 
             if not created:
                 order.payment_status = True
                 order.amount = amount
                 order.save()
                 
-            '''For saving cart items into db
-            
-            cart_items_user = cart.cart_items.all()
-            items_to_save = []
-            
-            for cart_item in cart_items_user:
-                items_to_save.append(CartItem.objects.create(
-                    cart=cart,
-                    product=cart_item.product,
-                    quantity_purchased=cart_item.quantity_purchased
-                ))
-            ''' 
-            # Move cart items to order items
+            # use OrderItem
             cart_items = cart.cart_items.all()
             for cart_item in cart_items:
                 OrderItem.objects.create(
@@ -534,9 +515,7 @@ def handle_payment_intent_succeeded(payment_intent):
                     product=cart_item.product,
                     quantity_purchased=cart_item.quantity_purchased
                 )
-
-            
-            # Clear the cart
+            # Clear the cart after the success transaction
             cart.cart_items.all().delete()
             
             logging.debug('SUCCESS: Cart items deleted')
