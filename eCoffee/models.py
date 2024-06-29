@@ -4,6 +4,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from decimal import Decimal
+from django.utils import timezone
 
 class User(AbstractUser):
     pass 
@@ -70,8 +71,8 @@ class Order(models.Model):
 
     cart=models.ForeignKey(Cart,on_delete=models.CASCADE)   
     payment_status=models.BooleanField(default=False)
-    placed_order_at=models.DateTimeField(auto_now_add=True)
     
+    placed_order_at = models.DateTimeField(default=timezone.now, null=True, blank=True)
     payment_intent_id = models.CharField(max_length=255, null=True, blank=True)
     amount=models.FloatField(default=0)  
     

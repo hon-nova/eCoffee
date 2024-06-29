@@ -105,10 +105,22 @@ def register(request):
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
+
+from django.db.models import Sum
+from django.db.models.functions import TruncMonth
+from datetime import datetime
+
+def get_monthly_sales():
+       
+    monthly_sales = Order.objects.annotate(month=TruncMonth('placed_order_at')).values('month').annotate(total=Sum('amount')).order_by('month')    
+    
+    return monthly_sales
+
 @user_passes_test(is_admin)
 def main_dashboard(request):
-    
-    return render(request,'eCoffee/main_dashboard.html',{'dashboard':'MY DASHBOARD CONTENT'})
+    monthly_sales = get_monthly_sales()
+    logging.debug(f'monthly_sales::{monthly_sales}')
+    return render(request,'eCoffee/main_dashboard.html',{'dashboard':'MY DASHBOARD CONTENT','monthly_sales':monthly_sales})
 
 @user_passes_test(is_admin)
 def admin_products(request):    
