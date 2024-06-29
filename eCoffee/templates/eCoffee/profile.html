@@ -4,7 +4,7 @@
 {%block body %}
 
 <div class="profile-container">
-   <h1>Hello and welcome to the Profile Page,</h1>
+   <h1>Profile: {{profile.username}}</h1>
    <div class="">
       {%if orders_with_items%}
       {% for order in orders_with_items %}

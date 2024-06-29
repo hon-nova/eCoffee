@@ -119,7 +119,7 @@ def get_monthly_sales():
 def sales_data(request):
     
     monthly_sales = get_monthly_sales()
-    logging.debug(f'monthly_sales::{monthly_sales}')
+    # logging.debug(f'monthly_sales::{monthly_sales}')
     return JsonResponse(monthly_sales, safe=False)
 
 @user_passes_test(is_admin)
@@ -280,9 +280,7 @@ def cart_items(request):
         taxes=tax5+tax7
         total=sum_sub_total+taxes
         cart_length=request.POST.get('cart_length')
-       
-      #   logging.debug(f'new cart_length::{cart_length}')
-      #   logging.debug(f'sum_sub_total::{sum_sub_total}')
+
         return render(request,'eCoffee/cart.html',{'items':cart_items,'sum_sub_total':sum_sub_total,'tax5':tax5,'tax7':tax7,'taxes':taxes,'total':total}) 
     else:
         return redirect('login')
@@ -344,14 +342,10 @@ def product_details(request, product_id):
 def profile(request, user_id):
     logging.debug('Profile got triggered')
     
-    my_cart = get_object_or_404(Cart, user__id=user_id)
-    '''
-    WORK ON THIS TOMORROW
-    identity= get_object_or_404(User,user__id=user_id)
-    # logging.debug(f'who am I::{identity.username}')
-    '''
+    my_cart = get_object_or_404(Cart, user__id=user_id)    
     orders_with_items = []
-
+    profile= get_object_or_404(User, id=user_id)
+    logging.debug(f'Who am I::{profile.username}')
     my_orders = Order.objects.filter(cart=my_cart, payment_status=True).order_by('-placed_order_at')
     
     for order in my_orders:
@@ -378,6 +372,7 @@ def profile(request, user_id):
     
     context = {
         'orders_with_items': orders_with_items,
+        'profile':profile
     }
     
     return render(request, 'eCoffee/profile.html', context)

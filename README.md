@@ -1,8 +1,8 @@
 # 0. Introduction
 
-   - As a coffee enthusiast, the project theme was born: the eCoffee website offers an online shopping experience. Utilizing Django classes and models, the platform integrates robust features such as user authentication, a customizable shopping cart, and secure payment processing via Stripe. Users can track their favorite coffee products. To simulate a realistic scenario, the project also includes comprehensive admin capabilities for managing inventory and users' purchase history, making it viable in the digital marketplace.
+1. As a coffee enthusiast, the project theme was born: the eCoffee website offers an online shopping experience. Utilizing Django classes and models, the platform integrates robust features such as user authentication, a customizable shopping cart, and secure payment processing via Stripe. Users can track their favorite coffee products. To simulate a realistic scenario, the project also includes comprehensive admin capabilities for managing inventory and users' purchase history, making it viable in the digital marketplace.
   
-   - I took on this project to tackle the complexities of e-commerce websites. It is crucial to create a smooth experience for users, making it easy to browse products and complete transactions. The website can generate detailed receipts and lets users check their purchase history. I'm passionate about full-stack development, and e-commerce challenges are like solving real business problems. This project highlights the importance of continually improving skills to build successful e-commerce solutions, which is my main focus in web development.
+2. I took on this project to tackle the complexities of e-commerce websites. It is crucial to create a smooth experience for users, making it easy to browse products and complete transactions. The website can generate detailed receipts and lets users check their purchase history. I'm passionate about full-stack development. Solving e-commerce challenges is like solving real business problems. This project highlights the importance of continually improving skills to build successful e-commerce solutions, which is my main focus in web development.
 
 # 1. Distinctiveness and Complexity
 ## **Distinctiveness:**
@@ -61,6 +61,7 @@ A) User Route:
          - Payment details: Amount to be charged, currency, total items in cart
          - Success and failure URLs directions 
      - Return Session ID: Sends back the session ID or URL to the client-side, typically as a JSON response
+     - There is a script tag which associates the initilization of Stripe transaction. It sets up a click handler for a checkout button, sending a POST request to create a Stripe checkout session, and then redirects the user to the Stripe Checkout page. It handles errors by logging them and redirecting to a failure page
    
 5. `success_transaction.html`
      - Displayed a success transaction message and allowed user to go back to HomePage
@@ -76,7 +77,9 @@ A) User Route:
 B) Admin Route: 
 
 1. `main_dashboard.html`
-      - contains all sections of the admin route encompassing admin dashboard, admin products and admin user pages for convenient navigation
+      - contains all sections of the admin route, encompassing admin dashboard, admin products and admin user pages for convenient navigation
+      - adds a script tag that utilizes `chart.js` for generating a sales report chart
+  
 2.  `admin_products.html` 
       - displayed all current products encompassing the CRUD operations 
       - added Pagination functionality at the end of the page
@@ -191,11 +194,11 @@ B) Admin Route:
 
 1. `index.js`
       - There are a few functionalities:
-          - First, one script is responsible for handling the `like` functionality on an e-commerce website. When a user clicks a like button for a product, it sends a request to the server Django to update the `like` status. Depending on the response, it updates the UI to reflect whether the product is liked or not by toggling a liked class on the corresponding `heart` icon. The script includes error handling to log any issues that occur during the process.
-          - Second, a function call `getSalesData()` that is used for:
-            - fetch monthly sales data from `/api/sales-data` backend Django
-            - rendered a Chart.js bar chart (myChart) on main_dashboard.html using fetched data
-            - used JavaScript to dynamically update the chart with monthly sales data
+         - First, one script is responsible for handling the `like` functionality on an e-commerce website. When a user clicks a like button for a product, it sends a request to the server Django to update the `like` status. Depending on the response, it updates the UI to reflect whether the product is liked or not by toggling a liked class on the corresponding `heart` icon. The script includes error handling to log any issues that occur during the process.
+         - Second, a function call `getSalesData()` that is used for:
+            - fetching monthly sales data from `/api/sales-data` backend Django
+            - rendering a Chart.js bar chart (myChart) on main_dashboard.html using fetched data
+            - using JavaScript to dynamically update the chart with monthly sales data
 # 3. How to run your application
 1. Create a virtual environment named as final_env: 
    ```python
@@ -230,10 +233,14 @@ B) Admin Route:
    ```python   
    $ pip install python-dotenv
    ```
+1. To validate the admin person, the library support is as follows
+   ```python
+   from django.contrib.auth.decorators import user_passes_test
+   ```
 
-1.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them
+2.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them
    
-2.  **__Applied credentials:__**<br/>
+3.  **__Applied credentials:__**<br/>
    
       
       |                    |url| username      | password    |
@@ -241,17 +248,18 @@ B) Admin Route:
       | user route         |http://localhost:8000| hon           | useruser11  |
       | admin route        |http://localhost:8000/coffee_admin| hon-admin     | useruser11  |
       | Django admin route |http://localhost:8000/admin| hon-admin     | useruser11  |
-
-   
-3.  The app does use other Bootstrap libraries for collapsible task as shown
-  ```js
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
   
-  ```   
 # 5. Python Libraries used:
+   0. Bootstrap libraries for collapsible task, `chart.js` and `Stripe` libraries
 
+   ```js
+   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+   <script src="https://js.stripe.com/v3/"></script>
+   ```   
    1. Install Stripe
       ```python
       pip install stripe
@@ -311,4 +319,3 @@ B) Admin Route:
 <hr/>
 
 # Thank you
-_June 29, 2024_
