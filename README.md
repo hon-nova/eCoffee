@@ -1,14 +1,18 @@
+# 0. Introduction
+
+   As a coffee enthusiast, the project theme was born: the eCoffee website offers an online shopping experience. Utilizing Django classes and models, the platform integrates robust features such as user authentication, a customizable shopping cart, and secure payment processing via Stripe. Users can track their favorite coffee products. To simulate a realistic scenario, the project also includes comprehensive admin capabilities for managing inventory and users' purchase history, making it viable in the digital marketplace.
+
 # 1. Distinctiveness and Complexity
 ## **Distinctiveness:**
 
-   This project is an e-commerce website dedicated to selling coffee online, which allows registered users to make purchases via Stripe payment. The distinctiveness of this website is demonstrated through the integration of various comprehensive features that go beyond basic e-commerce functionalities:
+   The distinctiveness of this website is demonstrated through the integration of various comprehensive features that go beyond basic e-commerce functionalities:
 
-   1. Full-Stack Development: The project showcases a complete full-stack development approach, integrating both frontend and backend components seamlessly.
-   2. Diverse Features: It incorporates multiple lessons and components learned throughout the course, such as product management, user authentication, and dynamic content rendering. Specific features include:
-      - Product Like/Unlike Option: Users can like or unlike products, adding an interactive element to the user experience.
-      - Stripe Payment Integration: Secure and reliable payment processing through Stripe, enhancing user trust and transaction safety.
-      - User Purchase History: Registered users can view their purchase history, providing a personalized shopping experience.
-      - Admin Dashboard: A robust admin interface that allows administrators to manage products, view sales data, and generate reports.
+   1. Full-Stack Development: The project showcases a complete full-stack development approach, integrating frontend and backend components and the third party service seamlessly.
+   2. Diverse Features: It incorporates multiple lessons and components learned throughout the course, such as commerce concepts, user authentication, database structures and dynamic content rendering. Specific features include:
+      - Product Like/Unlike Option: Users can like or unlike products, adding an interactive element to the user experience
+      - Stripe Payment Integration: Secure and reliable payment processing through Stripe, enhancing user trust and transaction safety
+      - User Purchase History: Registered users can view their purchase history, providing a personalized shopping experience
+      - Admin Dashboard: A visual admin interface that allows administrators to manage products, view sales data, and reports
   
 ## **Complexity:**
 
@@ -134,35 +138,36 @@ B) Admin Route:
 1. `views.py`
       - The views.py file in a Django application serves as the backbone, defining various view functions that handle different aspects of the application's functionality. Each view function is responsible for processing requests, interacting with the database through models, and rendering appropriate responses or templates to users. All functions are defined as follows:
   
+  
 
-   |Name|Function|Description|
-   |----|--------|------------|
-   |Index View|`index`|Renders the homepage of the application| 
-   |**Authentication Views**||
-   |Login View|`login_view`|Handles user authentication and renders the login page|
-   |Logout View|`logout_view`|Logs out the user and redirects to the homepage|
-   |Register View|`register`|Manages user registration and renders the registration form|
-   |**Admin Dashboard Views**||
-   |Main Dashboard|`main_dashboard`|Renders the main administrative dashboard|
-   |Admin Products|`admin_products`|Manages products within the administrative interface|
-   |Admin Users|`admin_users`|Manages user-related tasks within the administrative interface|
-   |**Product Views**||
-   |Get Product|`get_product`|Retrieves and displays details of a specific product|
-   |Delete Product|`delete_product`|Deletes a product from the database|
-   |Product Details|`product_details`|Shows detailed information about a product|
-   |Save Product|`save_product`|Handles the creation or update of product information|
-   |**Cart Views**||
-   |Cart Items|`cart_items`|Manages items in the user's shopping cart|
-   |Add to Cart|`add_to_cart`|Adds a product to the user's cart|
-   |Cart Delete Item|`cart_delete_item`|Removes an item from the user's cart|
-   |Update Cart Item|`update_cart_item`|Updates the quantity of an item in the user's cart|
-   |**Checkout Views**||
-   |Create Checkout Session|`create_checkout_session`|Initiates a checkout session for payment processing|
-   |Success Transaction|`success_transaction`|Displays a success message after a successful transaction|
-   |Failure Transaction|`failure_transaction`|Displays a failure message after an unsuccessful transaction|
-   |**Profile View**|`profile`|Renders and manages user history purchases information|
-   |**Like View**|`toggle_like`|Handles toggling of product likes by users|
-   |**Webhook Terminal**|`stripe_webhook`|Handles webhook events from Stripe for payment notifications and updates|
+      |Name|Function|Description|
+      |----|--------|------------|
+      |Index View|`index`|Renders the homepage of the application| 
+      |**Authentication Views**||
+      |Login View|`login_view`|Handles user authentication and renders the login page|
+      |Logout View|`logout_view`|Logs out the user and redirects to the homepage|
+      |Register View|`register`|Manages user registration and renders the registration form|
+      |**Admin Dashboard Views**||
+      |Main Dashboard|`main_dashboard`|Renders the main administrative dashboard|
+      |Admin Products|`admin_products`|Manages products within the administrative interface|
+      |Admin Users|`admin_users`|Manages user-related tasks within the administrative interface|
+      |**Product Views**||
+      |Get Product|`get_product`|Retrieves and displays details of a specific product|
+      |Delete Product|`delete_product`|Deletes a product from the database|
+      |Product Details|`product_details`|Shows detailed information about a product|
+      |Save Product|`save_product`|Handles the creation or update of product information|
+      |**Cart Views**||
+      |Cart Items|`cart_items`|Manages items in the user's shopping cart|
+      |Add to Cart|`add_to_cart`|Adds a product to the user's cart|
+      |Cart Delete Item|`cart_delete_item`|Removes an item from the user's cart|
+      |Update Cart Item|`update_cart_item`|Updates the quantity of an item in the user's cart|
+      |**Checkout Views**||
+      |Create Checkout Session|`create_checkout_session`|Initiates a checkout session for payment processing|
+      |Success Transaction|`success_transaction`|Displays a success message after a successful transaction|
+      |Failure Transaction|`failure_transaction`|Displays a failure message after an unsuccessful transaction|
+      |**Profile View**|`profile`|Renders and manages user history purchases information|
+      |**Like View**|`toggle_like`|Handles toggling of product likes by users|
+      |**Webhook Terminal**|`stripe_webhook`|Handles webhook events from Stripe for payment notifications and updates|
 
 
 ### js:
