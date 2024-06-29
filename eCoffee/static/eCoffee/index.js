@@ -1,36 +1,57 @@
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  // Get the context of the canvas element where the chart will be rendered
-  const ctx = document.getElementById('myChart').getContext('2d');
+   const getSalesData = async ()=> {
+      await fetch('api/sales-data')
+      .then(response => response.json())
+      .then(data => {
+         console.log('DATA::',data)
+         renderChart(data); 
+      })
+      .catch(error => {
+         console.error('Error fetching sales data:', error);
+      });   
+    }
+   const renderChart= (data)=> {
+      const months = data.map(object => object.month);
+      let monthList=[]
+      months.forEach(dateString=>{
+         
+         const date = new Date(dateString);
+         const options = { month: 'long' }; 
+         const monthName = new Intl.DateTimeFormat('en-US', options).format(date);
+         monthList.push(monthName)
+      })
+      console.log('monthList::',monthList)
+      const salesAmounts = data.map(obj => obj.total);
 
-  const data ={
-   labels: [
-      {% for sale in monthly_sales %}
-   ]
-  }
-    
-  // Define the chart data and options
-  var myChart = new Chart(ctx, {
-      type: 'bar',  // Specify the type of chart (e.g., bar, line, pie, etc.)
-      data: {
-          labels: ['January', 'February', 'March', 'April', 'May'],  // Labels for x-axis
-          datasets: [{
-              label: 'Sales',  // Label for the dataset
-              data: [12, 19, 3, 5, 2],  // Data points for the dataset
-              backgroundColor: 'rgba(54, 162, 235, 0.2)',  // Background color for bars
-              borderColor: 'rgba(54, 162, 235, 1)',  // Border color for bars
-              borderWidth: 1  // Border width for bars
-          }]
-      },
-      options: {
-          scales: {
-              y: {
-                  beginAtZero: true  // Start y-axis at zero
-              }
+      const ctx = document.getElementById('myChart').getContext('2d');
+      // console.log('ctx::',ctx)
+      new Chart(ctx, {
+          type: 'bar',
+          data: {
+              labels: monthList,
+              datasets: [{
+                  label: 'Monthly Sales',
+                  data: salesAmounts,
+                  backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                  borderColor: 'rgba(54, 162, 235, 1)',
+                  borderWidth: 1
+              }]
+          },
+          options: {
+               scales: {
+                  y: {
+                      beginAtZero: true
+                  }
+              },
+               responsive: false,
+               maintainAspectRatio: false
           }
-      }
-  });
+      });
+  }
+    //call getSalesData
+    getSalesData()
 
   // 2. like or unlike
    const likeBtns = document.querySelectorAll(".like-btn");

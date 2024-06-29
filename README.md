@@ -144,6 +144,7 @@ B) Admin Route:
    | "profile/<int:user_id>"| Shows the profile of a user using `views.profile` based on their ID|
    | "likes/<int:product_id>"| Handles toggling of product likes using `views.toggle_like` based on the product's ID|
    |"webhook/"                | Handles webhook events from Stripe using `views.stripe_webhook`|
+   |"api/sales-data/"|Handles sending data from Django backend to the froontend event using `views.sales_data`|
 
 
 6. `views.py`
@@ -180,7 +181,8 @@ B) Admin Route:
       |**Like View**|`toggle_like`|Handles toggling of product likes by users|
       |**Webhook Terminal**|`stripe_webhook`|Handles webhook events from Stripe for payment notifications and updates|
       |**Sales Report**||
-      |Get Monthly Sales|`get_monthly_sales`|Return a list of dict representing the sales data grouped by month|
+      |Get Monthly Sales|`get_monthly_sales`|Returns a list of dict representing the sales data grouped by month|
+      |Sales Data|`sales_data`|Sends a `JsonResponse` data object to the frontend|
 
 
 ### js:
@@ -188,7 +190,12 @@ B) Admin Route:
 
 
 1. `index.js`
-      - This script is responsible for handling the `like` functionality on an e-commerce website. When a user clicks a like button for a product, it sends a request to the server Django to update the `like` status. Depending on the response, it updates the UI to reflect whether the product is liked or not by toggling a liked class on the corresponding `heart` icon. The script includes error handling to log any issues that occur during the process.
+      - There are a few functionalities:
+          - First, one script is responsible for handling the `like` functionality on an e-commerce website. When a user clicks a like button for a product, it sends a request to the server Django to update the `like` status. Depending on the response, it updates the UI to reflect whether the product is liked or not by toggling a liked class on the corresponding `heart` icon. The script includes error handling to log any issues that occur during the process.
+          - Second, a function call `getSalesData()` that is used for:
+            - fetch monthly sales data from `/api/sales-data` backend Django
+            - rendered a Chart.js bar chart (myChart) on main_dashboard.html using fetched data
+            - used JavaScript to dynamically update the chart with monthly sales data
 # 3. How to run your application
 1. Create a virtual environment named as final_env: 
    ```python
@@ -260,9 +267,9 @@ B) Admin Route:
 3. Run your terminal shell to get the Stripe webhook secret(s)
    ```python
     $ stripe login
-    $ stripe listen --forward-to localhost:8080/webhook/
-    $ stripe listen --forward-to localhost:8080/success_transaction/
-    $ stripe listen --forward-to localhost:8080/failure_transaction/
+    $ stripe listen --forward-to localhost:8000/webhook/
+    $ stripe listen --forward-to localhost:8000/success_transaction/
+    $ stripe listen --forward-to localhost:8000/failure_transaction/
    ```
 4. Stripe Event Packages
    ```
@@ -291,6 +298,7 @@ B) Admin Route:
    - Review my purchase history
    - Indicate preferences by liking or disliking a product
 3. As an admin person or a general manager, I can
+   - View and interact with the Dashboard with sales report
    - Access and review all current registered users' purchase history and account information (excluding passwords)
    - Perform all CRUD (Create, Read, Update, Delete) operations on products
 
