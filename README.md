@@ -205,12 +205,12 @@ B) Admin Route:
    
 2.  **__Applied credentials:__**<br/>
    
-    
-   |                    | username      | password    |
-   |     --------       | --------      | -------     |
-   | user route         | hon           | useruser11  |
-   | admin route        | hon-admin     | useruser11  |
-   | Django admin route | hon-admin     | useruser11  |
+      
+      |                    |url| username      | password    |
+      |     --------       |------| --------      | -------     |
+      | user route         |http://localhost:8000| hon           | useruser11  |
+      | admin route        |http://localhost:8000/coffee_admin| hon-admin     | useruser11  |
+      | Django admin route |http://localhost:8000/admin| hon-admin     | useruser11  |
 
    
 3.  The app does use other Bootstrap libraries for collapsible task as shown
