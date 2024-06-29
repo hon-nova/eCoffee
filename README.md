@@ -1,6 +1,8 @@
 # 0. Introduction
 
-   As a coffee enthusiast, the project theme was born: the eCoffee website offers an online shopping experience. Utilizing Django classes and models, the platform integrates robust features such as user authentication, a customizable shopping cart, and secure payment processing via Stripe. Users can track their favorite coffee products. To simulate a realistic scenario, the project also includes comprehensive admin capabilities for managing inventory and users' purchase history, making it viable in the digital marketplace.
+   - As a coffee enthusiast, the project theme was born: the eCoffee website offers an online shopping experience. Utilizing Django classes and models, the platform integrates robust features such as user authentication, a customizable shopping cart, and secure payment processing via Stripe. Users can track their favorite coffee products. To simulate a realistic scenario, the project also includes comprehensive admin capabilities for managing inventory and users' purchase history, making it viable in the digital marketplace.
+  
+   - I took on this project to tackle the complexities of e-commerce websites. It is crucial to create a smooth experience for users, making it easy to browse products and complete transactions. The website can generate detailed receipts and lets users check their purchase history. I'm passionate about full-stack development, and e-commerce challenges are like solving real business problems. This project highlights the importance of continually improving skills to build successful e-commerce solutions, which is my main focus in web development.
 
 # 1. Distinctiveness and Complexity
 ## **Distinctiveness:**
@@ -11,14 +13,14 @@
    2. Diverse Features: It incorporates multiple lessons and components learned throughout the course, such as commerce concepts, user authentication, database structures and dynamic content rendering. Specific features include:
       - Product Like/Unlike Option: Users can like or unlike products, adding an interactive element to the user experience
       - Stripe Payment Integration: Secure and reliable payment processing through Stripe, enhancing user trust and transaction safety
-      - User Purchase History: Registered users can view their purchase history, providing a personalized shopping experience
-      - Admin Dashboard: A visual admin interface that allows administrators to manage products, view sales data, and reports
+      - **User Purchase History**: Registered users can view their purchase history, providing a personalized shopping experience
+      - **Admin Dashboard**: A visual admin interface that allows administrators to manage products, view sales data, and reports
   
 ## **Complexity:**
 
 
    The project’s complexity is evident through the following advanced features and implementations:
-   1. Sales Reporting: The website includes functionality to generate detailed sales reports, accessible through the admin dashboard. This feature leverages data aggregation and visualization techniques to provide insights into sales performance.
+   1. **Sales Reporting**: The website includes functionality to generate detailed sales reports, accessible through the admin dashboard. This feature leverages data aggregation and visualization techniques to provide insights into sales performance.
    2. User Profiles and Orders Management: The site allows users to view all past orders, integrating complex querying and data retrieval processes.
    3. Custom User Authentication: Implementation of a custom user authentication system using AbstractUser, enhancing security and allowing for extended user functionalities.
    4. Cart and Order Management: The project includes comprehensive cart and order management systems, enabling users to add items to their cart, adjust quantities, and proceed to checkout seamlessly.
@@ -198,7 +200,7 @@ B) Admin Route:
    $ pip freeze > requirements.txt
    ```
 
-# 4. Supplementary information about the project
+# 4. Additional information about the project
 
 0. The package for security & deployment purposes
    
