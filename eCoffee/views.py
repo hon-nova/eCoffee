@@ -333,7 +333,7 @@ def profile(request, user_id):
     orders_with_items = []
     
     # Retrieve all orders for the user's cart that have been successfully paid
-    my_orders = Order.objects.filter(cart=my_cart, payment_status=True)
+    my_orders = Order.objects.filter(cart=my_cart, payment_status=True).order_by('-placed_order_at')
     
     # Loop through each order to retrieve associated items
     for order in my_orders:
