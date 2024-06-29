@@ -308,3 +308,7 @@ B) Admin Route:
 # 8. Constraints:
 1. The implementation of the `like` icon in product_details.html is currently not fully effective in handling multiple clicks on a particular product. To revert the like icon to its original state, users may need to refresh the page
 2. The project does not contain nor implement a 'forgot password' feature. In case users encounter this situation, they are advised to contact the Django admin person for further instructions
+<hr/>
+
+# Thank you
+_June 29, 2024_
