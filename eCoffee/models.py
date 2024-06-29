@@ -80,6 +80,19 @@ class Order(models.Model):
     
     def __str__(self):
         return f'Order id {self.id} for {self.cart.user.username} with status {"successful" if self.payment_status else "canceled"} with amount received CAD$ {self.amount}'
+    
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, related_name='purchased_items', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity_purchased = models.PositiveIntegerField(default=0)
+    sub_total = models.FloatField(default=0)
+
+    def __str__(self):
+        return f'{self.product} - Quantity: {self.quantity_purchased}'
+
+    def save(self, *args, **kwargs):
+        self.sub_total = self.product.price * self.quantity_purchased
+        super().save(*args, **kwargs)
  
     
 

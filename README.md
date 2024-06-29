@@ -86,7 +86,7 @@ B) Admin Route:
 ### py:
 
 1. `admin.py`:
-      - This file registers the `User, Product, Cart, CartItem, Like, and Order` models with the Django admin site. As a result, these models can be managed via the Django admin interface, allowing administrators to view, add, modify, and delete instances of these models through a web-based interface.
+      - This file registers the `User, Product, Cart, CartItem, Like, Order, and OrderItem` models with the Django admin site. As a result, these models can be managed via the Django admin interface, allowing administrators to view, add, modify, and delete instances of these models through a web-based interface.
 2. `context_processors.py`
       - Defines a context processor function `send_cart_length` that provides cart-related information to all **templates**. Specifically, it adds the total number of items in the cart (cart_length) and the total price of the items in the cart (total) to the context. This function is registered in the settings.py as follows
   
@@ -108,7 +108,8 @@ B) Admin Route:
       - `Like`: Tracks which users like which products, with a unique constraint on the user-product pair
       - `Cart`: One-to-one relationship with User, includes methods to get total items and total price
       - `CartItem`: Represents items in a cart, linked to Cart and Product, with a quantity field
-      - `Order`: Linked to Cart, includes fields for payment status, order placement timestamp, payment intent ID, amount, and a method to get the total payment.
+      - `Order`: Linked to Cart, includes fields for payment status, order placement timestamp, payment intent ID, amount, and a method to get the total payment
+      - `OrderItem`: Linked to CartItem, includes all info about the purchased items. The model is used to saved all purchased items for each order and to retrieve for later review
 5. `urls.py`
       This urlpatterns list defines the routing paths for URLs in a Django application:
 

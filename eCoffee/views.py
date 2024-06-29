@@ -6,7 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.shortcuts import render,redirect,get_object_or_404
 from django.urls import reverse
 import logging
-from .models import User,Product,CartItem,Cart,Like, Order
+from .models import User,Product,CartItem,Cart,Like, Order, OrderItem
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from decimal import Decimal
@@ -19,10 +19,9 @@ import os
 from dotenv import load_dotenv
 from django.conf import settings
 
-# Load environment variables from .env file
+
 load_dotenv()
 
-# Stripe keys
 STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY')
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 endpoint_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
@@ -327,21 +326,23 @@ def product_details(request, product_id):
 
 def profile(request, user_id):
     logging.debug('Profile got triggered')
+    
     my_cart = get_object_or_404(Cart, user__id=user_id)
     
-    orders_with_items = [{}]
-
+    # Initialize a list to store orders with their items
+    orders_with_items = []
+    
+    # Retrieve all orders for the user's cart that have been successfully paid
     my_orders = Order.objects.filter(cart=my_cart, payment_status=True)
-    # my_orders = my_orders.order_by('-placed_order_at')
+    
+    # Loop through each order to retrieve associated items
     for order in my_orders:
-        order_items = []        
-        # cart_items = CartItem.objects.filter(cart=order.cart)  
-        cart_items= order.cart.cart_items.all()     
-       
-        logging.debug(f'Cart items for order {order.id}: {list(cart_items)}')    
+        order_items = []
         
-        for item in cart_items:
-            logging.debug(f'Product: {item.product.description}, Quantity Purchased: {item.quantity_purchased}')
+        # Retrieve order items associated with the current order
+        order_items_queryset = OrderItem.objects.filter(order=order)
+        
+        for item in order_items_queryset:
             product_details = {
                 'description': item.product.description,
                 'category': item.product.category,
@@ -350,18 +351,20 @@ def profile(request, user_id):
                 'photo_url': item.product.photo_url
             }
             order_items.append(product_details)
-            # logging.debug(f'Product details added: {product_details}')
         
+        # Append order details along with its items to the list
         orders_with_items.append({
             'order_id': order.id,
-            'order_amount':order.amount,
-            'placed_order_at':order.placed_order_at,
+            'order_amount': order.amount,
+            'placed_order_at': order.placed_order_at,
             'items': order_items
         })
-
+    
+    # Prepare context to pass to the template
     context = {
         'orders_with_items': orders_with_items,
     }
+    
     return render(request, 'eCoffee/profile.html', context)
 
 @login_required
@@ -511,22 +514,34 @@ def handle_payment_intent_succeeded(payment_intent):
                 order.amount = amount
                 order.save()
                 
-            # cart_items_to_save=[]
-            '''For saving cart items into db''' 
-            cart_items_user=cart.cart_items.all()  
-            cart_items=[{"product":object.product,"quantity":object.quantity_purchased,"sub_total":object.product.price*object.quantity_purchased } for object in cart_items_user]
-            items=[]
-            for item in cart_items:
-                items_to_save=CartItem.objects.create(cart=cart,product=item.product,quantity_purchased=item.quantity) 
+            '''For saving cart items into db
             
-                items.append(items_to_save)
-             
-             # Delete all cart items associated with the cart
+            cart_items_user = cart.cart_items.all()
+            items_to_save = []
+            
+            for cart_item in cart_items_user:
+                items_to_save.append(CartItem.objects.create(
+                    cart=cart,
+                    product=cart_item.product,
+                    quantity_purchased=cart_item.quantity_purchased
+                ))
+            ''' 
+            # Move cart items to order items
+            cart_items = cart.cart_items.all()
+            for cart_item in cart_items:
+                OrderItem.objects.create(
+                    order=order,
+                    product=cart_item.product,
+                    quantity_purchased=cart_item.quantity_purchased
+                )
+
+            
+            # Clear the cart
             cart.cart_items.all().delete()
             
-            logging.debug(f'SUCCESS cart_items deleted')
-            logging.debug(f'Order processed for successful payment: {order}')       
-    
+            logging.debug('SUCCESS: Cart items deleted')
+            logging.debug(f'Order processed for successful payment: {order}')  
+
     except KeyError as e:
         logging.error(f'KeyError: {e} in payment_intent')
     
