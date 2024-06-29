@@ -37,9 +37,15 @@ footer_data = [
         ["Payment Products", "Rewards Mastercard", "Shop with Points", "Reload Your Balance", "Currency Converter", "Gift Cards", "Cash"],
         ["Let Us Help You", "Shipping Rates & Policies", "Prime Card Holders", "Returns Are Easy", "Manage your Content and Devices", "Recalls and Product Safety Alerts", "Customer Service"]
     ]
+faq=[{"question":"How do I purchase coffee from eCoffee online?","answer":"To purchase coffee from eCoffee, simply browse our product selection, add your desired items to your cart, and proceed to checkout. You will need to create an account or log in if you already have one."},    
+    {"question":"Does eCoffee offer discounts or promotional offers?","answer":"Currently, eCoffee does not offer discounts or promotional offers. We are exploring options to provide benefits to our patrons in the future. Stay tuned for updates on any upcoming promotions or special offers."},]
+
+
 def index(request):
     # logging.debug('index got invoked::')
-    return render(request,'eCoffee/index.html',{'footer_data':footer_data})
+    for object in faq:
+        logging.debug(f'{object["question"]}: {object["answer"]}')
+    return render(request,'eCoffee/index.html',{'footer_data':footer_data,'faq':faq})
 
 def login_view(request):
     if request.method == "POST":
