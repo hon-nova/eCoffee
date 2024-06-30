@@ -221,7 +221,11 @@ B) Admin Route:
    $ python3 manage.py makemigrations eCoffee
    $ python3 manage.py migrate
    ```
-6. Use `pip` to create a requirements.txt file: 
+6. Create an admin user
+   ```python
+   $ python3 manage.py createsuperuser
+   ```
+7. Use `pip` to create a requirements.txt file: 
    ```python
    $ pip freeze > requirements.txt
    ```
@@ -253,12 +257,12 @@ B) Admin Route:
    0. Bootstrap libraries for collapsible task, `chart.js` and `Stripe` libraries
 
    ```js
-   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 
-   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-   <script src="https://js.stripe.com/v3/"></script>
+      <script src="https://js.stripe.com/v3/"></script>
    ```   
    1. Install Stripe
       ```python
