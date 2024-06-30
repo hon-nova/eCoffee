@@ -44,35 +44,35 @@ A) User Route:
          - Cart Icon: Displays an icon associated with the user's cart, showing the total number of items currently in the cart. This allows quick access and visibility of cart contents
   
 1. `index.html`   
-     - displayed the intro. page of the eCoffee website
+     - displays the intro. page of the eCoffee website
 
 2. `home_products.html` 
-     - Displayed all products currently in the system
-     - Added a checkbox functionality to filter out the products
-     - Inluding the pagination functionality at the end of the page
+     - Displays all products currently in the system
+     - Adds a checkbox functionality to filter products as desired
+     - Includes the pagination functionality at the end of the page
 3. `cart.html`
-     - Displaying Selected Items: It lists all selected items from the user's cart, allowing them to increase, decrease quantities, or remove items entirely
+     - Displays Selected Items: It lists all selected items from the user's cart, allowing them to increase, decrease quantities, or remove items entirely
      - Dynamic Updates: Based on user interactions (increasing, decreasing quantities, or removing items), the page dynamically updates the sub-total, taxes, and total amounts to reflect these changes
      - Checkout Button: It provides a prominent "Continue to Checkout" button, enabling users to proceed to payment services, indicating readiness to complete their purchase
 4. `create_checkout_session.html`
-     - The file includes the `script` tag used to initiate the process for a user to checkout and make a payment for their selected items. The tag also triggered the Stripe template sheet for payment
+     - The file includes a script tag that initiates the process for a user to checkout and make a payment for their selected items. This tag triggers the Stripe template sheet for payment, sets up a click handler for a checkout button, sends a POST request to create a Stripe checkout session, and then redirects the user to the Stripe Checkout page. It also handles errors by logging them and redirecting the user to a failure page
      - Session parameters contain
          - Line items: Products being purchased
          - Payment details: Amount to be charged, currency, total items in cart
          - Success and failure URLs directions 
      - Return Session ID: Sends back the session ID or URL to the client-side, typically as a JSON response
-     - There is a script tag which associates the initilization of Stripe transaction. It sets up a click handler for a checkout button, sending a POST request to create a Stripe checkout session, and then redirects the user to the Stripe Checkout page. It handles errors by logging them and redirecting to a failure page
+   
    
 5. `success_transaction.html`
-     - Displayed a success transaction message and allowed user to go back to HomePage
+     - Displays a success transaction message and allows user to go back to HomePage
 6. `failure_transaction.html`
-     - Displayed a reason for a failure transaction
+     - Displays a reason for a failure transaction and leads user back to the HomePage
    
 7. `product_details.html`
-     - Showed the product information in great details
-     - Allowed user to add the item; increase, decrease the number of the particular item; or remove all of them at once
+     - Shows the product information in greater details
+     - Allows user to add the item; increase, decrease the number of the particular item; or remove all of them at once
 8.  `profile.html`
-     -  Mainly displayed the info all of the items and that have been purchased based on `order_id` encompassing amount paid for each order
+     -  Mainly displays the info all of the items which were purchased based on `order_id` including amount paid for the order
     
 B) Admin Route: 
 
@@ -81,21 +81,22 @@ B) Admin Route:
       - adds a script tag that utilizes `chart.js` for generating a sales report chart
   
 2.  `admin_products.html` 
-      - displayed all current products encompassing the CRUD operations 
-      - added Pagination functionality at the end of the page
+      - displays all current products encompassing the CRUD operations 
+      - adds Pagination functionality at the end of the page
 3.  `admin_user.html` 
-      - showed all registered users excluding the admin person
+      - shows all registered users excluding the admin user
 
 ### py:
 
 1. `admin.py`:
       - This file registers the `User, Product, Cart, CartItem, Like, Order,OrderItem, and OrderAdmin` models with the Django admin site. As a result, these models can be managed via the Django admin interface, allowing administrators to view, add, modify, and delete instances of these models through a web-based interface
-      - The `OrderAdmin` class is created in this file that is used to manage how the model `Order` is diplayed and customised in the Django admin interface. The fields selected are `'cart', 'payment_status', 'placed_order_at', 'payment_intent_id', 'amount'`
+      - The `OrderAdmin` class is created in this file that is used to manage how the model `Order` is diplayed and importantly will be customised in the Django admin interface. The fields selected are `'cart', 'payment_status', 'placed_order_at', 'payment_intent_id', 'amount'`
   
 2. `context_processors.py`
       - Defines a context processor function `send_cart_length` that provides cart-related information to all **templates**. Specifically, it adds the total number of items in the cart (cart_length) and the total price of the items in the cart (total) to the context. This function is registered in the settings.py as follows
   
       ```python
+            ...
             'context_processors': [
                 ...
                 'eCoffee.context_processors.send_cart_length'
@@ -117,8 +118,8 @@ B) Admin Route:
       - `Like`: Tracks which users like which products, with a unique constraint on the user-product pair
       - `Cart`: One-to-one relationship with User, includes methods to get total items and total price
       - `CartItem`: Represents items in a cart, linked to Cart and Product, with a quantity field
-      - `Order`: Linked to Cart, includes fields for payment status, order placement timestamp, payment intent ID, amount, and a method to get the total payment
-      - `OrderItem`: Linked to CartItem, includes all info about the purchased items. The model is used to saved all purchased items for each order and to retrieve for later review
+      - `Order`: Is linked to Cart, includes fields for payment status, order placement timestamp, payment intent ID, amount, and a method to get the total payment
+      - `OrderItem`: Is linked to CartItem, includes all info about the purchased items. The model is used to saved all purchased items for each order and to retrieve for later review
 5. `urls.py`
       This urlpatterns list defines the routing paths for URLs in a Django application:
 
@@ -221,7 +222,7 @@ B) Admin Route:
    $ python3 manage.py makemigrations eCoffee
    $ python3 manage.py migrate
    ```
-6. Create an admin user
+6. Create a Django admin user
    ```python
    $ python3 manage.py createsuperuser
    ```
@@ -266,7 +267,7 @@ B) Admin Route:
    ```   
    1. Install Stripe
       ```python
-      pip install stripe
+      $ pip install stripe
       ```
    2. Install Stripe CLI globally
       ```python
@@ -298,16 +299,16 @@ B) Admin Route:
 # 6. Agile User Stories:
 1. As a visitor, I can surf the website and look for products that I want
 2. As a registered user, I can
-   - Save items in my cart for future purchase.
+   - Save items in my cart for future purchase
    - Remove unwanted items from my cart
    - Add items to my cart
    - Make online transactions
-   - View all items in my cart before and after completing a transaction   
+   - View all items in my cart before making a transaction   
    - Review my purchase history
    - Indicate preferences by liking or disliking a product
-3. As an admin person or a general manager, I can
-   - View the visual sales report
-   - Access and review all current registered users' purchase history and account information (excluding passwords)
+3. As an admin user or a general manager, I can
+   - View the visual sales report Dashboard
+   - Access and view all current registered users' purchase history and their account information (excluding passwords)
    - Perform all CRUD (Create, Read, Update, Delete) operations on products
 
 # 7. Tech Stack:

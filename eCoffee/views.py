@@ -10,7 +10,6 @@ from .models import User,Product,CartItem,Cart,Like, Order, OrderItem
 from .forms import ProductForm
 from django.core.paginator import Paginator,EmptyPage, PageNotAnInteger
 from decimal import Decimal
-# from django.views import View
 import stripe
 from django.conf import settings
 from django.http import JsonResponse
