@@ -1,5 +1,4 @@
 .admin-container {
-   /* border:5px solid green; */
 }
 a.admin{
    color:black;
@@ -8,7 +7,6 @@ a.admin{
    -webkit-font-smoothing: antialiased;
 }
 .admin-products-container .new-product {
-   /* border: 5px solid goldenrod; */
    border-radius: 5px;
    border: 1px solid #d0d0d5;
    width: 800px;

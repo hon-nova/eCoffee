@@ -2,7 +2,6 @@ body {
    box-sizing: border-box;
 }
 .cart-container {
-   /* border:5px solid orange; */
    padding:auto 15px;
    margin:auto 15px;
    max-width: 100%;

@@ -5,10 +5,10 @@
 {%block body %}
 
 <div class="product-details-container">
-   <h1>Hello Product Details Page!</h1>
+   <h1>Hello!</h1>
    <div class="row">
       {%if product%}
-      <div class="col-md-1">left</div>
+      <div class="col-md-1"></div>
       <div class="col-md-4" style="border:1px solid #d0d0d5;border-radius:30px;">
          <img src="{{ product.photo_url }}" alt="photo url" width="480" height="auto"/>
       </div>
@@ -68,7 +68,7 @@
       </div>
       {%endif%}        
       </div>
-      <div class="col-md-1" >right</div>
+      <div class="col-md-1" ></div>
       {%endif%}
    </div>
    {%block script%}

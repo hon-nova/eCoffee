@@ -124,7 +124,7 @@ def sales_data(request):
 @user_passes_test(is_admin)
 def main_dashboard(request):
     
-    return render(request,'eCoffee/main_dashboard.html',{'dashboard':'MY DASHBOARD CONTENT'})
+    return render(request,'eCoffee/main_dashboard.html',{'dashboard':'eCoffee Admin DASHBOARD'})
 
 @user_passes_test(is_admin)
 def admin_products(request):    

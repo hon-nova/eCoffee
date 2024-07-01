@@ -7,8 +7,6 @@ nav {
    width: 100%; 
    z-index: 1000; 
    border-bottom:5px solid #d0d0d5;
-   /* background-color: red; */
-   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
    margin-bottom:10px;
 }
 nav > div{
