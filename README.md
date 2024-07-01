@@ -243,16 +243,8 @@ B) Admin Route:
    from django.contrib.auth.decorators import user_passes_test
    ```
 
-2.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them
-   
-3.  **__Applied credentials:__**<br/>
-   
-      
-      |                    |url| username      | password    |
-      |     --------       |------| --------      | -------     |
-      | user route         |http://localhost:8000| hon           | useruser11  |
-      | admin route        |http://localhost:8000/coffee_admin| hon-admin     | useruser11  |
-      | Django admin route |http://localhost:8000/admin| hon-admin     | useruser11  |
+2.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them   
+
   
 # 5. Python Libraries used:
    0. Bootstrap libraries for collapsible task, `chart.js` and `Stripe` libraries
