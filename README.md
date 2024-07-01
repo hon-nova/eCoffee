@@ -32,7 +32,6 @@
 
 A) User Route:
 
-
 0. `layout.html`:
    
      - Template Inheritance: It sets up blocks that other templates can inherit using {% extends "eCoffee/layout.html" %}. This allows consistent structure and styling across multiple pages
@@ -60,8 +59,7 @@ A) User Route:
          - Line items: Products being purchased
          - Payment details: Amount to be charged, currency, total items in cart
          - Success and failure URLs directions 
-     - Return Session ID: Sends back the session ID or URL to the client-side, typically as a JSON response
-   
+     - Return Session ID: Sends back the session ID or URL to the client-side, typically as a JSON response   
    
 5. `success_transaction.html`
      - Displays a success transaction message and allows user to go back to HomePage
@@ -87,7 +85,6 @@ B) Admin Route:
       - shows all registered users excluding the admin user
 
 ### py:
-
 1. `admin.py`:
       - This file registers the `User, Product, Cart, CartItem, Like, Order,OrderItem, and OrderAdmin` models with the Django admin site. As a result, these models can be managed via the Django admin interface, allowing administrators to view, add, modify, and delete instances of these models through a web-based interface
       - The `OrderAdmin` class is created in this file that is used to manage how the model `Order` is diplayed and importantly will be customised in the Django admin interface. The fields selected are `'cart', 'payment_status', 'placed_order_at', 'payment_intent_id', 'amount'`
@@ -150,10 +147,8 @@ B) Admin Route:
    |"webhook/"                | Handles webhook events from Stripe using `views.stripe_webhook`|
    |"api/sales-data/"|Handles sending data from Django backend to the frontend event using `views.sales_data`|
 
-
 6. `views.py`
-      - The views.py file in a Django application serves as the backbone, defining various view functions that handle different aspects of the application's functionality. Each view function is responsible for processing requests, interacting with the database through models, and rendering appropriate responses or templates to users. All functions are defined as follows:
-  
+      - The views.py file in a Django application serves as the backbone, defining various view functions that handle different aspects of the application's functionality. Each view function is responsible for processing requests, interacting with the database through models, and rendering appropriate responses or templates to users. All functions are defined as follows: 
   
 
       |Name|Function|Description|
@@ -187,12 +182,7 @@ B) Admin Route:
       |**Sales Report**||
       |Get Monthly Sales|`get_monthly_sales`|Returns a list of dict representing the sales data grouped by month|
       |Sales Data|`sales_data`|Sends a `JsonResponse` data object to the frontend|
-
-
 ### js:
-
-
-
 1. `index.js`
       - There are a few functionalities:
          - First, one script is responsible for handling the `like` functionality on an e-commerce website. When a user clicks a like button for a product, it sends a request to the server Django to update the `like` status. Depending on the response, it updates the UI to reflect whether the product is liked or not by toggling a liked class on the corresponding `heart` icon. The script includes error handling to log any issues that occur during the process.
@@ -230,7 +220,6 @@ B) Admin Route:
    ```python
    $ pip freeze > requirements.txt
    ```
-
 # 4. Additional information about the project
 
 0. The package for security & deployment purposes
@@ -242,13 +231,10 @@ B) Admin Route:
    ```python
    from django.contrib.auth.decorators import user_passes_test
    ```
-
-2.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them   
-
+2.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them
   
 # 5. Python Libraries used:
    0. Bootstrap libraries for collapsible task, `chart.js` and `Stripe` libraries
-
    ```js
       <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
       <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
@@ -278,16 +264,17 @@ B) Admin Route:
       payment_intent.payment_failed
       ```
       **__Use Cases__**
-
       **success**
 
       ![success](./eCoffee/static/eCoffee/demo/success_transaction.png)
 
       **failure**
-
       ![failure](./eCoffee/static/eCoffee/demo/failure_transaction.png)
+   5. Install `celery`, `redis`
+      ```python
+      $ pip install celery redis
 
-
+      ```
 # 6. Agile User Stories:
 1. As a visitor, I can surf the website and look for products that I want
 2. As a registered user, I can
@@ -306,13 +293,14 @@ B) Admin Route:
 # 7. Tech Stack:
    0. JavaScript
    1. The DOM
-   2. Django's ORM
-   3. Django Rest Framework (DRF) for APIs
-   4. Sqlite3
+   2. CSS
+   3. ChartJS
+   4. Django's ORM
+   5. Django Rest Framework (DRF) for APIs
+   6. Sqlite3
 
-# 8. Constraints:
-1. The implementation of the `like` icon in product_details.html is currently not fully effective in handling multiple clicks on a particular product. To revert the like icon to its original state, users may need to refresh the page
-2. The project does not contain nor implement a 'forgot password' feature. In case users encounter this situation, they are advised to contact the Django admin person for further instructions
+# 8. Constraints:   
+1. The project does not contain nor implement a 'forgot password' feature. In case users encounter this situation, they are advised to contact the Django admin person for further instructions
 <hr/>
 
 # Thank you
