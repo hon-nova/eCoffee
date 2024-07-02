@@ -203,7 +203,7 @@ B) Admin Route:
 # 3. How to run your application
 1. Create a virtual environment named as final_env: 
    ```python
-   $ pip -m venv final_env
+   $ python3 -m venv final_env
    ```
 2. Activate the virtual environment: 
    ```python
