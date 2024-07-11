@@ -190,7 +190,7 @@ B) Admin Route:
             - fetching monthly sales data from `/api/sales-data` backend Django
             - rendering a Chart.js bar chart (myChart) on main_dashboard.html using fetched data
             - using JavaScript to dynamically update the chart with monthly sales data
-# 3. How to run your application
+# 3. How to run the application
 1. Create a virtual environment named as final_env: 
    ```python
    $ pip -m venv final_env
@@ -232,6 +232,12 @@ B) Admin Route:
    from django.contrib.auth.decorators import user_passes_test
    ```
 2.  For the security reasons, all tokens and secret keys are stored in the `.env` file and the function `load_dotenv()` in `settings.py` is used to apply them
+3.  For deployment purpose into Neon Cloud Service Provider, install
+    ```python
+    $ pip install dj-database-url
+    $ brew install neonctl
+    
+    ```
   
 # 5. Python Libraries used:
    0. Bootstrap libraries for collapsible task, `chart.js` and `Stripe` libraries
