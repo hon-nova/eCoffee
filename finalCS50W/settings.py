@@ -114,8 +114,27 @@ DEBUG = False
 #         'PORT': os.getenv('DB_PORT'),
 #     }
 # }
+# DATABASES = {
+#     'default': dj_database_url.parse(os.getenv('NEON_DATABASE_URL'))
+# }
+
+# Add these at the top of your settings.py
+from os import getenv
+from dotenv import load_dotenv
+
+# Replace the DATABASES section of your settings.py with this
 DATABASES = {
-    'default': dj_database_url.parse(os.getenv('NEON_DATABASE_URL'))
+  'default': {
+    'ENGINE': 'django.db.backends.postgresql',
+    'NAME': getenv('PGDATABASE'),
+    'USER': getenv('PGUSER'),
+    'PASSWORD': getenv('PGPASSWORD'),
+    'HOST': getenv('PGHOST'),
+    'PORT': getenv('PGPORT', 5432),
+    'OPTIONS': {
+      'sslmode': 'require',
+    },
+  }
 }
 
 ALLOWED_HOSTS = ['your_neon_hosted_domain_or_IP']
