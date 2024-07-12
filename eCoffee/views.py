@@ -416,8 +416,7 @@ def create_checkout_session(request):
                 }],
                 mode="payment",
                 cancel_url=f"{settings.BASE_URL}/failure_transaction",                
-                success_url=f"{settings.BASE_URL}/success_transaction"
-               
+                success_url=f"{settings.BASE_URL}/success_transaction",               
                 metadata={                    
                     "email": user_email 
                 }
