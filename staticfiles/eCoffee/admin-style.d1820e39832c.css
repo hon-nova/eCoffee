@@ -1,0 +1,48 @@
+.admin-container {
+}
+a.admin{
+   color:black;
+   font-size:22px;
+   font-style: italic;
+   -webkit-font-smoothing: antialiased;
+}
+.admin-products-container .new-product {
+   border-radius: 5px;
+   border: 1px solid #d0d0d5;
+   width: 800px;
+   margin: auto;
+   padding: 10px;
+}
+
+.create-input input[type="number"],
+.create-input input[type="url"],
+.create-input select{
+   width:500px;
+   height: 40px;
+   border: 1px solid #ccc; 
+   border-radius: 5px;
+   box-sizing: border-box;
+}
+.create-input textarea{
+   width:500px;
+   height: 90px;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   box-sizing: border-box;
+}
+
+.sidebar {
+   padding-top:20px;
+   float:left;
+}
+ul > li.sidebar-item i {   
+   padding-right:10px;
+   font-size: 25px;  
+}
+.btnAdd{
+   background-color: #0077b3;
+   border:1px solid whitesmoke;
+   border-radius: 10px;
+   padding: 10px;
+   float:right;
+}

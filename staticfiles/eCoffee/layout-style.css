@@ -1,0 +1,40 @@
+.body {
+   padding-top:80px;
+}
+nav {   
+   position:fixed;
+   top:0;
+   width: 100%; 
+   z-index: 1000; 
+   border-bottom:5px solid #d0d0d5;
+   margin-bottom:10px;
+}
+nav > div{
+   display:flex;
+   justify-content: space-between;
+   align-items: center;
+   margin:auto;
+}
+ul {   
+   justify-content: space-evenly;
+   justify-content: center;
+   align-items: center;
+}
+ul > li {
+   margin-right:10px;
+}
+select#profile {
+   border-radius: 10px;
+   padding:10px;
+}
+.cart-len {
+   width:20px;
+   height:20px;
+   background-color: red;
+   color:white;
+   font-weight: bolder;
+   border-radius: 50%;   
+   padding-top:5px;   
+   padding:5px 5px 0 5px;
+   border:1px solid white;   
+}

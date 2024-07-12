@@ -1,0 +1,10 @@
+.delete #trash_icon {
+   color:red;  
+}
+.edit #pen-icon{
+   color:green;
+}
+#category {
+   border-radius: 10px;
+   padding:5px;
+}

@@ -1,0 +1,22 @@
+body {
+   border: 5px solid green;
+}
+
+.product-details-right {
+   background-color: whitesmoke;
+   border:#d0d0d5;
+}
+
+
+.heart {
+   border: blue; /* Default color */
+}
+
+.heart.liked {
+   color: red; /* Color when liked */
+}
+
+
+#btnLike {
+   border:none;
+}
