@@ -505,8 +505,7 @@ def handle_payment_intent_succeeded(payment_intent):
             payment_email = payment_method_obj['billing_details']['email']
             
             user=get_object_or_404(User,email=payment_email)
-            cart=get_object_or_404(Cart,user=user)         
-            
+            cart=get_object_or_404(Cart,user=user)            
             
             order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
@@ -535,8 +534,7 @@ def handle_payment_intent_succeeded(payment_intent):
         logging.error(f'KeyError: {e} in payment_intent')
     
     except Exception as e:
-        logging.error(f'Error handling payment intent success: {e}')
-    
+        logging.error(f'Error handling payment intent success: {e}')    
 
 @csrf_exempt
 def handle_payment_intent_failed(payment_intent):
