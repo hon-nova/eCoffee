@@ -415,8 +415,8 @@ def create_checkout_session(request):
                     "quantity": 1
                 }],
                 mode="payment",
-                cancel_url="http://localhost:8000/failure_transaction/",
-                success_url="http://localhost:8000/success_transaction/",
+                cancel_url=f"{settings.BASE_URL}/failure_transaction",                
+                success_url=f"{settings.BASE_URL}/success_transaction"
                
                 metadata={                    
                     "email": user_email 

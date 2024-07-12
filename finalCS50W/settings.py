@@ -23,18 +23,16 @@ STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+# Set the base URL based on the environment
+BASE_URL = os.getenv('BASE_URL', 'http://localhost:8000')
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-=lfr$fgpcgiyrvwb8+e&v=7%tbf(pqtr^xt%f*1b2k%o6mqs=&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
+DEBUG = False
 
 ALLOWED_HOSTS = ['ecoffee.onrender.com']
-# CSRF_TRUSTED_ORIGINS=['https://127.0.0.1:8000']
-
 
 # Application definition
 
@@ -91,9 +89,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-# Set DEBUG to False for production
-DEBUG = False
-
 
 # Add these at the top of your settings.py
 from os import getenv
