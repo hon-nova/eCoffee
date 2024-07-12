@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-=lfr$fgpcgiyrvwb8+e&v=7%tbf(pqtr^xt%f*1b2k%o6mqs=&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = ['ecoffee-2.onrender.com']
 CSRF_TRUSTED_ORIGINS=['https://127.0.0.1:8000']
 
 
@@ -85,12 +85,12 @@ WSGI_APPLICATION = 'finalCS50W.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 # Set DEBUG to False for production
 DEBUG = False
 
@@ -104,16 +104,16 @@ DEBUG = False
 #         'PORT': '5432',        
 #         }
 # }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('DB_NAME'),
-        'USER': os.getenv('DB_USER'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST'),
-        'PORT': os.getenv('DB_PORT'),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.getenv('DB_NAME'),
+#         'USER': os.getenv('DB_USER'),
+#         'PASSWORD': os.getenv('DB_PASSWORD'),
+#         'HOST': os.getenv('DB_HOST'),
+#         'PORT': os.getenv('DB_PORT'),
+#     }
+# }
 # DATABASES = {
 #     'default': dj_database_url.parse(os.getenv('NEON_DATABASE_URL'))
 # }
