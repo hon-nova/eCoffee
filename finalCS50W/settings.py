@@ -34,7 +34,7 @@ SECRET_KEY = 'django-insecure-=lfr$fgpcgiyrvwb8+e&v=7%tbf(pqtr^xt%f*1b2k%o6mqs=&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['ecoffee-2.onrender.com']
+ALLOWED_HOSTS = ['ecoffee.onrender.com']
 CSRF_TRUSTED_ORIGINS=['https://127.0.0.1:8000']
 
 
