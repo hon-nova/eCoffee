@@ -41,8 +41,6 @@ faq=[{"question":"How do I purchase coffee from eCoffee online?","answer":"To pu
 
 def index(request):
     # logging.debug('index got invoked::')
-    for object in faq:
-        logging.debug(f'{object["question"]}: {object["answer"]}')
     return render(request,'eCoffee/index.html',{'footer_data':footer_data,'faq':faq})
 
 def login_view(request):
@@ -104,11 +102,9 @@ def register(request):
 def is_admin(user):
     return user.is_authenticated and user.is_staff
 
-
 from django.db.models import Sum
 from django.db.models.functions import TruncMonth
 from datetime import datetime
-
 
 def get_monthly_sales():       
     monthly_sales = Order.objects.annotate(month=TruncMonth('placed_order_at')).values('month').annotate(total=Sum('amount')).order_by('month')    
@@ -118,7 +114,6 @@ def get_monthly_sales():
 def sales_data(request):
     
     monthly_sales = get_monthly_sales()
-    # logging.debug(f'monthly_sales::{monthly_sales}')
     return JsonResponse(monthly_sales, safe=False)
 
 @user_passes_test(is_admin)
@@ -171,8 +166,6 @@ def home_products(request):
     
     if selected_categories:
         products=Product.objects.filter(category__in=selected_categories).order_by('-created_at')
-        # logging.debug(f'selected_category::{selected_categories}')
-        # logging.debug(f'products associated selected_category::{products}')
         products_count=len(products)
     else:
         products=Product.objects.all().order_by('-created_at')    
@@ -389,7 +382,7 @@ def toggle_like(request, product_id):
          liked = True            
       else:
          like.delete()
-            # logging.debug(f'No. Product {product_id} unliked by user {request.user}')
+        
       logging.debug(f'{liked}. Product {product_id} liked by user {request.user}')
       return JsonResponse({'liked': liked})
     
@@ -424,7 +417,7 @@ def create_checkout_session(request):
             return redirect(session.url, code=303) 
          
         except stripe.error.StripeError as e:
-            print(f"Stripe Error: {e}")
+        
             logging.debug(f'Stripe Error Page: {e}')
             return render(request,'eCoffee/failure_transaction.html')
         
@@ -433,10 +426,8 @@ def create_checkout_session(request):
            
             return render(request,'eCoffee/failure_transaction.html')
          
-        except Exception as e:
-            print(f"Exception: {e}")
-            logging.debug(f'cart_items: The transaction was not successful.{e}')
-            
+        except Exception as e:            
+            logging.debug(f'cart_items: The transaction was not successful.{e}')          
             return render(request,'eCoffee/failure_transaction.html')
 
    return redirect('cart_items') 
@@ -466,11 +457,11 @@ def stripe_webhook(request):
         return HttpResponse(status=400)
 
     # Handle the event
-    if event['type'] == 'payment_intent.payment_failed':
+    if event['type'] == 'checkout.session.completed':
+        session = event['data']['object']
+        handle_checkout_session(session)
+    elif event['type'] == 'payment_intent.payment_failed':
         payment_intent = event['data']['object']
-        logging.debug(f'payment_intent.payment_failed event received: {payment_intent}')
-        logging.debug(f'ID: {payment_intent["id"]}')
-        logging.debug(f'AMOUNT RECEIVED::{payment_intent["amount_received"]}')
         handle_payment_intent_failed(payment_intent)
         
         return HttpResponse(status=200)
@@ -484,7 +475,52 @@ def stripe_webhook(request):
     else:
         logging.debug(f"Unhandled event type::{event['type']}")
         return JsonResponse({'success': True})
-    
+ 
+def handle_checkout_session(session):
+    logging.debug('handle_checkout_session called')
+
+    try:
+        # Extract details from session object
+        payment_intent_id = session.get('payment_intent')
+        amount = session.get('amount_total') / 100.0  # Amount in cents, convert to dollars
+        customer_email = session.get('customer_details', {}).get('email')
+
+        logging.debug(f'Session Payment Intent ID: {payment_intent_id}')
+        logging.debug(f'Session Amount: {amount}')
+        logging.debug(f'Session Customer Email: {customer_email}')
+
+        # Retrieve the user based on the email
+        user = get_object_or_404(User, email=customer_email)
+        cart = get_object_or_404(Cart, user=user)
+
+        # Create or update the order
+        order, created = Order.objects.get_or_create(
+            payment_intent_id=payment_intent_id,
+            defaults={'cart': cart, 'amount': amount, 'payment_status': True}
+        )
+        logging.debug(f'Order ID Created: {order.id}')
+        if not created:
+            order.payment_status = True
+            order.amount = amount
+            order.save()
+
+        # Create order items
+        cart_items = cart.cart_items.all()
+        for cart_item in cart_items:
+            OrderItem.objects.create(
+                order=order,
+                product=cart_item.product,
+                quantity_purchased=cart_item.quantity_purchased
+            )
+
+        # Clear the cart after the successful transaction
+        cart.cart_items.all().delete()
+        logging.debug('Cart cleared after successful checkout session.')
+
+    except KeyError as e:
+        logging.error(f'KeyError: {e} in handle_checkout_session')
+    except Exception as e:
+        logging.error(f'Error handling checkout session: {e}') 
 @csrf_exempt
 def handle_payment_intent_succeeded(payment_intent):
     logging.debug('SUCCESS triggered handle_payment_intent_succeeded')
@@ -510,7 +546,7 @@ def handle_payment_intent_succeeded(payment_intent):
             order, created = Order.objects.get_or_create(
             payment_intent_id=payment_intent_id,
             defaults={'cart':cart,'amount': amount, 'payment_status': True})        
-
+            logging.debug(f'ORDER ID CREATED: {order.id}')
             if not created:
                 order.payment_status = True
                 order.amount = amount
@@ -526,9 +562,6 @@ def handle_payment_intent_succeeded(payment_intent):
                 )
             # Clear the cart after the success transaction
             cart.cart_items.all().delete()
-            
-            logging.debug('SUCCESS: Cart items deleted')
-            logging.debug(f'Order processed for successful payment: {order}')  
 
     except KeyError as e:
         logging.error(f'KeyError: {e} in payment_intent')
@@ -539,9 +572,8 @@ def handle_payment_intent_succeeded(payment_intent):
 @csrf_exempt
 def handle_payment_intent_failed(payment_intent):
     try:
-        logging.debug('Handling payment_intent.payment_failed')
-        payment_intent_id = payment_intent['id']
-        logging.debug(f'ID FAILED::{payment_intent_id}')
+        
+        payment_intent_id = payment_intent['id']        
         payment_email = payment_intent['last_payment_error']['payment_method']['billing_details']['email']
         
         user=get_object_or_404(User,email=payment_email)
@@ -551,14 +583,10 @@ def handle_payment_intent_failed(payment_intent):
             payment_intent_id=payment_intent_id,
             defaults={'cart': cart, 'payment_status': False}
         )
-        logging.debug(f'order???:: {order}')
-        logging.debug(f'created???:: {created}')
-
         if not created:
             order.payment_status = False
             order.save()
 
-        logging.debug(f'Order processed for failed payment: {order}')
     except KeyError as e:
         logging.error(f'KeyError: {e} in payment_intent')
     
