@@ -307,6 +307,14 @@ B) Admin Route:
 
 # 8. Constraints:   
 1. The project does not contain nor implement a 'forgot password' feature. In case users encounter this situation, they are advised to contact the Django admin person for further instructions
+# 9. Preview
+![one](./eCoffee/static/eCoffee/demo/one.png)
+<hr/>
+
+![two](./eCoffee/static/eCoffee/demo/two.png)
+<hr/>
+
+![three](./eCoffee/static/eCoffee/demo/three.png)
 <hr/>
 
 # Thank you
