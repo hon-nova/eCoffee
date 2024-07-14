@@ -317,4 +317,7 @@ B) Admin Route:
 ![three](./eCoffee/static/eCoffee/demo/three.png)
 <hr/>
 
+![four](./eCoffee/static/eCoffee/demo/four.png)
+<hr/>
+
 # Thank you
